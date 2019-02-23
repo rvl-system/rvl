@@ -1,0 +1,16 @@
+{
+  "name": "RaverLightsMessaging",
+  "description": "A standalone, dependecy-less library that implements the Raver Lights messaging stack for use with Arduino, PlatformIO, and WASM",
+  "keywords": "led synchronization, clock synchronization, messaging",
+  "authors": {
+    "name": "Bryan Hughes",
+    "email": "bryan@nebri.us",
+    "url": "https://nebri.us"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nebrius/RaverLightsMessaging.git"
+  },
+  "version": "1.0.0",
+  "license": "GPL-3.0"
+}
