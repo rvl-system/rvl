@@ -17,14 +17,13 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RAVER_LIGHTS_MESSAGING_H_
-#define RAVER_LIGHTS_MESSAGING_H_
+#include <Arduino.h>
+#include <RaverLightsMessaging>
 
-namespace RaverLightsMessaging {
+void setup() {
 
-void init();
-void loop();
+}
 
-}  // namespace RaverLightsMessaging
+void loop() {
 
-#endif  // RAVER_LIGHTS_MESSAGING_H_
+}
