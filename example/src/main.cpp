@@ -18,7 +18,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <Arduino.h>
-#include <RaverLightsMessaging>
+#include <RaverLightsMessaging.h>
 
 void setup() {
 
