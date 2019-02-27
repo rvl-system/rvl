@@ -17,23 +17,19 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
-#include "./messaging/stack/protocols/giggle_pixel/giggle_pixel.h"
-#include "./messaging/stack/protocols/giggle_pixel/palette.h"
-#include "./messaging/stack/protocols/giggle_pixel/wave.h"
-#include "./messaging/stack/transport.h"
-#include "../../../../config.h"  // Why does this one single file require ".." but none of the others do?
-#include "./codes.h"
-#include "./state.h"
-#include "./util/logging.h"
+#include <stdint.h>
+#include "./protocols/giggle_pixel/giggle_pixel.h"
+#include "./protocols/giggle_pixel/palette.h"
+#include "./protocols/giggle_pixel/wave.h"
+#include "./RaverLightsMessaging.h"
 
 namespace GigglePixel {
 
-const uint8 protocolVersion = 1;
+const uint8_t protocolVersion = 1;
 
-TransportInterface* transport;
+RaverLightsMessaging::TransportInterface* transport;
 
-void init(TransportInterface* newTransport) {
+void init(RaverLightsMessaging::TransportInterface* newTransport) {
   transport = newTransport;
   Wave::init(newTransport);
   Palette::init(newTransport);
@@ -43,18 +39,18 @@ void loop() {
   Wave::loop();
 }
 
-void setClientId(uint16 id);
-void broadcastHeader(uint8 packetType, uint8 priority, uint16 length);
+void setClientId(uint16_t id);
+void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
 
 void parsePacket() {
   Logging::debug("Parsing GigglePixel packet");
-  uint8 protocolVersion = transport->read8();
+  uint8_t protocolVersion = transport->read8();
   if (protocolVersion != protocolVersion) {
     Logging::error("Received unsupported GigglePixel protocol version packet");
     return;
   }
   transport->read16();  // length
-  uint8 packetType = transport->read8();
+  uint8_t packetType = transport->read8();
   transport->read8();  // priority
   transport->read8();  // Reserved
   transport->read16();  // sourceId
@@ -73,9 +69,9 @@ void parsePacket() {
   }
 }
 
-void broadcastHeader(uint8 packetType, uint8 priority, uint16 length) {
-  uint8* signature = const_cast<uint8*>(reinterpret_cast<const uint8*>("GLPX"));
-  transport->write(signature, sizeof(uint8) * 4);
+void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
+  uint8_t* signature = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>("GLPX"));
+  transport->write(signature, sizeof(uint8_t) * 4);
   transport->write8(protocolVersion);
   transport->write16(length);
   transport->write8(packetType);

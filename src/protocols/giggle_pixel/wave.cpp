@@ -17,25 +17,21 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
-#include "./messaging/stack/protocols/giggle_pixel/wave.h"
-#include "./messaging/stack/protocols/giggle_pixel/giggle_pixel.h"
-#include "./messaging/stack/transport.h"
-#include "../../../../config.h"  // Why does this one single file require ".." but none of the others do?
-#include "./state.h"
-#include "./event.h"
-#include "./codes.h"
-#include "./util/logging.h"
+#include <stdint.h>
+#include "./protocols/giggle_pixel/wave.h"
+#include "./protocols/giggle_pixel/giggle_pixel.h"
+#include "./RaverLightsMessaging.h"
+#include "./config.h"
 
 namespace Wave {
 
-uint32 nextSyncTime = millis();
+uint32_t nextSyncTime = millis();
 
-TransportInterface* transport;
+RaverLightsMessaging::TransportInterface* transport;
 
 void sync();
 
-void init(TransportInterface* newTransport) {
+void init(RaverLightsMessaging::TransportInterface* newTransport) {
   transport = newTransport;
   Event::on(Codes::EventType::AnimationChange, sync);
 }
@@ -54,7 +50,7 @@ void loop() {
 void sync() {
   Logging::debug("Syncing preset");
   auto settings = State::getSettings();
-  uint16 length = sizeof(State::Wave) * NUM_WAVES;
+  uint16_t length = sizeof(State::Wave) * NUM_WAVES;
   transport->beginWrite();
   GigglePixel::broadcastHeader(
     Codes::GigglePixelPacketTypes::Wave,
@@ -62,7 +58,7 @@ void sync() {
     2 + length);
   transport->write8(settings->waveSettings.timePeriod);
   transport->write8(settings->waveSettings.distancePeriod);
-  transport->write(reinterpret_cast<uint8*>(&settings->waveSettings.waves), length);
+  transport->write(reinterpret_cast<uint8_t*>(&settings->waveSettings.waves), length);
   transport->endWrite();
 }
 
@@ -71,7 +67,7 @@ void parsePacket() {
   State::WaveSettings newWaveSettings;
   newWaveSettings.timePeriod = transport->read8();
   newWaveSettings.distancePeriod = transport->read8();
-  transport->read(reinterpret_cast<uint8*>(&newWaveSettings.waves), sizeof(State::Wave) * NUM_WAVES);
+  transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(State::Wave) * NUM_WAVES);
   State::setWaveParameters(&newWaveSettings);
 }
 

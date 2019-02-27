@@ -17,25 +17,11 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MESSAGING_STACK_PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
-#define MESSAGING_STACK_PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
-#include "./messaging/stack/transport.h"
+#define NUM_WAVES 4
 
-// Packet:
-// h: a b w_t w_x phi
-// s: a b w_t w_x phi
-// v: a b w_t w_x phi
-// a: a b w_t w_x phi
-// 20 bytes per wave, 4 waves total for 80 bytes
+#define CLIENT_SYNC_INTERVAL 2000
 
-namespace Wave {
-
-void init(TransportInterface* newTransport);
-void loop();
-
-void parsePacket();
-
-}  // namespace Wave
-
-#endif  // MESSAGING_STACK_PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
+#endif  // CONFIG_H_

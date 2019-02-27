@@ -17,12 +17,46 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdint.h>
+#include "./RaverLightsMessaging.h"
+#include "./protocols/clock_sync/clock_sync.h"
+#include "./protocols/giggle_pixel/giggle_pixel.h"
+
 namespace RaverLightsMessaging {
 
-void init() {
+TransportInterface* transport;
+
+void init(TransportInterface* newTransport) {
+  transport = newTransport;
+  ClockSync::init(newTransport);
+  GigglePixel::init(newTransport);
 }
 
 void loop() {
+  int packetSize = transport->parsePacket();
+  if (packetSize == 0) {
+    return;
+  }
+  uint8_t signature[4];
+  transport->read(signature, 4);
+  if (
+    signature[0] == ClockSync::signature[0] &&
+    signature[1] == ClockSync::signature[1] &&
+    signature[2] == ClockSync::signature[2] &&
+    signature[3] == ClockSync::signature[3]
+  ) {
+    ClockSync::parsePacket();
+  } else if (
+    signature[0] == GigglePixel::signature[0] &&
+    signature[1] == GigglePixel::signature[1] &&
+    signature[2] == GigglePixel::signature[2] &&
+    signature[3] == GigglePixel::signature[3]
+  ) {
+    GigglePixel::parsePacket();
+  }
+
+  ClockSync::loop();
+  GigglePixel::loop();
 }
 
 }  // namespace RaverLightsMessaging

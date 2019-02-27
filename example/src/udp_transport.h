@@ -17,24 +17,37 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MESSAGING_STACK_TRANSPORT_H_
-#define MESSAGING_STACK_TRANSPORT_H_
+#ifndef MESSAGING_UDP_TRANSPORT_H_
+#define MESSAGING_UDP_TRANSPORT_H_
 
+#include <stdint.h>
 #include <Arduino.h>
+#include <RaverLightsMessaging.h>
 
-class TransportInterface {
+#define SERVER_PORT 4978
+
+using namespace RaverLightsMessaging;
+
+namespace UDPTransport {
+
+class UDPTransport : public TransportInterface {
  public:
-  virtual void beginWrite() = 0;
-  virtual void write8(uint8 data) = 0;
-  virtual void write16(uint16 data) = 0;
-  virtual void write32(uint32 data) = 0;
-  virtual void write(byte* data, uint16 length) = 0;
-  virtual void endWrite() = 0;
+  explicit UDPTransport(WiFiUDP* udp);
 
-  virtual uint8 read8() = 0;
-  virtual uint16 read16() = 0;
-  virtual uint32 read32() = 0;
-  virtual void read(uint8* buffer, int length) = 0;
+  void beginWrite();
+  void write8(uint8_t data);
+  void write16(uint16_t data);
+  void write32(uint32_t data);
+  void write(uint8_t* data, uint16_t length);
+  void endWrite();
+
+  uint16_t parsePacket();
+  uint8_t read8();
+  uint16_t read16();
+  uint32_t read32();
+  void read(uint8_t* buffer, uint16_t length);
 };
 
-#endif  // MESSAGING_STACK_TRANSPORT_H_
+}  // namespace UDPTransport
+
+#endif  // MESSAGING_UDP_TRANSPORT_H_

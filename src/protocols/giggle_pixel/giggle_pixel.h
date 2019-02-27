@@ -17,21 +17,22 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MESSAGING_STACK_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
-#define MESSAGING_STACK_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#ifndef PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#define PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
 
-#include <Arduino.h>
-#include "./messaging/stack/transport.h"
+#include <stdint.h>
+#include "./RaverLightsMessaging.h"
 
-namespace ClockSync {
+namespace GigglePixel {
 
-void init(TransportInterface* newTransport);
+void init(RaverLightsMessaging::TransportInterface* newTransport);
 void loop();
 
-bool parsePacket();
+void parsePacket();
+void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
 
-const uint8 signature[4] = { 'C', 'L', 'K', 'S' };
+const uint8_t signature[4] = { 'G', 'L', 'P', 'X' };
 
-}  // namespace ClockSync
+}  // namespace GigglePixel
 
-#endif  // MESSAGING_STACK_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#endif  // PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_

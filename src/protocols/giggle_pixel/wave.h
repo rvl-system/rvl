@@ -17,18 +17,25 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MESSAGING_STACK_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
-#define MESSAGING_STACK_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
+#ifndef PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
+#define PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
 
-#include "./messaging/stack/transport.h"
+#include "./RaverLightsMessaging.h"
 
-namespace Palette {
+// Packet:
+// h: a b w_t w_x phi
+// s: a b w_t w_x phi
+// v: a b w_t w_x phi
+// a: a b w_t w_x phi
+// 20 bytes per wave, 4 waves total for 80 bytes
 
-void init(TransportInterface* newTransport);
+namespace Wave {
+
+void init(RaverLightsMessaging::TransportInterface* newTransport);
 void loop();
 
 void parsePacket();
 
-}  // namespace Palette
+}  // namespace Wave
 
-#endif  // MESSAGING_STACK_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
+#endif  // PROTOCOLS_GIGGLE_PIXEL_WAVE_H_

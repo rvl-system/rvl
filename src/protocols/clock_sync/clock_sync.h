@@ -17,30 +17,21 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MESSAGING_UDP_TRANSPORT_H_
-#define MESSAGING_UDP_TRANSPORT_H_
+#ifndef PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#define PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
 
-#include <Arduino.h>
-#include "./messaging/stack/transport.h"
+#include <stdint.h>
+#include "./RaverLightsMessaging.h"
 
-namespace UDPTransport {
+namespace ClockSync {
 
-class UDPTransport : public TransportInterface {
- public:
-  explicit UDPTransport(WiFiUDP* udp);
-  void beginWrite();
-  void write8(uint8 data);
-  void write16(uint16 data);
-  void write32(uint32 data);
-  void write(byte* data, uint16 length);
-  void endWrite();
+void init(RaverLightsMessaging::TransportInterface* newTransport);
+void loop();
 
-  uint8 read8();
-  uint16 read16();
-  uint32 read32();
-  void read(uint8* buffer, int length);
-};
+bool parsePacket();
 
-}  // namespace UDPTransport
+const uint8_t signature[4] = { 'C', 'L', 'K', 'S' };
 
-#endif  // MESSAGING_UDP_TRANSPORT_H_
+}  // namespace ClockSync
+
+#endif  // PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_

@@ -17,20 +17,15 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
-#include "./messaging/stack/protocols/giggle_pixel/palette.h"
-#include "./messaging/stack/protocols/giggle_pixel/giggle_pixel.h"
-#include "./messaging/stack/transport.h"
-#include "../../../../config.h"  // Why does this one single file require ".." but none of the others do?
-#include "./state.h"
-#include "./event.h"
-#include "./codes.h"
+#include "./protocols/giggle_pixel/palette.h"
+#include "./protocols/giggle_pixel/giggle_pixel.h"
+#include "./RaverLightsMessaging.h"
 
 namespace Palette {
 
-TransportInterface* transport;
+RaverLightsMessaging::TransportInterface* transport;
 
-void init(TransportInterface* newTransport) {
+void init(RaverLightsMessaging::TransportInterface* newTransport) {
   transport = newTransport;
 }
 

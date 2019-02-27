@@ -17,14 +17,32 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RAVER_LIGHTS_MESSAGING_H_
-#define RAVER_LIGHTS_MESSAGING_H_
+#ifndef RAVERLIGHTSMESSAGING_H_
+#define RAVERLIGHTSMESSAGING_H_
+
+#include <stdint.h>
 
 namespace RaverLightsMessaging {
 
-void init();
+class TransportInterface {
+ public:
+  virtual void beginWrite() = 0;
+  virtual void write8(uint8_t data) = 0;
+  virtual void write16(uint16_t data) = 0;
+  virtual void write32(uint32_t data) = 0;
+  virtual void write(uint8_t* data, uint16_t length) = 0;
+  virtual void endWrite() = 0;
+
+  virtual uint16_t parsePacket() = 0;
+  virtual uint8_t read8() = 0;
+  virtual uint16_t read16() = 0;
+  virtual uint32_t read32() = 0;
+  virtual void read(uint8_t* buffer, uint16_t length) = 0;
+};
+
+void init(TransportInterface* newTransport);
 void loop();
 
 }  // namespace RaverLightsMessaging
 
-#endif  // RAVER_LIGHTS_MESSAGING_H_
+#endif  // RAVERLIGHTSMESSAGING_H_
