@@ -21,6 +21,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RAVERLIGHTSMESSAGING_H_
 
 #include <stdint.h>
+#include "./wave.h"
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
 namespace GigglePixelPacketTypes {
@@ -46,13 +47,19 @@ class RVTransportInterface {
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
 };
 
-enum class RVLogLevel { Error, Warning, Info };
+// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
+enum class RVLogLevel {
+  Error = 1,
+  Info = 2,
+  Debug = 3
+};
 
 class RVLoggingInterface {
  public:
   virtual RVLogLevel getLogLevel() = 0;
   virtual void print(const char s) = 0;
   virtual void print(const char *s) = 0;
+  virtual void println() = 0;
   virtual void println(const char s) = 0;
   virtual void println(const char *s) = 0;
 };
@@ -60,6 +67,9 @@ class RVLoggingInterface {
 enum class RVDeviceMode { Controller, Receiver };
 
 class RVPlatformInterface {
+ protected:
+  void onWaveSettingsUpdated();
+
  public:
   virtual uint32_t getLocalTime() = 0;
   virtual uint32_t getClockOffset() = 0;
@@ -67,13 +77,16 @@ class RVPlatformInterface {
 
   virtual RVDeviceMode getDeviceMode() = 0;
   virtual uint16_t getDeviceId() = 0;
+
+  virtual RVWaveSettings* getWaveSettings() = 0;
+  virtual void setWaveSettings(RVWaveSettings* newWaveSettings) = 0;
 };
 
-void initRaverLightsMessaging(
+void RVMessagingInit(
   RVPlatformInterface* platform,
   RVTransportInterface* transport,
   RVLoggingInterface* logging);
 
-void loopRaverLightsMessaging();
+void RVMessagingLoop();
 
 #endif  // RAVERLIGHTSMESSAGING_H_

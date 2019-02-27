@@ -22,67 +22,67 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <WiFiUdp.h>
 #include "./udp_transport.h"
 
-WiFiUDP* udp;
+WiFiUDP* udpTransport;
 IPAddress SERVER_IP(192, 168, 1, 1);
 IPAddress GATEWAY(192, 168, 1, 255);
 IPAddress SUBNET(255, 255, 255, 0);
 
 UDPTransport::UDPTransport(WiFiUDP* newUDP) {
-  udp = newUDP;
+  udpTransport = newUDP;
 }
 
 void UDPTransport::beginWrite() {
-  udp->beginPacket(GATEWAY, SERVER_PORT);
+  udpTransport->beginPacket(GATEWAY, SERVER_PORT);
 }
 
 void UDPTransport::write8(uint8_t data) {
-  udp->write(data);
+  udpTransport->write(data);
 }
 
 void UDPTransport::write16(uint16_t data) {
-  udp->write(data >> 8);
-  udp->write(data & 0xFF);
+  udpTransport->write(data >> 8);
+  udpTransport->write(data & 0xFF);
 }
 
 void UDPTransport::write32(uint32_t data) {
-  udp->write(data >> 24);
-  udp->write(data >> 16 & 0xFF);
-  udp->write(data >> 8 & 0xFF);
-  udp->write(data & 0xFF);
+  udpTransport->write(data >> 24);
+  udpTransport->write(data >> 16 & 0xFF);
+  udpTransport->write(data >> 8 & 0xFF);
+  udpTransport->write(data & 0xFF);
 }
 
 void UDPTransport::write(uint8_t* data, uint16_t length) {
-  udp->write(data, length);
+  udpTransport->write(data, length);
 }
 
 void UDPTransport::endWrite() {
-  udp->endPacket();
+  udpTransport->endPacket();
 }
 
 uint16_t UDPTransport::parsePacket() {
-  return udp->parsePacket();
+  return udpTransport->parsePacket();
 }
 
 uint8_t UDPTransport::read8() {
-  return udp->read();
+  return udpTransport->read();
 }
 
 uint16_t UDPTransport::read16() {
   uint16_t val = 0;
-  val |= udp->read() << 8;
-  val |= udp->read();
+  val |= udpTransport->read() << 8;
+  val |= udpTransport->read();
   return val;
 }
 
 uint32_t UDPTransport::read32() {
   uint32_t val = 0;
-  val |= udp->read() << 24;
-  val |= udp->read() << 16;
-  val |= udp->read() << 8;
-  val |= udp->read();
+  val |= udpTransport->read() << 24;
+  val |= udpTransport->read() << 16;
+  val |= udpTransport->read() << 8;
+  val |= udpTransport->read();
   return val;
 }
 
 void UDPTransport::read(uint8_t* buffer, uint16_t length) {
-  udp->read(buffer, length);
+  udpTransport->read(buffer, length);
 }

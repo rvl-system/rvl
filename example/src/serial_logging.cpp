@@ -37,6 +37,10 @@ void SerialLogging::print(const char *s) {
   Serial.print(s);
 }
 
+void SerialLogging::println() {
+  Serial.println();
+}
+
 void SerialLogging::println(const char s) {
   Serial.println(s);
 }

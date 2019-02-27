@@ -36,6 +36,7 @@ class SerialLogging : public RVLoggingInterface {
   RVLogLevel getLogLevel();
   void print(const char s);
   void print(const char *s);
+  void println();
   void println(const char s);
   void println(const char *s);
 };

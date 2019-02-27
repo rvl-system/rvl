@@ -52,10 +52,10 @@ void setup() {
 
   platform.setDeviceId(WiFi.localIP()[3]);
 
-  initRaverLightsMessaging(&platform, &transport, &logging);
+  RVMessagingInit(&platform, &transport, &logging);
 }
 
 void loop() {
-  loopRaverLightsMessaging();
+  RVMessagingLoop();
   delay(10);
 }

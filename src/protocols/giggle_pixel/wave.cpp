@@ -23,6 +23,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./RaverLightsMessaging.h"
 #include "./platform.h"
 #include "./config.h"
+#include "./wave.h"
 
 namespace Wave {
 
@@ -31,7 +32,6 @@ uint32_t nextSyncTime = Platform::platform->getLocalTime();
 void sync();
 
 void init() {
-  Event::on(Codes::EventType::AnimationChange, sync);
 }
 
 void loop() {
@@ -47,26 +47,26 @@ void loop() {
 
 void sync() {
   Platform::debug("Syncing preset");
-  auto settings = State::getSettings();
-  uint16_t length = sizeof(State::Wave) * NUM_WAVES;
+  auto waveSettings = Platform::platform->getWaveSettings();
+  uint16_t length = sizeof(RVWave) * NUM_WAVES;
   Platform::transport->beginWrite();
   GigglePixel::broadcastHeader(
     GigglePixelPacketTypes::Wave,
     0,  // Priority
     2 + length);
-  Platform::transport->write8(settings->waveSettings.timePeriod);
-  Platform::transport->write8(settings->waveSettings.distancePeriod);
-  Platform::transport->write(reinterpret_cast<uint8_t*>(&settings->waveSettings.waves), length);
+  Platform::transport->write8(waveSettings->timePeriod);
+  Platform::transport->write8(waveSettings->distancePeriod);
+  Platform::transport->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
   Platform::transport->endWrite();
 }
 
 void parsePacket() {
   Platform::debug("Parsing Wave packet");
-  State::WaveSettings newWaveSettings;
+  RVWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();
   newWaveSettings.distancePeriod = Platform::transport->read8();
-  Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(State::Wave) * NUM_WAVES);
-  State::setWaveParameters(&newWaveSettings);
+  Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVWave) * NUM_WAVES);
+  Platform::platform->setWaveSettings(&newWaveSettings);
 }
 
 }  // namespace Wave

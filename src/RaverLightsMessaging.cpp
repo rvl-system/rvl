@@ -23,13 +23,17 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./protocols/clock_sync/clock_sync.h"
 #include "./protocols/giggle_pixel/giggle_pixel.h"
 
-void init(RVPlatformInterface* newPlatform, RVTransportInterface* newTransport, RVLoggingInterface* newLogging) {
+void RVMessagingInit(
+  RVPlatformInterface* newPlatform,
+  RVTransportInterface* newTransport,
+  RVLoggingInterface* newLogging
+) {
   Platform::init(newPlatform, newTransport, newLogging);
   ClockSync::init();
   GigglePixel::init();
 }
 
-void loop() {
+void RVMessagingLoop() {
   int packetSize = Platform::transport->parsePacket();
   if (packetSize == 0) {
     return;
@@ -54,4 +58,9 @@ void loop() {
 
   ClockSync::loop();
   GigglePixel::loop();
+}
+
+
+void RVPlatformInterface::onWaveSettingsUpdated() {
+  GigglePixel::sync();
 }

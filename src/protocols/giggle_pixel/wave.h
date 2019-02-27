@@ -33,6 +33,7 @@ namespace Wave {
 
 void init();
 void loop();
+void sync();
 
 void parsePacket();
 

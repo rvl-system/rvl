@@ -17,23 +17,31 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
-#define PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#ifndef WAVE_H_
+#define WAVE_H_
 
 #include <stdint.h>
-#include "./RaverLightsMessaging.h"
+#include "./config.h"
 
-namespace GigglePixel {
+struct RVWaveChannel {
+  uint8_t a = 0;
+  uint8_t b = 0;
+  int8_t w_t = 0;
+  int8_t w_x = 0;
+  int8_t phi = 0;
+};
 
-void init();
-void loop();
-void sync();
+struct RVWave {
+  RVWaveChannel h;
+  RVWaveChannel s;
+  RVWaveChannel v;
+  RVWaveChannel a;
+};
 
-void parsePacket();
-void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
+struct RVWaveSettings {
+  uint8_t timePeriod = 255;
+  uint8_t distancePeriod = 32;
+  RVWave waves[NUM_WAVES];
+};
 
-const uint8_t signature[4] = { 'G', 'L', 'P', 'X' };
-
-}  // namespace GigglePixel
-
-#endif  // PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#endif  // WAVE_H_

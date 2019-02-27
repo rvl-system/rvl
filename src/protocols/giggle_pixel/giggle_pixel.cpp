@@ -37,6 +37,11 @@ void loop() {
   Wave::loop();
 }
 
+void sync() {
+  // TODO(nebrius): Probably need to determine device Mode as well as Wave vs Palette before calling this
+  Wave::sync();
+}
+
 void setClientId(uint16_t id);
 void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
 

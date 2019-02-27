@@ -27,9 +27,9 @@ class ArduinoPlatform : public RVPlatformInterface {
  private:
   uint32_t clockOffset;
   uint16_t deviceId;
+  RVWaveSettings waveSettings;
 
  public:
-
   void setDeviceId(uint16_t newDeviceId) {
     this->deviceId = newDeviceId;
   }
@@ -51,6 +51,14 @@ class ArduinoPlatform : public RVPlatformInterface {
 
   uint16_t getDeviceId() {
     return WiFi.localIP()[3];
+  }
+
+  RVWaveSettings* getWaveSettings() {
+    return &waveSettings;
+  }
+
+  void setWaveSettings(RVWaveSettings* newWaveSettings) {
+    memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVWaveSettings));
   }
 };
 
