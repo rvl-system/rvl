@@ -20,15 +20,13 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include "./protocols/clock_sync/clock_sync.h"
 #include "./RaverLightsMessaging.h"
+#include "./platform.h"
 
 namespace ClockSync {
 
 const uint8_t protocolVersion = 1;
 
-RaverLightsMessaging::TransportInterface* transport;
-
-void init(RaverLightsMessaging::TransportInterface* newTransport) {
-  transport = newTransport;
+void init() {
 }
 
 void loop() {
@@ -45,17 +43,17 @@ ClientID: 2 bytes = matches ClientID in GigglePixel, or 0 for transmitter
 */
 
 bool parsePacket() {
-  Logging::debug("Parsing Clock Sync packet");
-  uint8_t version = transport->read8();
+  Platform::debug("Parsing Clock Sync packet");
+  uint8_t version = Platform::transport->read8();
   if (protocolVersion != version) {
     return false;
   }
-  transport->read8();  // type
-  transport->read16();  // seq
-  uint32_t commandTime = transport->read32();
-  transport->read16();  // clientId
+  Platform::transport->read8();  // type
+  Platform::transport->read16();  // seq
+  uint32_t commandTime = Platform::transport->read32();
+  Platform::transport->read16();  // clientId
 
-  State::setClockOffset(static_cast<int32_t>(commandTime) - static_cast<int32_t>(millis()));
+  State::setClockOffset(static_cast<int32_t>(commandTime) - static_cast<int32_t>(Platform::platform->millis()));
 
   return true;
 }

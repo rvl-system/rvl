@@ -22,17 +22,15 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./protocols/giggle_pixel/palette.h"
 #include "./protocols/giggle_pixel/wave.h"
 #include "./RaverLightsMessaging.h"
+#include "./platform.h"
 
 namespace GigglePixel {
 
 const uint8_t protocolVersion = 1;
 
-RaverLightsMessaging::TransportInterface* transport;
-
-void init(RaverLightsMessaging::TransportInterface* newTransport) {
-  transport = newTransport;
-  Wave::init(newTransport);
-  Palette::init(newTransport);
+void init() {
+  Wave::init();
+  Palette::init();
 }
 
 void loop() {
@@ -43,17 +41,17 @@ void setClientId(uint16_t id);
 void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
 
 void parsePacket() {
-  Logging::debug("Parsing GigglePixel packet");
-  uint8_t protocolVersion = transport->read8();
+  Platform::debug("Parsing GigglePixel packet");
+  uint8_t protocolVersion = Platform::transport->read8();
   if (protocolVersion != protocolVersion) {
-    Logging::error("Received unsupported GigglePixel protocol version packet");
+    Platform::error("Received unsupported GigglePixel protocol version packet");
     return;
   }
-  transport->read16();  // length
-  uint8_t packetType = transport->read8();
-  transport->read8();  // priority
-  transport->read8();  // Reserved
-  transport->read16();  // sourceId
+  Platform::transport->read16();  // length
+  uint8_t packetType = Platform::transport->read8();
+  Platform::transport->read8();  // priority
+  Platform::transport->read8();  // Reserved
+  Platform::transport->read16();  // sourceId
 
   // Ignore our own broadcast packets
   if (State::getSettings()->mode == Codes::Mode::Controller) {
@@ -65,19 +63,19 @@ void parsePacket() {
       Wave::parsePacket();
       break;
     default:
-      Logging::error("Unsupported packet type received: %d", packetType);
+      Platform::error("Unsupported packet type received: %d", packetType);
   }
 }
 
 void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
   uint8_t* signature = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>("GLPX"));
-  transport->write(signature, sizeof(uint8_t) * 4);
-  transport->write8(protocolVersion);
-  transport->write16(length);
-  transport->write8(packetType);
-  transport->write8(priority);
-  transport->write8(0);  // reserved
-  transport->write16(State::getSettings()->id);
+  Platform::transport->write(signature, sizeof(uint8_t) * 4);
+  Platform::transport->write8(protocolVersion);
+  Platform::transport->write16(length);
+  Platform::transport->write8(packetType);
+  Platform::transport->write8(priority);
+  Platform::transport->write8(0);  // reserved
+  Platform::transport->write16(State::getSettings()->id);
 }
 
 }  // namespace GigglePixel

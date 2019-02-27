@@ -21,18 +21,16 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./protocols/giggle_pixel/wave.h"
 #include "./protocols/giggle_pixel/giggle_pixel.h"
 #include "./RaverLightsMessaging.h"
+#include "./platform.h"
 #include "./config.h"
 
 namespace Wave {
 
-uint32_t nextSyncTime = millis();
-
-RaverLightsMessaging::TransportInterface* transport;
+uint32_t nextSyncTime = Platform::platform->millis();
 
 void sync();
 
-void init(RaverLightsMessaging::TransportInterface* newTransport) {
-  transport = newTransport;
+void init() {
   Event::on(Codes::EventType::AnimationChange, sync);
 }
 
@@ -40,34 +38,34 @@ void loop() {
   if (State::getSettings()->mode != Codes::Mode::Controller) {
     return;
   }
-  if (millis() < nextSyncTime) {
+  if (Platform::platform->millis() < nextSyncTime) {
     return;
   }
-  nextSyncTime = millis() + CLIENT_SYNC_INTERVAL;
+  nextSyncTime = Platform::platform->millis() + CLIENT_SYNC_INTERVAL;
   sync();
 }
 
 void sync() {
-  Logging::debug("Syncing preset");
+  Platform::debug("Syncing preset");
   auto settings = State::getSettings();
   uint16_t length = sizeof(State::Wave) * NUM_WAVES;
-  transport->beginWrite();
+  Platform::transport->beginWrite();
   GigglePixel::broadcastHeader(
     Codes::GigglePixelPacketTypes::Wave,
     0,  // Priority
     2 + length);
-  transport->write8(settings->waveSettings.timePeriod);
-  transport->write8(settings->waveSettings.distancePeriod);
-  transport->write(reinterpret_cast<uint8_t*>(&settings->waveSettings.waves), length);
-  transport->endWrite();
+  Platform::transport->write8(settings->waveSettings.timePeriod);
+  Platform::transport->write8(settings->waveSettings.distancePeriod);
+  Platform::transport->write(reinterpret_cast<uint8_t*>(&settings->waveSettings.waves), length);
+  Platform::transport->endWrite();
 }
 
 void parsePacket() {
-  Logging::debug("Parsing Wave packet");
+  Platform::debug("Parsing Wave packet");
   State::WaveSettings newWaveSettings;
-  newWaveSettings.timePeriod = transport->read8();
-  newWaveSettings.distancePeriod = transport->read8();
-  transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(State::Wave) * NUM_WAVES);
+  newWaveSettings.timePeriod = Platform::transport->read8();
+  newWaveSettings.distancePeriod = Platform::transport->read8();
+  Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(State::Wave) * NUM_WAVES);
   State::setWaveParameters(&newWaveSettings);
 }
 

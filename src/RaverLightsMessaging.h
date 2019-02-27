@@ -22,9 +22,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
-namespace RaverLightsMessaging {
-
-class TransportInterface {
+class RVTransportInterface {
  public:
   virtual void beginWrite() = 0;
   virtual void write8(uint8_t data) = 0;
@@ -40,9 +38,23 @@ class TransportInterface {
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
 };
 
-void init(TransportInterface* newTransport);
-void loop();
+enum class RVLogLevel { Error, Warning, Info };
 
-}  // namespace RaverLightsMessaging
+class RVLoggingInterface {
+ public:
+  virtual RVLogLevel getLogLevel() = 0;
+  virtual void print(const char s) = 0;
+  virtual void print(const char *s) = 0;
+  virtual void println(const char s) = 0;
+  virtual void println(const char *s) = 0;
+};
+
+class RVPlatformInterface {
+ public:
+  virtual uint32_t millis() = 0;
+};
+
+void initRaverLightsMessaging(RVPlatformInterface* platform, RVTransportInterface* transport, RVLoggingInterface* logging);
+void loopRaverLightsMessaging();
 
 #endif  // RAVERLIGHTSMESSAGING_H_

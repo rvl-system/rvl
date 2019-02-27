@@ -23,10 +23,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Palette {
 
-RaverLightsMessaging::TransportInterface* transport;
-
-void init(RaverLightsMessaging::TransportInterface* newTransport) {
-  transport = newTransport;
+void init() {
 }
 
 void loop() {

@@ -18,3 +18,4 @@
 
 DIR=$(dirname "${pwd}")
 cpplint --quiet --linelength=120 --recursive --repository=$DIR/src src/*
+cpplint --quiet --linelength=120 --recursive --repository=$DIR/example/src example/src/*

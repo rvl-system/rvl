@@ -19,26 +19,23 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include "./RaverLightsMessaging.h"
+#include "./platform.h"
 #include "./protocols/clock_sync/clock_sync.h"
 #include "./protocols/giggle_pixel/giggle_pixel.h"
 
-namespace RaverLightsMessaging {
-
-TransportInterface* transport;
-
-void init(TransportInterface* newTransport) {
-  transport = newTransport;
-  ClockSync::init(newTransport);
-  GigglePixel::init(newTransport);
+void init(RVPlatformInterface* newPlatform, RVTransportInterface* newTransport, RVLoggingInterface* newLogging) {
+  Platform::init(newPlatform, newTransport, newLogging);
+  ClockSync::init();
+  GigglePixel::init();
 }
 
 void loop() {
-  int packetSize = transport->parsePacket();
+  int packetSize = Platform::transport->parsePacket();
   if (packetSize == 0) {
     return;
   }
   uint8_t signature[4];
-  transport->read(signature, 4);
+  Platform::transport->read(signature, 4);
   if (
     signature[0] == ClockSync::signature[0] &&
     signature[1] == ClockSync::signature[1] &&
@@ -58,5 +55,3 @@ void loop() {
   ClockSync::loop();
   GigglePixel::loop();
 }
-
-}  // namespace RaverLightsMessaging

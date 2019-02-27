@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MESSAGING_UDP_TRANSPORT_H_
-#define MESSAGING_UDP_TRANSPORT_H_
+#ifndef UDP_TRANSPORT_H_
+#define UDP_TRANSPORT_H_
 
 #include <stdint.h>
 #include <Arduino.h>
@@ -26,11 +26,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 4978
 
-using namespace RaverLightsMessaging;
-
-namespace UDPTransport {
-
-class UDPTransport : public TransportInterface {
+class UDPTransport : public RVTransportInterface {
  public:
   explicit UDPTransport(WiFiUDP* udp);
 
@@ -48,6 +44,4 @@ class UDPTransport : public TransportInterface {
   void read(uint8_t* buffer, uint16_t length);
 };
 
-}  // namespace UDPTransport
-
-#endif  // MESSAGING_UDP_TRANSPORT_H_
+#endif  // UDP_TRANSPORT_H_

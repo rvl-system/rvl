@@ -22,8 +22,6 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <WiFiUdp.h>
 #include "./udp_transport.h"
 
-namespace UDPTransport {
-
 WiFiUDP* udp;
 IPAddress SERVER_IP(192, 168, 1, 1);
 IPAddress GATEWAY(192, 168, 1, 255);
@@ -88,5 +86,3 @@ uint32_t UDPTransport::read32() {
 void UDPTransport::read(uint8_t* buffer, uint16_t length) {
   udp->read(buffer, length);
 }
-
-}  // namespace UDPTransport

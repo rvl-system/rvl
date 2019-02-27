@@ -31,7 +31,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Wave {
 
-void init(RaverLightsMessaging::TransportInterface* newTransport);
+void init();
 void loop();
 
 void parsePacket();
