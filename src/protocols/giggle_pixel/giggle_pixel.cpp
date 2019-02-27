@@ -68,7 +68,7 @@ void parsePacket() {
       Wave::parsePacket();
       break;
     default:
-      Platform::error("Unsupported packet type received: %d", packetType);
+      Platform::error("Unsupported packet type received");
   }
 }
 
