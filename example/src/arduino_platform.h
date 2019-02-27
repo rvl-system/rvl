@@ -24,9 +24,33 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <RaverLightsMessaging.h>
 
 class ArduinoPlatform : public RVPlatformInterface {
+ private:
+  uint32_t clockOffset;
+  uint16_t deviceId;
+
  public:
-  uint32_t millis() {
+
+  void setDeviceId(uint16_t newDeviceId) {
+    this->deviceId = newDeviceId;
+  }
+
+  uint32_t getLocalTime() {
     return millis();
+  }
+
+  uint32_t getClockOffset() {
+    return this->clockOffset;
+  }
+  void setClockOffset(uint32_t newOffset) {
+    this->clockOffset = newOffset;
+  }
+
+  RVDeviceMode getDeviceMode() {
+    return RVDeviceMode::Controller;
+  }
+
+  uint16_t getDeviceId() {
+    return WiFi.localIP()[3];
   }
 };
 

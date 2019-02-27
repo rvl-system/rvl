@@ -35,7 +35,6 @@ void SerialLogging::print(const char s) {
 
 void SerialLogging::print(const char *s) {
   Serial.print(s);
-
 }
 
 void SerialLogging::println(const char s) {
@@ -45,4 +44,3 @@ void SerialLogging::println(const char s) {
 void SerialLogging::println(const char *s) {
   Serial.println(s);
 }
-

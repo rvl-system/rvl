@@ -26,7 +26,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Wave {
 
-uint32_t nextSyncTime = Platform::platform->millis();
+uint32_t nextSyncTime = Platform::platform->getLocalTime();
 
 void sync();
 
@@ -35,13 +35,13 @@ void init() {
 }
 
 void loop() {
-  if (State::getSettings()->mode != Codes::Mode::Controller) {
+  if (Platform::platform->getDeviceMode() != RVDeviceMode::Controller) {
     return;
   }
-  if (Platform::platform->millis() < nextSyncTime) {
+  if (Platform::platform->getLocalTime() < nextSyncTime) {
     return;
   }
-  nextSyncTime = Platform::platform->millis() + CLIENT_SYNC_INTERVAL;
+  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
   sync();
 }
 
@@ -51,7 +51,7 @@ void sync() {
   uint16_t length = sizeof(State::Wave) * NUM_WAVES;
   Platform::transport->beginWrite();
   GigglePixel::broadcastHeader(
-    Codes::GigglePixelPacketTypes::Wave,
+    GigglePixelPacketTypes::Wave,
     0,  // Priority
     2 + length);
   Platform::transport->write8(settings->waveSettings.timePeriod);

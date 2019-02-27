@@ -53,7 +53,9 @@ bool parsePacket() {
   uint32_t commandTime = Platform::transport->read32();
   Platform::transport->read16();  // clientId
 
-  State::setClockOffset(static_cast<int32_t>(commandTime) - static_cast<int32_t>(Platform::platform->millis()));
+  Platform::platform->setClockOffset(
+    static_cast<int32_t>(commandTime) -
+    static_cast<int32_t>(Platform::platform->getLocalTime()));
 
   return true;
 }

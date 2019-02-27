@@ -50,6 +50,8 @@ void setup() {
   Serial.println(WiFi.localIP());
   udp.begin(SERVER_PORT);
 
+  platform.setDeviceId(WiFi.localIP()[3]);
+
   initRaverLightsMessaging(&platform, &transport, &logging);
 }
 

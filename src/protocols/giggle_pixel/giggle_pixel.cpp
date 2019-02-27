@@ -54,12 +54,12 @@ void parsePacket() {
   Platform::transport->read16();  // sourceId
 
   // Ignore our own broadcast packets
-  if (State::getSettings()->mode == Codes::Mode::Controller) {
+  if (Platform::platform->getDeviceMode() == RVDeviceMode::Controller) {
     return;
   }
 
   switch (packetType) {
-    case Codes::GigglePixelPacketTypes::Wave:
+    case GigglePixelPacketTypes::Wave:
       Wave::parsePacket();
       break;
     default:
@@ -75,7 +75,7 @@ void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
   Platform::transport->write8(packetType);
   Platform::transport->write8(priority);
   Platform::transport->write8(0);  // reserved
-  Platform::transport->write16(State::getSettings()->id);
+  Platform::transport->write16(Platform::platform->getDeviceId());
 }
 
 }  // namespace GigglePixel
