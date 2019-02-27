@@ -51,7 +51,7 @@ void sync() {
   uint16_t length = sizeof(RVWave) * NUM_WAVES;
   Platform::transport->beginWrite();
   GigglePixel::broadcastHeader(
-    GigglePixelPacketTypes::Wave,
+    RVPacketType::Wave,
     0,  // Priority
     2 + length);
   Platform::transport->write8(waveSettings->timePeriod);

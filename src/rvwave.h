@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef WAVE_H_
-#define WAVE_H_
+#ifndef RVWAVE_H_
+#define RVWAVE_H_
 
 #include <stdint.h>
-#include "./config.h"
+#include "./rvconfig.h"
 
 struct RVWaveChannel {
   uint8_t a = 0;
@@ -44,4 +44,4 @@ struct RVWaveSettings {
   RVWave waves[NUM_WAVES];
 };
 
-#endif  // WAVE_H_
+#endif  // RVWAVE_H_

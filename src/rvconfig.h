@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#ifndef RVCONFIG_H_
+#define RVCONFIG_H_
 
 #define NUM_WAVES 4
 
 #define CLIENT_SYNC_INTERVAL 2000
 
-#endif  // CONFIG_H_
+#endif  // RVCONFIG_H_

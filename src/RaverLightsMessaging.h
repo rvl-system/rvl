@@ -21,11 +21,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RAVERLIGHTSMESSAGING_H_
 
 #include <stdint.h>
-#include "./wave.h"
+#include "./rvwave.h"
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
-namespace GigglePixelPacketTypes {
-  enum GigglePixelPacketTypes {
+namespace RVPacketType {
+  enum RVPacketType {
     Palette = 1,
     Wave = 2
   };
@@ -76,6 +76,7 @@ class RVPlatformInterface {
   virtual void setClockOffset(uint32_t newOffset) = 0;
 
   virtual RVDeviceMode getDeviceMode() = 0;
+  virtual void setDeviceMode(RVDeviceMode newMode) = 0;
   virtual uint16_t getDeviceId() = 0;
 
   virtual RVWaveSettings* getWaveSettings() = 0;

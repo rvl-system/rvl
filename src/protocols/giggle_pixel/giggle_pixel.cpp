@@ -64,7 +64,7 @@ void parsePacket() {
   }
 
   switch (packetType) {
-    case GigglePixelPacketTypes::Wave:
+    case RVPacketType::Wave:
       Wave::parsePacket();
       break;
     default:

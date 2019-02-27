@@ -28,6 +28,7 @@ class ArduinoPlatform : public RVPlatformInterface {
   uint32_t clockOffset;
   uint16_t deviceId;
   RVWaveSettings waveSettings;
+  RVDeviceMode deviceMode = RVDeviceMode::Controller;
 
  public:
   void setDeviceId(uint16_t newDeviceId) {
@@ -45,8 +46,12 @@ class ArduinoPlatform : public RVPlatformInterface {
     this->clockOffset = newOffset;
   }
 
+  void setDeviceMode(RVDeviceMode newDeviceMode) {
+    this->deviceMode = newDeviceMode;
+  }
+
   RVDeviceMode getDeviceMode() {
-    return RVDeviceMode::Controller;
+    return this->deviceMode;
   }
 
   uint16_t getDeviceId() {
