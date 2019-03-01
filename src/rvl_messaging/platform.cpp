@@ -18,17 +18,17 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "./RaverLightsMessaging.h"
-#include "./platform.h"
+#include "./rvl_messaging/platform.h"
 
 namespace Platform {
 
-RVTransportInterface* transport;
-RVLoggingInterface* logging;
-RVPlatformInterface* platform;
+RVLTransportInterface* transport;
+RVLLoggingInterface* logging;
+RVLPlatformInterface* platform;
 
 // Base case versions
 
-void init(RVPlatformInterface* newPlatform, RVTransportInterface* newTransport, RVLoggingInterface* newLogging) {
+void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLoggingInterface* newLogging) {
   platform = newPlatform;
   transport = newTransport;
   logging = newLogging;
@@ -39,24 +39,24 @@ inline void log(const char *s) {
 }
 
 void error(const char *s) {
-  RVLogLevel logLevel = Platform::logging->getLogLevel();
-  if (logLevel >= RVLogLevel::Error) {
+  RVLLogLevel logLevel = Platform::logging->getLogLevel();
+  if (logLevel >= RVLLogLevel::Error) {
     logging->print("[error]: ");
     logging->println(s);
   }
 }
 
 void info(const char *s) {
-  RVLogLevel logLevel = Platform::logging->getLogLevel();
-  if (logLevel >= RVLogLevel::Info) {
+  RVLLogLevel logLevel = Platform::logging->getLogLevel();
+  if (logLevel >= RVLLogLevel::Info) {
     logging->print("[info ]: ");
     logging->println(s);
   }
 }
 
 void debug(const char *s) {
-  RVLogLevel logLevel = Platform::logging->getLogLevel();
-  if (logLevel >= RVLogLevel::Debug) {
+  RVLLogLevel logLevel = Platform::logging->getLogLevel();
+  if (logLevel >= RVLLogLevel::Debug) {
     logging->print("[debug]: ");
     logging->println(s);
   }
@@ -79,8 +79,8 @@ void log(const char *s, T value, Args ...args) {
 
 template<typename T, typename... Args>
 void error(const char *s, T value, Args... args) {
-  RVLogLevel logLevel = logging->getLogLevel();
-  if (logLevel >= RVLogLevel::Error) {
+  RVLLogLevel logLevel = logging->getLogLevel();
+  if (logLevel >= RVLLogLevel::Error) {
     logging->print("[error]: ");
     log(s, value, args...);
     logging->println();
@@ -89,8 +89,8 @@ void error(const char *s, T value, Args... args) {
 
 template<typename T, typename... Args>
 void info(const char *s, T value, Args... args) {
-  RVLogLevel logLevel = logging->getLogLevel();
-  if (logLevel >= RVLogLevel::Info) {
+  RVLLogLevel logLevel = logging->getLogLevel();
+  if (logLevel >= RVLLogLevel::Info) {
     logging->print("[info ]: ");
     log(s, value, args...);
     logging->println();
@@ -99,8 +99,8 @@ void info(const char *s, T value, Args... args) {
 
 template<typename T, typename... Args>
 void debug(const char *s, T value, Args... args) {
-  RVLogLevel logLevel = logging->getLogLevel();
-  if (logLevel >= RVLogLevel::Debug) {
+  RVLLogLevel logLevel = logging->getLogLevel();
+  if (logLevel >= RVLLogLevel::Debug) {
     logging->print("[debug ]: ");
     log(s, value, args...);
     logging->println();

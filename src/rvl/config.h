@@ -17,31 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVWAVE_H_
-#define RVWAVE_H_
+#ifndef RVL_CONFIG_H_
+#define RVL_CONFIG_H_
 
-#include <stdint.h>
-#include "./rvconfig.h"
+#define NUM_WAVES 4
 
-struct RVWaveChannel {
-  uint8_t a = 0;
-  uint8_t b = 0;
-  int8_t w_t = 0;
-  int8_t w_x = 0;
-  int8_t phi = 0;
-};
-
-struct RVWave {
-  RVWaveChannel h;
-  RVWaveChannel s;
-  RVWaveChannel v;
-  RVWaveChannel a;
-};
-
-struct RVWaveSettings {
-  uint8_t timePeriod = 255;
-  uint8_t distancePeriod = 32;
-  RVWave waves[NUM_WAVES];
-};
-
-#endif  // RVWAVE_H_
+#endif  // RVL_CONFIG_H_

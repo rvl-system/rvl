@@ -17,21 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
-#define PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#ifndef RVL_MESSAGING_CONFIG_H_
+#define RVL_MESSAGING_CONFIG_H_
 
-#include <stdint.h>
-#include "./RaverLightsMessaging.h"
+#define CLIENT_SYNC_INTERVAL 2000
 
-namespace ClockSync {
-
-void init();
-void loop();
-
-bool parsePacket();
-
-const uint8_t signature[4] = { 'C', 'L', 'K', 'S' };
-
-}  // namespace ClockSync
-
-#endif  // PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#endif  // RVL_MESSAGING_CONFIG_H_

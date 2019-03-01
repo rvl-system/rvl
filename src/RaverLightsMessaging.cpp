@@ -19,21 +19,21 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include "./RaverLightsMessaging.h"
-#include "./platform.h"
-#include "./protocols/clock_sync/clock_sync.h"
-#include "./protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl_messaging/platform.h"
+#include "./rvl_messaging/protocols/clock_sync/clock_sync.h"
+#include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
 
-void RVMessagingInit(
-  RVPlatformInterface* newPlatform,
-  RVTransportInterface* newTransport,
-  RVLoggingInterface* newLogging
+void RVLMessagingInit(
+  RVLPlatformInterface* newPlatform,
+  RVLTransportInterface* newTransport,
+  RVLLoggingInterface* newLogging
 ) {
   Platform::init(newPlatform, newTransport, newLogging);
   ClockSync::init();
   GigglePixel::init();
 }
 
-void RVMessagingLoop() {
+void RVLMessagingLoop() {
   int packetSize = Platform::transport->parsePacket();
   if (packetSize == 0) {
     return;
@@ -61,6 +61,6 @@ void RVMessagingLoop() {
 }
 
 
-void RVPlatformInterface::onWaveSettingsUpdated() {
+void RVLPlatformInterface::onWaveSettingsUpdated() {
   GigglePixel::sync();
 }

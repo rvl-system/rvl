@@ -26,7 +26,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 4978
 
-class UDPTransport : public RVTransportInterface {
+class UDPTransport : public RVLTransportInterface {
  public:
   explicit UDPTransport(WiFiUDP* udp);
 

@@ -18,11 +18,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "./protocols/giggle_pixel/giggle_pixel.h"
-#include "./protocols/giggle_pixel/palette.h"
-#include "./protocols/giggle_pixel/wave.h"
 #include "./RaverLightsMessaging.h"
-#include "./platform.h"
+#include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl_messaging/protocols/giggle_pixel/palette.h"
+#include "./rvl_messaging/protocols/giggle_pixel/wave.h"
+#include "./rvl_messaging/platform.h"
 
 namespace GigglePixel {
 
@@ -59,12 +59,12 @@ void parsePacket() {
   Platform::transport->read16();  // sourceId
 
   // Ignore our own broadcast packets
-  if (Platform::platform->getDeviceMode() == RVDeviceMode::Controller) {
+  if (Platform::platform->getDeviceMode() == RVLDeviceMode::Controller) {
     return;
   }
 
   switch (packetType) {
-    case RVPacketType::Wave:
+    case RVLPacketType::Wave:
       Wave::parsePacket();
       break;
     default:

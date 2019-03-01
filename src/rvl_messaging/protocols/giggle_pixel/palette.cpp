@@ -17,18 +17,20 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
-#define PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
-
 #include "./RaverLightsMessaging.h"
+#include "./rvl_messaging/protocols/giggle_pixel/palette.h"
 
 namespace Palette {
 
-void init();
-void loop();
+void init() {
+}
 
-void parsePacket();
+void loop() {
+  // Nothing to do
+}
+
+void parsePacket() {
+  // TODO(nebrius)
+}
 
 }  // namespace Palette
-
-#endif  // PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_

@@ -26,14 +26,14 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 4978
 
-class SerialLogging : public RVLoggingInterface {
+class SerialLogging : public RVLLoggingInterface {
  private:
-  RVLogLevel level;
+  RVLLogLevel level;
 
  public:
-  explicit SerialLogging(RVLogLevel level);
+  explicit SerialLogging(RVLLogLevel level);
 
-  RVLogLevel getLogLevel();
+  RVLLogLevel getLogLevel();
   void print(const char s);
   void print(const char *s);
   void println();

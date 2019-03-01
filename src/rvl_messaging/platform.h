@@ -17,20 +17,20 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PLATFORM_H_
-#define PLATFORM_H_
+#ifndef RVL_MESSAGING_PLATFORM_H_
+#define RVL_MESSAGING_PLATFORM_H_
 
 #include "./RaverLightsMessaging.h"
 
 namespace Platform {
 
-extern RVTransportInterface* transport;
-extern RVLoggingInterface* logging;
-extern RVPlatformInterface* platform;
+extern RVLTransportInterface* transport;
+extern RVLLoggingInterface* logging;
+extern RVLPlatformInterface* platform;
 
 // Base case versions
 
-void init(RVPlatformInterface* newPlatform, RVTransportInterface* newTransport, RVLoggingInterface* newLogging);
+void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLoggingInterface* newLogging);
 
 void error(const char *s);
 void info(const char *s);
@@ -49,4 +49,4 @@ void debug(const char *s, T value, Args... args);
 
 }  // namespace Platform
 
-#endif  // PLATFORM_H_
+#endif  // RVL_MESSAGING_PLATFORM_H_

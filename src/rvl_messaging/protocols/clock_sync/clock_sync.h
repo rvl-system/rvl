@@ -17,34 +17,21 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
-#include "./serial_logging.h"
+#ifndef RVL_MESSAGING_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#define RVL_MESSAGING_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
 
-SerialLogging::SerialLogging(RVLLogLevel newLevel) {
-  this->level = newLevel;
-  Serial.begin(115200);
-}
+#include <stdint.h>
+#include "./RaverLightsMessaging.h"
 
-RVLLogLevel SerialLogging::getLogLevel() {
-  return this->level;
-}
+namespace ClockSync {
 
-void SerialLogging::print(const char s) {
-  Serial.print(s);
-}
+void init();
+void loop();
 
-void SerialLogging::print(const char *s) {
-  Serial.print(s);
-}
+bool parsePacket();
 
-void SerialLogging::println() {
-  Serial.println();
-}
+const uint8_t signature[4] = { 'C', 'L', 'K', 'S' };
 
-void SerialLogging::println(const char s) {
-  Serial.println(s);
-}
+}  // namespace ClockSync
 
-void SerialLogging::println(const char *s) {
-  Serial.println(s);
-}
+#endif  // RVL_MESSAGING_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_

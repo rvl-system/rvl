@@ -23,12 +23,12 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <Arduino.h>
 #include <RaverLightsMessaging.h>
 
-class ArduinoPlatform : public RVPlatformInterface {
+class ArduinoPlatform : public RVLPlatformInterface {
  private:
   uint32_t clockOffset;
   uint16_t deviceId;
-  RVWaveSettings waveSettings;
-  RVDeviceMode deviceMode = RVDeviceMode::Controller;
+  RVLWaveSettings waveSettings;
+  RVLDeviceMode deviceMode = RVLDeviceMode::Controller;
 
  public:
   void setDeviceId(uint16_t newDeviceId) {
@@ -46,11 +46,11 @@ class ArduinoPlatform : public RVPlatformInterface {
     this->clockOffset = newOffset;
   }
 
-  void setDeviceMode(RVDeviceMode newDeviceMode) {
+  void setDeviceMode(RVLDeviceMode newDeviceMode) {
     this->deviceMode = newDeviceMode;
   }
 
-  RVDeviceMode getDeviceMode() {
+  RVLDeviceMode getDeviceMode() {
     return this->deviceMode;
   }
 
@@ -58,12 +58,12 @@ class ArduinoPlatform : public RVPlatformInterface {
     return WiFi.localIP()[3];
   }
 
-  RVWaveSettings* getWaveSettings() {
+  RVLWaveSettings* getWaveSettings() {
     return &waveSettings;
   }
 
-  void setWaveSettings(RVWaveSettings* newWaveSettings) {
-    memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVWaveSettings));
+  void setWaveSettings(RVLWaveSettings* newWaveSettings) {
+    memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVLWaveSettings));
   }
 };
 

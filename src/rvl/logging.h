@@ -17,21 +17,24 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./protocols/giggle_pixel/palette.h"
-#include "./protocols/giggle_pixel/giggle_pixel.h"
-#include "./RaverLightsMessaging.h"
+#ifndef RVL_LOGGING_H_
+#define RVL_LOGGING_H_
 
-namespace Palette {
+// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
+enum class RVLLogLevel {
+  Error = 1,
+  Info = 2,
+  Debug = 3
+};
 
-void init() {
-}
+class RVLLoggingInterface {
+ public:
+  virtual RVLLogLevel getLogLevel() = 0;
+  virtual void print(const char s) = 0;
+  virtual void print(const char *s) = 0;
+  virtual void println() = 0;
+  virtual void println(const char s) = 0;
+  virtual void println(const char *s) = 0;
+};
 
-void loop() {
-  // Nothing to do
-}
-
-void parsePacket() {
-  // TODO(nebrius)
-}
-
-}  // namespace Palette
+#endif  // RVL_LOGGING_H_

@@ -18,9 +18,9 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "./protocols/clock_sync/clock_sync.h"
+#include "./rvl_messaging/protocols/clock_sync/clock_sync.h"
 #include "./RaverLightsMessaging.h"
-#include "./platform.h"
+#include "./rvl_messaging/platform.h"
 
 namespace ClockSync {
 

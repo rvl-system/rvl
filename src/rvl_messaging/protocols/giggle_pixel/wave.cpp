@@ -18,12 +18,12 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "./protocols/giggle_pixel/wave.h"
-#include "./protocols/giggle_pixel/giggle_pixel.h"
 #include "./RaverLightsMessaging.h"
-#include "./platform.h"
-#include "./config.h"
-#include "./wave.h"
+#include "./rvl/wave.h"
+#include "./rvl_messaging/protocols/giggle_pixel/wave.h"
+#include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl_messaging/platform.h"
+#include "./rvl_messaging/config.h"
 
 namespace Wave {
 
@@ -35,7 +35,7 @@ void init() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVDeviceMode::Controller) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (Platform::platform->getLocalTime() < nextSyncTime) {
@@ -48,10 +48,10 @@ void loop() {
 void sync() {
   Platform::debug("Syncing preset");
   auto waveSettings = Platform::platform->getWaveSettings();
-  uint16_t length = sizeof(RVWave) * NUM_WAVES;
+  uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite();
   GigglePixel::broadcastHeader(
-    RVPacketType::Wave,
+    RVLPacketType::Wave,
     0,  // Priority
     2 + length);
   Platform::transport->write8(waveSettings->timePeriod);
@@ -62,10 +62,10 @@ void sync() {
 
 void parsePacket() {
   Platform::debug("Parsing Wave packet");
-  RVWaveSettings newWaveSettings;
+  RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();
   newWaveSettings.distancePeriod = Platform::transport->read8();
-  Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVWave) * NUM_WAVES);
+  Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVLWave) * NUM_WAVES);
   Platform::platform->setWaveSettings(&newWaveSettings);
 }
 

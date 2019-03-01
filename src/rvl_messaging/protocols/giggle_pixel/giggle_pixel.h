@@ -17,34 +17,23 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
-#include "./serial_logging.h"
+#ifndef RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#define RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
 
-SerialLogging::SerialLogging(RVLLogLevel newLevel) {
-  this->level = newLevel;
-  Serial.begin(115200);
-}
+#include <stdint.h>
+#include "./RaverLightsMessaging.h"
 
-RVLLogLevel SerialLogging::getLogLevel() {
-  return this->level;
-}
+namespace GigglePixel {
 
-void SerialLogging::print(const char s) {
-  Serial.print(s);
-}
+void init();
+void loop();
+void sync();
 
-void SerialLogging::print(const char *s) {
-  Serial.print(s);
-}
+void parsePacket();
+void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
 
-void SerialLogging::println() {
-  Serial.println();
-}
+const uint8_t signature[4] = { 'G', 'L', 'P', 'X' };
 
-void SerialLogging::println(const char s) {
-  Serial.println(s);
-}
+}  // namespace GigglePixel
 
-void SerialLogging::println(const char *s) {
-  Serial.println(s);
-}
+#endif  // RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_

@@ -21,17 +21,18 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RAVERLIGHTSMESSAGING_H_
 
 #include <stdint.h>
-#include "./rvwave.h"
+#include "./rvl/wave.h"
+#include "./rvl/logging.h"
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
-namespace RVPacketType {
-  enum RVPacketType {
+namespace RVLPacketType {
+  enum RVLPacketType {
     Palette = 1,
     Wave = 2
   };
 }
 
-class RVTransportInterface {
+class RVLTransportInterface {
  public:
   virtual void beginWrite() = 0;
   virtual void write8(uint8_t data) = 0;
@@ -47,26 +48,9 @@ class RVTransportInterface {
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
 };
 
-// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
-enum class RVLogLevel {
-  Error = 1,
-  Info = 2,
-  Debug = 3
-};
+enum class RVLDeviceMode { Controller, Receiver };
 
-class RVLoggingInterface {
- public:
-  virtual RVLogLevel getLogLevel() = 0;
-  virtual void print(const char s) = 0;
-  virtual void print(const char *s) = 0;
-  virtual void println() = 0;
-  virtual void println(const char s) = 0;
-  virtual void println(const char *s) = 0;
-};
-
-enum class RVDeviceMode { Controller, Receiver };
-
-class RVPlatformInterface {
+class RVLPlatformInterface {
  protected:
   void onWaveSettingsUpdated();
 
@@ -75,19 +59,19 @@ class RVPlatformInterface {
   virtual uint32_t getClockOffset() = 0;
   virtual void setClockOffset(uint32_t newOffset) = 0;
 
-  virtual RVDeviceMode getDeviceMode() = 0;
-  virtual void setDeviceMode(RVDeviceMode newMode) = 0;
+  virtual RVLDeviceMode getDeviceMode() = 0;
+  virtual void setDeviceMode(RVLDeviceMode newMode) = 0;
   virtual uint16_t getDeviceId() = 0;
 
-  virtual RVWaveSettings* getWaveSettings() = 0;
-  virtual void setWaveSettings(RVWaveSettings* newWaveSettings) = 0;
+  virtual RVLWaveSettings* getWaveSettings() = 0;
+  virtual void setWaveSettings(RVLWaveSettings* newWaveSettings) = 0;
 };
 
-void RVMessagingInit(
-  RVPlatformInterface* platform,
-  RVTransportInterface* transport,
-  RVLoggingInterface* logging);
+void RVLMessagingInit(
+  RVLPlatformInterface* platform,
+  RVLTransportInterface* transport,
+  RVLLoggingInterface* logging);
 
-void RVMessagingLoop();
+void RVLMessagingLoop();
 
 #endif  // RAVERLIGHTSMESSAGING_H_

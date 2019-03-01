@@ -33,7 +33,7 @@ byte state = STATE_DISCONNECTED;
 
 WiFiUDP udp;
 UDPTransport transport(&udp);
-SerialLogging logging(RVLogLevel::Info);
+SerialLogging logging(RVLLogLevel::Info);
 ArduinoPlatform platform;
 
 void setup() {
@@ -52,10 +52,10 @@ void setup() {
 
   platform.setDeviceId(WiFi.localIP()[3]);
 
-  RVMessagingInit(&platform, &transport, &logging);
+  RVLMessagingInit(&platform, &transport, &logging);
 }
 
 void loop() {
-  RVMessagingLoop();
+  RVLMessagingLoop();
   delay(10);
 }
