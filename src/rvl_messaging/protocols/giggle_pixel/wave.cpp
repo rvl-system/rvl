@@ -37,9 +37,6 @@ void init() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
-    return;
-  }
   if (Platform::platform->getLocalTime() < nextSyncTime) {
     return;
   }
@@ -48,6 +45,9 @@ void loop() {
 }
 
 void sync() {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+    return;
+  }
   Platform::debug("Syncing preset");
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
