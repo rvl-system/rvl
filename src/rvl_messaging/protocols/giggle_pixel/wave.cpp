@@ -18,6 +18,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
+#include <limits.h>
 #include "./RaverLightsMessaging.h"
 #include "./rvl/wave.h"
 #include "./rvl_messaging/protocols/giggle_pixel/wave.h"
@@ -27,11 +28,12 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Wave {
 
-uint32_t nextSyncTime = Platform::platform->getLocalTime();
+uint32_t nextSyncTime = INT_MAX;
 
 void sync();
 
 void init() {
+  nextSyncTime = Platform::platform->getLocalTime();
 }
 
 void loop() {

@@ -34,30 +34,30 @@ void RVLMessagingInit(
 }
 
 void RVLMessagingLoop() {
-  int packetSize = Platform::transport->parsePacket();
-  if (packetSize == 0) {
-    return;
-  }
-  uint8_t signature[4];
-  Platform::transport->read(signature, 4);
-  if (
-    signature[0] == ClockSync::signature[0] &&
-    signature[1] == ClockSync::signature[1] &&
-    signature[2] == ClockSync::signature[2] &&
-    signature[3] == ClockSync::signature[3]
-  ) {
-    ClockSync::parsePacket();
-  } else if (
-    signature[0] == GigglePixel::signature[0] &&
-    signature[1] == GigglePixel::signature[1] &&
-    signature[2] == GigglePixel::signature[2] &&
-    signature[3] == GigglePixel::signature[3]
-  ) {
-    GigglePixel::parsePacket();
-  }
+  // int packetSize = Platform::transport->parsePacket();
+  // if (packetSize == 0) {
+  //   return;
+  // }
+  // uint8_t signature[4];
+  // Platform::transport->read(signature, 4);
+  // if (
+  //   signature[0] == ClockSync::signature[0] &&
+  //   signature[1] == ClockSync::signature[1] &&
+  //   signature[2] == ClockSync::signature[2] &&
+  //   signature[3] == ClockSync::signature[3]
+  // ) {
+  //   ClockSync::parsePacket();
+  // } else if (
+  //   signature[0] == GigglePixel::signature[0] &&
+  //   signature[1] == GigglePixel::signature[1] &&
+  //   signature[2] == GigglePixel::signature[2] &&
+  //   signature[3] == GigglePixel::signature[3]
+  // ) {
+  //   GigglePixel::parsePacket();
+  // }
 
-  ClockSync::loop();
-  GigglePixel::loop();
+  // ClockSync::loop();
+  // GigglePixel::loop();
 }
 
 

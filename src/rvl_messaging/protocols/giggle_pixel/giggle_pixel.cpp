@@ -42,9 +42,6 @@ void sync() {
   Wave::sync();
 }
 
-void setClientId(uint16_t id);
-void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
-
 void parsePacket() {
   Platform::debug("Parsing GigglePixel packet");
   uint8_t protocolVersion = Platform::transport->read8();
