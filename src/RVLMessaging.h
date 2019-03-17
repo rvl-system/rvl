@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RAVERLIGHTSMESSAGING_H_
-#define RAVERLIGHTSMESSAGING_H_
+#ifndef RVLMESSAGING_H_
+#define RVLMESSAGING_H_
 
 #include <stdint.h>
 #include <string.h>
@@ -83,4 +83,4 @@ void RVLMessagingInit(
 
 void RVLMessagingLoop();
 
-#endif  // RAVERLIGHTSMESSAGING_H_
+#endif  // RVLMESSAGING_H_
