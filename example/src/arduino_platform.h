@@ -21,7 +21,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define ARDUINO_PLATFORM_H_
 
 #include <Arduino.h>
-#include <RaverLightsMessaging.h>
+#include <RVLMessaging.h>
 
 class ArduinoPlatform : public RVLPlatformInterface {
  private:

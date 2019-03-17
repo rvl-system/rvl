@@ -18,7 +18,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "./RaverLightsMessaging.h"
+#include "./RVLMessaging.h"
 #include "./rvl_messaging/platform.h"
 #include "./rvl_messaging/protocols/clock_sync/clock_sync.h"
 #include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
@@ -60,7 +60,30 @@ void RVLMessagingLoop() {
   GigglePixel::loop();
 }
 
-
 void RVLPlatformInterface::onWaveSettingsUpdated() {
   GigglePixel::sync();
+}
+
+uint32_t RVLPlatformInterface::getClockOffset() {
+  return this->clockOffset;
+}
+void RVLPlatformInterface::setClockOffset(uint32_t newOffset) {
+  this->clockOffset = newOffset;
+}
+
+RVLDeviceMode RVLPlatformInterface::getDeviceMode() {
+  return this->deviceMode;
+}
+
+void RVLPlatformInterface::setDeviceMode(RVLDeviceMode newDeviceMode) {
+  this->deviceMode = newDeviceMode;
+}
+
+RVLWaveSettings* RVLPlatformInterface::getWaveSettings() {
+  return &(this->waveSettings);
+}
+
+void RVLPlatformInterface::setWaveSettings(RVLWaveSettings* newWaveSettings) {
+  memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVLWaveSettings));
+  this->onWaveSettingsUpdated();
 }

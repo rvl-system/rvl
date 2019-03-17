@@ -21,7 +21,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
 
 #include <stdint.h>
-#include "./RaverLightsMessaging.h"
+#include "./RVLMessaging.h"
 
 namespace GigglePixel {
 

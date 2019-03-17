@@ -19,7 +19,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <limits.h>
-#include "./RaverLightsMessaging.h"
+#include "./RVLMessaging.h"
 #include "./rvl/wave.h"
 #include "./rvl_messaging/protocols/giggle_pixel/wave.h"
 #include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"

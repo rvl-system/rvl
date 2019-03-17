@@ -21,6 +21,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RAVERLIGHTSMESSAGING_H_
 
 #include <stdint.h>
+#include <string.h>
 #include "./rvl/wave.h"
 #include "./rvl/logging.h"
 
@@ -51,20 +52,28 @@ class RVLTransportInterface {
 enum class RVLDeviceMode { Controller, Receiver };
 
 class RVLPlatformInterface {
+ private:
+  uint32_t clockOffset;
+  RVLDeviceMode deviceMode = RVLDeviceMode::Receiver;
+  RVLWaveSettings waveSettings;
+
  protected:
   void onWaveSettingsUpdated();
+  void onDeviceModeUpdated();
+  void onClockOffsetUpdated();
 
  public:
   virtual uint32_t getLocalTime() = 0;
-  virtual uint32_t getClockOffset() = 0;
-  virtual void setClockOffset(uint32_t newOffset) = 0;
-
-  virtual RVLDeviceMode getDeviceMode() = 0;
-  virtual void setDeviceMode(RVLDeviceMode newMode) = 0;
   virtual uint16_t getDeviceId() = 0;
 
-  virtual RVLWaveSettings* getWaveSettings() = 0;
-  virtual void setWaveSettings(RVLWaveSettings* newWaveSettings) = 0;
+  uint32_t getClockOffset();
+  void setClockOffset(uint32_t newOffset);
+
+  RVLDeviceMode getDeviceMode();
+  void setDeviceMode(RVLDeviceMode newDeviceMode);
+
+  RVLWaveSettings* getWaveSettings();
+  void setWaveSettings(RVLWaveSettings* newWaveSettings);
 };
 
 void RVLMessagingInit(

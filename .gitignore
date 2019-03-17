@@ -26,3 +26,5 @@ _autosave-*
 *.xml
 *.csv
 
+# VS Code files
+.vscode/ipch

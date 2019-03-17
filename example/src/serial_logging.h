@@ -22,7 +22,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <Arduino.h>
-#include <RaverLightsMessaging.h>
+#include <RVLMessaging.h>
 
 #define SERVER_PORT 4978
 

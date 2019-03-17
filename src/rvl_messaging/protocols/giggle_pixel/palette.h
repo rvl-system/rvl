@@ -20,7 +20,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
 #define RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
 
-#include "./RaverLightsMessaging.h"
+#include "./RVLMessaging.h"
 
 namespace Palette {
 

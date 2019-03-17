@@ -20,7 +20,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <RaverLightsMessaging.h>
+#include <RVLMessaging.h>
 #include "./arduino_platform.h"
 #include "./udp_transport.h"
 #include "./serial_logging.h"
