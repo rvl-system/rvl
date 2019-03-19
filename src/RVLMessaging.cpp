@@ -26,7 +26,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 void RVLMessagingInit(
   RVLPlatformInterface* newPlatform,
   RVLTransportInterface* newTransport,
-  RVLLoggingInterface* newLogging
+  RVLLogging* newLogging
 ) {
   Platform::init(newPlatform, newTransport, newLogging);
   ClockSync::init();

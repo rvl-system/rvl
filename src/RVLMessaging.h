@@ -22,8 +22,8 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <string.h>
+#include <RVLLogging.h>
 #include "./rvl/wave.h"
-#include "./rvl/logging.h"
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
 namespace RVLPacketType {
@@ -79,7 +79,7 @@ class RVLPlatformInterface {
 void RVLMessagingInit(
   RVLPlatformInterface* platform,
   RVLTransportInterface* transport,
-  RVLLoggingInterface* logging);
+  RVLLogging* logging);
 
 void RVLMessagingLoop();
 

@@ -25,27 +25,10 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 namespace Platform {
 
 extern RVLTransportInterface* transport;
-extern RVLLoggingInterface* logging;
+extern RVLLogging* logging;
 extern RVLPlatformInterface* platform;
 
-// Base case versions
-
-void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLoggingInterface* newLogging);
-
-void error(const char *s);
-void info(const char *s);
-void debug(const char *s);
-
-// Variadic versions
-
-template<typename T, typename... Args>
-void error(const char *s, T value, Args... args);
-
-template<typename T, typename... Args>
-void info(const char *s, T value, Args... args);
-
-template<typename T, typename... Args>
-void debug(const char *s, T value, Args... args);
+void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLogging* newLogging);
 
 }  // namespace Platform
 

@@ -48,7 +48,7 @@ void sync() {
   if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
-  Platform::debug("Syncing preset");
+  Platform::logging->debug("Syncing preset");
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite();
@@ -63,7 +63,7 @@ void sync() {
 }
 
 void parsePacket() {
-  Platform::debug("Parsing Wave packet");
+  Platform::logging->debug("Parsing Wave packet");
   RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();
   newWaveSettings.distancePeriod = Platform::transport->read8();

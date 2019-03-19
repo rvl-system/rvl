@@ -1,36 +1,27 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights Messaging.
+This file is part of RVLLogging.
 
-Raver Lights Messaging is free software: you can redistribute it and/or modify
+RVLLogging is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights Messaging is distributed in the hope that it will be useful,
+RVLLogging is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
+along with RVLLogging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
 #include "./serial_logging.h"
 
-SerialLogging::SerialLogging(RVLLogLevel newLevel) {
-  this->level = newLevel;
+SerialLogging::SerialLogging() {
   Serial.begin(115200);
-}
-
-RVLLogLevel SerialLogging::getLogLevel() {
-  return this->level;
-}
-
-void SerialLogging::print(const char s) {
-  Serial.print(s);
+  Serial.println();
 }
 
 void SerialLogging::print(const char *s) {
@@ -39,10 +30,6 @@ void SerialLogging::print(const char *s) {
 
 void SerialLogging::println() {
   Serial.println();
-}
-
-void SerialLogging::println(const char s) {
-  Serial.println(s);
 }
 
 void SerialLogging::println(const char *s) {

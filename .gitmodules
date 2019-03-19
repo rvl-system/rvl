@@ -1,0 +1,3 @@
+[submodule "lib/RVLLogging"]
+	path = lib/RVLLogging
+	url = https://github.com/nebrius/RVLLogging.git

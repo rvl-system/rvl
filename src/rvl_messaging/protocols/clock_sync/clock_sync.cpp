@@ -43,7 +43,7 @@ ClientID: 2 bytes = matches ClientID in GigglePixel, or 0 for transmitter
 */
 
 bool parsePacket() {
-  Platform::debug("Parsing Clock Sync packet");
+  Platform::logging->debug("Parsing Clock Sync packet");
   uint8_t version = Platform::transport->read8();
   if (protocolVersion != version) {
     return false;

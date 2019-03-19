@@ -33,21 +33,20 @@ byte state = STATE_DISCONNECTED;
 
 WiFiUDP udp;
 UDPTransport transport(&udp);
-SerialLogging logging(RVLLogLevel::Info);
+SerialLogging interface;
+RVLLogging logging(&interface, RVLLogLevel::Info);
 ArduinoPlatform platform;
 
 void setup() {
   WiFi.begin("network-name", "pass-to-network");
 
-  logging.print("Connecting");
+  logging.info("Connecting");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    logging.print(".");
   }
-  logging.println("");
 
-  logging.print("Connected, IP address: ");
-  Serial.println(WiFi.localIP());
+  auto ip = WiFi.localIP();
+  logging.info("Connected, IP address: %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
   udp.begin(SERVER_PORT);
 
   platform.setDeviceId(WiFi.localIP()[3]);

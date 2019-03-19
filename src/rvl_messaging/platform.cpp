@@ -23,88 +23,15 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 namespace Platform {
 
 RVLTransportInterface* transport;
-RVLLoggingInterface* logging;
+RVLLogging* logging;
 RVLPlatformInterface* platform;
 
 // Base case versions
 
-void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLoggingInterface* newLogging) {
+void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLogging* newLogging) {
   platform = newPlatform;
   transport = newTransport;
   logging = newLogging;
-}
-
-inline void log(const char *s) {
-  logging->print(s);
-}
-
-void error(const char *s) {
-  RVLLogLevel logLevel = Platform::logging->getLogLevel();
-  if (logLevel >= RVLLogLevel::Error) {
-    logging->print("[error]: ");
-    logging->println(s);
-  }
-}
-
-void info(const char *s) {
-  RVLLogLevel logLevel = Platform::logging->getLogLevel();
-  if (logLevel >= RVLLogLevel::Info) {
-    logging->print("[info ]: ");
-    logging->println(s);
-  }
-}
-
-void debug(const char *s) {
-  RVLLogLevel logLevel = Platform::logging->getLogLevel();
-  if (logLevel >= RVLLogLevel::Debug) {
-    logging->print("[debug]: ");
-    logging->println(s);
-  }
-}
-
-// Variadic versions
-
-template<typename T, typename ...Args>
-void log(const char *s, T value, Args ...args) {
-  while (*s) {
-    if (*s == '%' && *(++s) != '%') {
-      logging->print(value);
-      s++;
-      log(s, args...);
-      return;
-    }
-    logging->print(*(s++));
-  }
-}
-
-template<typename T, typename... Args>
-void error(const char *s, T value, Args... args) {
-  RVLLogLevel logLevel = logging->getLogLevel();
-  if (logLevel >= RVLLogLevel::Error) {
-    logging->print("[error]: ");
-    log(s, value, args...);
-    logging->println();
-  }
-}
-
-template<typename T, typename... Args>
-void info(const char *s, T value, Args... args) {
-  RVLLogLevel logLevel = logging->getLogLevel();
-  if (logLevel >= RVLLogLevel::Info) {
-    logging->print("[info ]: ");
-    log(s, value, args...);
-    logging->println();
-  }
-}
-
-template<typename T, typename... Args>
-void debug(const char *s, T value, Args... args) {
-  RVLLogLevel logLevel = logging->getLogLevel();
-  if (logLevel >= RVLLogLevel::Debug) {
-    logging->print("[debug ]: ");
-    log(s, value, args...);
-    logging->println();
-  }
 }
 
 }  // namespace Platform
