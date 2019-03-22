@@ -46,7 +46,7 @@ void parsePacket() {
   Platform::logging->debug("Parsing GigglePixel packet");
   uint8_t protocolVersion = Platform::transport->read8();
   if (protocolVersion != PROTOCOL_VERSION) {
-    Platform::logging->error("Received unsupported GigglePixel protocol version packet");
+    Platform::logging->error("Received unsupported GigglePixel protocol version packet %d", protocolVersion);
     return;
   }
   Platform::transport->read16();  // length
@@ -65,7 +65,7 @@ void parsePacket() {
       Wave::parsePacket();
       break;
     default:
-      Platform::logging->error("Unsupported packet type received");
+      Platform::logging->error("Received unsupported GigglePixel packet type %d", packetType);
   }
 }
 
