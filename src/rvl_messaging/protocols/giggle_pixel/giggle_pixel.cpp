@@ -26,7 +26,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace GigglePixel {
 
-const uint8_t protocolVersion = 1;
+const uint8_t PROTOCOL_VERSION = 1;
 
 void init() {
   Wave::init();
@@ -45,7 +45,7 @@ void sync() {
 void parsePacket() {
   Platform::logging->debug("Parsing GigglePixel packet");
   uint8_t protocolVersion = Platform::transport->read8();
-  if (protocolVersion != protocolVersion) {
+  if (protocolVersion != PROTOCOL_VERSION) {
     Platform::logging->error("Received unsupported GigglePixel protocol version packet");
     return;
   }
