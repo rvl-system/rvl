@@ -21,7 +21,8 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_WAVE_H_
 
 #include <stdint.h>
-#include "./rvl/config.h"
+
+#define NUM_WAVES 4
 
 struct RVLWaveChannel {
   uint8_t a = 0;

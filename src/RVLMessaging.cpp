@@ -64,6 +64,14 @@ void RVLPlatformInterface::onWaveSettingsUpdated() {
   GigglePixel::sync();
 }
 
+void RVLPlatformInterface::onDeviceModeUpdated() {
+  // Do nothing
+}
+
+void RVLPlatformInterface::onClockOffsetUpdated() {
+  // Do nothing
+}
+
 uint32_t RVLPlatformInterface::getClockOffset() {
   return this->clockOffset;
 }

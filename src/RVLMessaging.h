@@ -58,9 +58,9 @@ class RVLPlatformInterface {
   RVLWaveSettings waveSettings;
 
  protected:
-  void onWaveSettingsUpdated();
-  void onDeviceModeUpdated();
-  void onClockOffsetUpdated();
+  virtual void onWaveSettingsUpdated();
+  virtual void onDeviceModeUpdated();
+  virtual void onClockOffsetUpdated();
 
  public:
   virtual uint32_t getLocalTime() = 0;
