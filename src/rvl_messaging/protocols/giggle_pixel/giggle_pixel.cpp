@@ -72,7 +72,7 @@ void parsePacket() {
 void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
   uint8_t* signature = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>("GLPX"));
   Platform::transport->write(signature, sizeof(uint8_t) * 4);
-  Platform::transport->write8(protocolVersion);
+  Platform::transport->write8(PROTOCOL_VERSION);
   Platform::transport->write16(length);
   Platform::transport->write8(packetType);
   Platform::transport->write8(priority);
