@@ -68,6 +68,7 @@ class RVLPlatformInterface {
 
   uint32_t getClockOffset();
   void setClockOffset(uint32_t newOffset);
+  uint32_t getAnimationClock();
 
   RVLDeviceMode getDeviceMode();
   void setDeviceMode(RVLDeviceMode newDeviceMode);

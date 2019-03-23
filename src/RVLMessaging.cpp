@@ -23,6 +23,8 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl_messaging/protocols/clock_sync/clock_sync.h"
 #include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
 
+uint32_t animationClock;
+
 void RVLMessagingInit(
   RVLPlatformInterface* newPlatform,
   RVLTransportInterface* newTransport,
@@ -34,6 +36,7 @@ void RVLMessagingInit(
 }
 
 void RVLMessagingLoop() {
+  animationClock = this->getLocalTime() + this->getClockOffset();
   int packetSize = Platform::transport->parsePacket();
   if (packetSize == 0) {
     return;
@@ -77,6 +80,10 @@ uint32_t RVLPlatformInterface::getClockOffset() {
 }
 void RVLPlatformInterface::setClockOffset(uint32_t newOffset) {
   this->clockOffset = newOffset;
+}
+
+uint32_t RVLPlatformInterface::getAnimationClock() {
+  return animationClock;
 }
 
 RVLDeviceMode RVLPlatformInterface::getDeviceMode() {
