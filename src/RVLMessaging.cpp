@@ -40,6 +40,9 @@ void RVLMessagingInit(
 
 void RVLMessagingLoop() {
   animationClock = platform->getLocalTime() + platform->getClockOffset();
+  if (!platform->isNetworkAvailable()) {
+    return;
+  }
   int packetSize = Platform::transport->parsePacket();
   if (packetSize == 0) {
     return;
