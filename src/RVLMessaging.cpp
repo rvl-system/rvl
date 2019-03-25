@@ -25,22 +25,22 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 uint32_t animationClock;
 
-RVLPlatformInterface* platform;
+RVLPlatformInterface* rvlPlatform;
 
 void RVLMessagingInit(
   RVLPlatformInterface* newPlatform,
   RVLTransportInterface* newTransport,
   RVLLogging* newLogging
 ) {
-  platform = newPlatform;
+  rvlPlatform = newPlatform;
   Platform::init(newPlatform, newTransport, newLogging);
   ClockSync::init();
   GigglePixel::init();
 }
 
 void RVLMessagingLoop() {
-  animationClock = platform->getLocalTime() + platform->getClockOffset();
-  if (!platform->isNetworkAvailable()) {
+  animationClock = rvlPlatform->getLocalTime() + rvlPlatform->getClockOffset();
+  if (!rvlPlatform->isNetworkAvailable()) {
     return;
   }
   int packetSize = Platform::transport->parsePacket();
