@@ -26,7 +26,9 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace GigglePixel {
 
-const uint8_t PROTOCOL_VERSION = 1;
+#define CHANNEL_OFFSET 240
+
+const uint8_t PROTOCOL_VERSION = 2;
 
 void init() {
   Wave::init();
@@ -52,11 +54,24 @@ void parsePacket() {
   Platform::transport->read16();  // length
   uint8_t packetType = Platform::transport->read8();
   Platform::transport->read8();  // priority
-  Platform::transport->read8();  // Reserved
-  Platform::transport->read16();  // sourceId
+  uint8_t destination = Platform::transport->read8();  // destination
+  uint8_t source = Platform::transport->read16();  // source
 
-  // Ignore our own broadcast packets
-  if (Platform::platform->getDeviceMode() == RVLDeviceMode::Controller) {
+  // Ignore our own packets
+  if (source == Platform::platform->getDeviceId()) {
+    return;
+  }
+
+  // Ignore multicast packets meant for a different multicast group
+  if (
+    destination >= CHANNEL_OFFSET && destination < 255 &&
+    Platform::platform->getChannel() != CHANNEL_OFFSET - destination
+  ) {
+    return;
+  }
+
+  // Ignore unicast packets meant for a different destination
+  if (destination < CHANNEL_OFFSET && destination != Platform::platform->getDeviceId()) {
     return;
   }
 
@@ -69,15 +84,27 @@ void parsePacket() {
   }
 }
 
-void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
+void sendHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length) {
   uint8_t* signature = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>("GLPX"));
   Platform::transport->write(signature, sizeof(uint8_t) * 4);
   Platform::transport->write8(PROTOCOL_VERSION);
   Platform::transport->write16(length);
   Platform::transport->write8(packetType);
   Platform::transport->write8(priority);
-  Platform::transport->write8(0);  // reserved
+  Platform::transport->write8(address);
   Platform::transport->write16(Platform::platform->getDeviceId());
+}
+
+void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
+  sendHeader(255, packetType, priority, length);
+}
+
+void multicastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
+  sendHeader(CHANNEL_OFFSET + Platform::platform->getChannel(), packetType, priority, length);
+}
+
+void unicastHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length) {
+  sendHeader(address, packetType, priority, length);
 }
 
 }  // namespace GigglePixel

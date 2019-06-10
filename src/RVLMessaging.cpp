@@ -81,6 +81,10 @@ void RVLPlatformInterface::onClockOffsetUpdated() {
   // Do nothing
 }
 
+void RVLPlatformInterface::onChannelUpdated() {
+  // Do nothing
+}
+
 uint32_t RVLPlatformInterface::getClockOffset() {
   return this->clockOffset;
 }
@@ -90,6 +94,15 @@ void RVLPlatformInterface::setClockOffset(uint32_t newOffset) {
 
 uint32_t RVLPlatformInterface::getAnimationClock() {
   return animationClock;
+}
+
+uint8_t RVLPlatformInterface::getChannel() {
+  return this->channel;
+}
+
+void RVLPlatformInterface::setChannel(uint8_t channel) {
+  this->channel = channel;
+  this->onChannelUpdated();
 }
 
 RVLDeviceMode RVLPlatformInterface::getDeviceMode() {

@@ -24,46 +24,34 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <RVLMessaging.h>
 
 class ArduinoPlatform : public RVLPlatformInterface {
- private:
-  uint32_t clockOffset;
-  uint16_t deviceId;
-  RVLWaveSettings waveSettings;
-  RVLDeviceMode deviceMode = RVLDeviceMode::Controller;
+ protected:
+  void onWaveSettingsUpdated() {
+    Serial.println("Settings updated");
+  }
+
+  void onDeviceModeUpdated() {
+    Serial.println("Device Mode updated");
+  }
+
+  void onClockOffsetUpdated() {
+    Serial.println("Clock Offset updated");
+  }
+
+  void onChannelUpdated() {
+    Serial.println("Channel updated");
+  }
 
  public:
-  void setDeviceId(uint16_t newDeviceId) {
-    this->deviceId = newDeviceId;
-  }
-
   uint32_t getLocalTime() {
     return millis();
-  }
-
-  uint32_t getClockOffset() {
-    return this->clockOffset;
-  }
-  void setClockOffset(uint32_t newOffset) {
-    this->clockOffset = newOffset;
-  }
-
-  void setDeviceMode(RVLDeviceMode newDeviceMode) {
-    this->deviceMode = newDeviceMode;
-  }
-
-  RVLDeviceMode getDeviceMode() {
-    return this->deviceMode;
   }
 
   uint16_t getDeviceId() {
     return WiFi.localIP()[3];
   }
 
-  RVLWaveSettings* getWaveSettings() {
-    return &waveSettings;
-  }
-
-  void setWaveSettings(RVLWaveSettings* newWaveSettings) {
-    memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVLWaveSettings));
+  bool isNetworkAvailable() {
+    return WiFi.status() == WL_CONNECTED;
   }
 };
 

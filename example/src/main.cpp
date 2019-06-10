@@ -49,8 +49,6 @@ void setup() {
   logging.info("Connected, IP address: %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
   udp.begin(SERVER_PORT);
 
-  platform.setDeviceId(WiFi.localIP()[3]);
-
   RVLMessagingInit(&platform, &transport, &logging);
 }
 

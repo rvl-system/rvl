@@ -31,6 +31,8 @@ void sync();
 
 void parsePacket();
 void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
+void multicastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
+void unicastHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length);
 
 const uint8_t signature[4] = { 'G', 'L', 'P', 'X' };
 
