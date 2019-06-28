@@ -53,8 +53,8 @@ enum class RVLDeviceMode { Controller, Receiver };
 
 class RVLPlatformInterface {
  private:
-  uint32_t clockOffset;
-  uint8_t channel;
+  uint32_t clockOffset = 0;
+  uint8_t channel = 0;
   RVLDeviceMode deviceMode = RVLDeviceMode::Receiver;
   RVLWaveSettings waveSettings;
 
