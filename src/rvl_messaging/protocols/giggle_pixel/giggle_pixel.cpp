@@ -65,7 +65,7 @@ void parsePacket() {
   // Ignore multicast packets meant for a different multicast group
   if (
     destination >= CHANNEL_OFFSET && destination < 255 &&
-    Platform::platform->getChannel() != CHANNEL_OFFSET - destination
+    Platform::platform->getChannel() != destination - CHANNEL_OFFSET
   ) {
     return;
   }
