@@ -18,11 +18,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "./RVLMessaging.h"
-#include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
-#include "./rvl_messaging/protocols/giggle_pixel/palette.h"
-#include "./rvl_messaging/protocols/giggle_pixel/wave.h"
-#include "./rvl_messaging/platform.h"
+#include "./rvl.h"
+#include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl/protocols/giggle_pixel/palette.h"
+#include "./rvl/protocols/giggle_pixel/wave.h"
+#include "./rvl/platform.h"
 
 namespace GigglePixel {
 
@@ -44,6 +44,17 @@ void sync() {
   Wave::sync();
 }
 
+/*
+Signature: 4 bytes = "GLPX"
+Version: 1 byte = 2
+Length: 2 bytes = the length of the payload
+Type: 1 byte = 1:palette, 2:wave
+Priority: 1 byte = not currently used or implemented
+Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
+Source: 1 byte = the address of the device that sent the message
+Reserved: 1 byte = reserved for future use
+*/
+
 void parsePacket() {
   Platform::logging->debug("Parsing GigglePixel packet");
   uint8_t protocolVersion = Platform::transport->read8();
@@ -51,11 +62,14 @@ void parsePacket() {
     Platform::logging->error("Received unsupported GigglePixel protocol version packet %d", protocolVersion);
     return;
   }
-  Platform::transport->read16();  // length
+  // TODO(nebrius): We don't use length cause the length is fixed for wave packets, but probably not for other types.
+  // This approach also isn't very defensive coding and should be passed to Wave::parsePacket() for error handling.
+  Platform::transport->read16();  // length.
   uint8_t packetType = Platform::transport->read8();
   Platform::transport->read8();  // priority
   uint8_t destination = Platform::transport->read8();  // destination
-  uint8_t source = Platform::transport->read16();  // source
+  uint8_t source = Platform::transport->read8();  // source
+  Platform::transport->read8();  // reserved
 
   // Ignore our own packets
   if (source == Platform::platform->getDeviceId()) {
@@ -92,7 +106,8 @@ void sendHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t 
   Platform::transport->write8(packetType);
   Platform::transport->write8(priority);
   Platform::transport->write8(address);
-  Platform::transport->write16(Platform::platform->getDeviceId());
+  Platform::transport->write8(Platform::platform->getDeviceId());
+  Platform::transport->write8(0);
 }
 
 void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {

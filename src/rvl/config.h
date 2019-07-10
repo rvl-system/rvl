@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_MESSAGING_CONFIG_H_
-#define RVL_MESSAGING_CONFIG_H_
+#ifndef RVL_CONFIG_H_
+#define RVL_CONFIG_H_
 
 #define CLIENT_SYNC_INTERVAL 2000
 
-#endif  // RVL_MESSAGING_CONFIG_H_
+#endif  // RVL_CONFIG_H_

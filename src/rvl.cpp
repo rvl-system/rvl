@@ -18,10 +18,13 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "./RVLMessaging.h"
-#include "./rvl_messaging/platform.h"
-#include "./rvl_messaging/protocols/clock_sync/clock_sync.h"
-#include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include "./rvl.h"
+#include "./rvl/platform.h"
+#include "./rvl/protocols/clock_sync/clock_sync.h"
+#include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
 
 uint32_t animationClock;
 
@@ -67,6 +70,52 @@ void RVLMessagingLoop() {
 
   ClockSync::loop();
   GigglePixel::loop();
+}
+
+RVLLogging::RVLLogging(RVLLoggingInterface* iface, RVLLogLevel level) {
+  this->interface = iface;
+  this->logLevel = level;
+}
+
+void RVLLogging::log(const char *s) {
+  this->interface->print(s);
+}
+
+void RVLLogging::log(const char *s, va_list argptr) {
+  int bufferLength = strlen(s) * 3;
+  char str[bufferLength];
+  vsnprintf(str, bufferLength, s, argptr);
+  this->interface->print(str);
+}
+
+void RVLLogging::error(const char *s, ...) {
+  if (this->logLevel >= RVLLogLevel::Error) {
+    this->interface->print("[error]: ");
+    va_list argptr;
+    va_start(argptr, s);
+    this->log(s, argptr);
+    this->interface->println();
+  }
+}
+
+void RVLLogging::info(const char *s, ...) {
+  if (this->logLevel >= RVLLogLevel::Info) {
+    this->interface->print("[info ]: ");
+    va_list argptr;
+    va_start(argptr, s);
+    this->log(s, argptr);
+    this->interface->println();
+  }
+}
+
+void RVLLogging::debug(const char *s, ...) {
+  if (this->logLevel >= RVLLogLevel::Debug) {
+    this->interface->print("[debug ]: ");
+    va_list argptr;
+    va_start(argptr, s);
+    this->log(s, argptr);
+    this->interface->println();
+  }
 }
 
 void RVLPlatformInterface::onWaveSettingsUpdated() {
