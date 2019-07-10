@@ -22,7 +22,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <string.h>
-#include <RVLLogging.h>
+#include "./rvl/logging.h"
 #include "./rvl/wave.h"
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
