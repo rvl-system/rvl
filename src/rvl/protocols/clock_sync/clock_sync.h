@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_MESSAGING_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
-#define RVL_MESSAGING_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#ifndef RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#define RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
 
 #include <stdint.h>
-#include "./RVLMessaging.h"
+#include "./rvl.h"
 
 namespace ClockSync {
 
@@ -34,4 +34,4 @@ const uint8_t signature[4] = { 'C', 'L', 'K', 'S' };
 
 }  // namespace ClockSync
 
-#endif  // RVL_MESSAGING_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#endif  // RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_

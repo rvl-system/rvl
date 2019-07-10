@@ -17,25 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
-#define RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#ifndef RVL_CONFIG_H_
+#define RVL_CONFIG_H_
 
-#include <stdint.h>
-#include "./RVLMessaging.h"
+#define CLIENT_SYNC_INTERVAL 2000
 
-namespace GigglePixel {
-
-void init();
-void loop();
-void sync();
-
-void parsePacket();
-void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
-void multicastHeader(uint8_t packetType, uint8_t priority, uint16_t length);
-void unicastHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length);
-
-const uint8_t signature[4] = { 'G', 'L', 'P', 'X' };
-
-}  // namespace GigglePixel
-
-#endif  // RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#endif  // RVL_CONFIG_H_

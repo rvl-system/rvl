@@ -17,9 +17,20 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_MESSAGING_CONFIG_H_
-#define RVL_MESSAGING_CONFIG_H_
+#include "./rvl.h"
+#include "./rvl/protocols/giggle_pixel/palette.h"
 
-#define CLIENT_SYNC_INTERVAL 2000
+namespace Palette {
 
-#endif  // RVL_MESSAGING_CONFIG_H_
+void init() {
+}
+
+void loop() {
+  // Nothing to do
+}
+
+void parsePacket() {
+  // TODO(nebrius)
+}
+
+}  // namespace Palette

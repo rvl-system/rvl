@@ -19,12 +19,12 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <limits.h>
-#include "./RVLMessaging.h"
+#include "./rvl.h"
 #include "./rvl/wave.h"
-#include "./rvl_messaging/protocols/giggle_pixel/wave.h"
-#include "./rvl_messaging/protocols/giggle_pixel/giggle_pixel.h"
-#include "./rvl_messaging/platform.h"
-#include "./rvl_messaging/config.h"
+#include "./rvl/protocols/giggle_pixel/wave.h"
+#include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl/platform.h"
+#include "./rvl/config.h"
 
 namespace Wave {
 

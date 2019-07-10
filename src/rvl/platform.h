@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_MESSAGING_PLATFORM_H_
-#define RVL_MESSAGING_PLATFORM_H_
+#ifndef RVL_PLATFORM_H_
+#define RVL_PLATFORM_H_
 
-#include "./RVLMessaging.h"
+#include "./rvl.h"
 
 namespace Platform {
 
@@ -32,4 +32,4 @@ void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport
 
 }  // namespace Platform
 
-#endif  // RVL_MESSAGING_PLATFORM_H_
+#endif  // RVL_PLATFORM_H_

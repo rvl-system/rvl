@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./RVLMessaging.h"
-#include "./rvl_messaging/platform.h"
+#include "./rvl.h"
+#include "./rvl/platform.h"
 
 namespace Platform {
 

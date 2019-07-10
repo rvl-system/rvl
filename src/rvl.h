@@ -17,13 +17,43 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVLMESSAGING_H_
-#define RVLMESSAGING_H_
+#ifndef RVL_H_
+#define RVL_H_
 
 #include <stdint.h>
 #include <string.h>
-#include <RVLLogging.h>
+#include <stdarg.h>
 #include "./rvl/wave.h"
+
+// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
+enum class RVLLogLevel {
+  Error = 1,
+  Info = 2,
+  Debug = 3
+};
+
+class RVLLoggingInterface {
+ public:
+  virtual void print(const char *s) = 0;
+  virtual void println() = 0;
+  virtual void println(const char *s) = 0;
+};
+
+class RVLLogging {
+ private:
+  RVLLogLevel logLevel;
+  RVLLoggingInterface* interface;
+
+  void log(const char *s);
+  void log(const char *s, va_list argptr);
+
+ public:
+  RVLLogging(RVLLoggingInterface* iface, RVLLogLevel level);
+
+  void error(const char *s, ...);
+  void info(const char *s, ...);
+  void debug(const char *s, ...);
+};
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
 namespace RVLPacketType {
@@ -90,4 +120,4 @@ void RVLMessagingInit(
 
 void RVLMessagingLoop();
 
-#endif  // RVLMESSAGING_H_
+#endif  // RVL_H_

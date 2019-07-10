@@ -17,26 +17,18 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
-#define RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
+#ifndef RVL_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
+#define RVL_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
 
-#include "./RVLMessaging.h"
+#include "./rvl.h"
 
-// Packet:
-// h: a b w_t w_x phi
-// s: a b w_t w_x phi
-// v: a b w_t w_x phi
-// a: a b w_t w_x phi
-// 20 bytes per wave, 4 waves total for 80 bytes
-
-namespace Wave {
+namespace Palette {
 
 void init();
 void loop();
-void sync();
 
 void parsePacket();
 
-}  // namespace Wave
+}  // namespace Palette
 
-#endif  // RVL_MESSAGING_PROTOCOLS_GIGGLE_PIXEL_WAVE_H_
+#endif  // RVL_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_

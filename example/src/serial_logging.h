@@ -22,7 +22,7 @@ along with RVLLogging.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <Arduino.h>
-#include <RVLLogging.h>
+#include "./rvl.h"
 
 #define SERVER_PORT 4978
 
