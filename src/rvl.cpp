@@ -38,6 +38,7 @@ void RVLMessagingInit(
 ) {
   rvlPlatform = newPlatform;
   Platform::init(newPlatform, newTransport, newLogging);
+  RVLSystem::init();
   ClockSync::init();
   GigglePixel::init();
 }
@@ -65,6 +66,7 @@ void RVLMessagingLoop() {
     }
   }
 
+  RVLSystem::loop();
   ClockSync::loop();
   GigglePixel::loop();
 }
