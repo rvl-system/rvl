@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <limits.h>
 #include <stdint.h>
 #include "./rvl.h"
 #include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
@@ -26,9 +27,8 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace GigglePixel {
 
+#define PROTOCOL_VERSION 2
 #define CHANNEL_OFFSET 240
-
-const uint8_t PROTOCOL_VERSION = 2;
 
 void init() {
   Wave::init();
@@ -57,9 +57,9 @@ Reserved: 1 byte = reserved for future use
 
 void parsePacket() {
   Platform::logging->debug("Parsing GigglePixel packet");
-  uint8_t protocolVersion = Platform::transport->read8();
-  if (protocolVersion != PROTOCOL_VERSION) {
-    Platform::logging->error("Received unsupported GigglePixel protocol version packet %d", protocolVersion);
+  uint8_t version = Platform::transport->read8();
+  if (version != PROTOCOL_VERSION) {
+    Platform::logging->error("Received unsupported GigglePixel protocol version packet %d", version);
     return;
   }
   // TODO(nebrius): We don't use length cause the length is fixed for wave packets, but probably not for other types.
@@ -99,8 +99,7 @@ void parsePacket() {
 }
 
 void sendHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length) {
-  uint8_t* signature = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>("GLPX"));
-  Platform::transport->write(signature, sizeof(uint8_t) * 4);
+  Platform::transport->write(const_cast<uint8_t*>(signature), sizeof(uint8_t) * 4);
   Platform::transport->write8(PROTOCOL_VERSION);
   Platform::transport->write16(length);
   Platform::transport->write8(packetType);

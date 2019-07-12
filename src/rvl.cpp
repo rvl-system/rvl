@@ -25,6 +25,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/platform.h"
 #include "./rvl/protocols/clock_sync/clock_sync.h"
 #include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl/protocols/rvl_system/rvl_system.h"
 
 uint32_t animationClock;
 
@@ -41,6 +42,10 @@ void RVLMessagingInit(
   GigglePixel::init();
 }
 
+bool compareSignature(const uint8_t* reference, uint8_t* received, size_t len) {
+  return memcmp(reference, received, len) == 0;
+}
+
 void RVLMessagingLoop() {
   animationClock = rvlPlatform->getLocalTime() + rvlPlatform->getClockOffset();
   if (!rvlPlatform->isNetworkAvailable()) {
@@ -51,20 +56,12 @@ void RVLMessagingLoop() {
   if (packetSize != 0) {
     uint8_t signature[4];
     Platform::transport->read(signature, 4);
-    if (
-      signature[0] == ClockSync::signature[0] &&
-      signature[1] == ClockSync::signature[1] &&
-      signature[2] == ClockSync::signature[2] &&
-      signature[3] == ClockSync::signature[3]
-    ) {
+    if (compareSignature(ClockSync::signature, signature, 4)) {
       ClockSync::parsePacket();
-    } else if (
-      signature[0] == GigglePixel::signature[0] &&
-      signature[1] == GigglePixel::signature[1] &&
-      signature[2] == GigglePixel::signature[2] &&
-      signature[3] == GigglePixel::signature[3]
-    ) {
+    } else if (compareSignature(GigglePixel::signature, signature, 4)) {
       GigglePixel::parsePacket();
+    } else if (compareSignature(RVLSystem::signature, signature, 4)) {
+      RVLSystem::parsePacket();
     }
   }
 
@@ -134,6 +131,14 @@ void RVLPlatformInterface::onChannelUpdated() {
   // Do nothing
 }
 
+void RVLPlatformInterface::onPowerStateUpdated() {
+  // Do nothing
+}
+
+void RVLPlatformInterface::onBrightnessUpdated() {
+  // DO nothing
+}
+
 uint32_t RVLPlatformInterface::getClockOffset() {
   return this->clockOffset;
 }
@@ -169,4 +174,22 @@ RVLWaveSettings* RVLPlatformInterface::getWaveSettings() {
 void RVLPlatformInterface::setWaveSettings(RVLWaveSettings* newWaveSettings) {
   memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVLWaveSettings));
   this->onWaveSettingsUpdated();
+}
+
+bool RVLPlatformInterface::getPowerState() {
+  return this->powerState;
+}
+
+void RVLPlatformInterface::setPowerState(bool newPowerState) {
+  this->powerState = newPowerState;
+  this->onPowerStateUpdated();
+}
+
+uint8_t RVLPlatformInterface::getBrightness() {
+  return this->brightness;
+}
+
+void RVLPlatformInterface::setBrightness(uint8_t newBrightness) {
+  this->brightness = newBrightness;
+  this->onPowerStateUpdated();
 }

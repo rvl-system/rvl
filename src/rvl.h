@@ -87,12 +87,16 @@ class RVLPlatformInterface {
   uint8_t channel = 0;
   RVLDeviceMode deviceMode = RVLDeviceMode::Receiver;
   RVLWaveSettings waveSettings;
+  bool powerState = 0;
+  uint8_t brightness = 0;
 
  protected:
   virtual void onWaveSettingsUpdated();
   virtual void onDeviceModeUpdated();
   virtual void onClockOffsetUpdated();
   virtual void onChannelUpdated();
+  virtual void onPowerStateUpdated();
+  virtual void onBrightnessUpdated();
 
  public:
   virtual uint32_t getLocalTime() = 0;
@@ -111,6 +115,12 @@ class RVLPlatformInterface {
 
   RVLWaveSettings* getWaveSettings();
   void setWaveSettings(RVLWaveSettings* newWaveSettings);
+
+  bool getPowerState();
+  void setPowerState(bool newPowerState);
+
+  uint8_t getBrightness();
+  void setBrightness(uint8_t newBrightness);
 };
 
 void RVLMessagingInit(

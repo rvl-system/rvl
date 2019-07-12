@@ -24,7 +24,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ClockSync {
 
-const uint8_t protocolVersion = 1;
+#define PROTOCOL_VERSION 1
 
 void init() {
 }
@@ -45,7 +45,7 @@ ClientID: 2 bytes = matches ClientID in GigglePixel, or 0 for transmitter
 bool parsePacket() {
   Platform::logging->debug("Parsing Clock Sync packet");
   uint8_t version = Platform::transport->read8();
-  if (protocolVersion != version) {
+  if (version != PROTOCOL_VERSION) {
     return false;
   }
   Platform::transport->read8();  // type
