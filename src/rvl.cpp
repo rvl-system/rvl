@@ -134,11 +134,11 @@ void RVLPlatformInterface::onChannelUpdated() {
 }
 
 void RVLPlatformInterface::onPowerStateUpdated() {
-  // Do nothing
+  RVLSystem::sync();
 }
 
 void RVLPlatformInterface::onBrightnessUpdated() {
-  // DO nothing
+  RVLSystem::sync();
 }
 
 uint32_t RVLPlatformInterface::getClockOffset() {
