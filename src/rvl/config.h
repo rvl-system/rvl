@@ -21,5 +21,6 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_CONFIG_H_
 
 #define CLIENT_SYNC_INTERVAL 2000
+#define CHANNEL_OFFSET 240
 
 #endif  // RVL_CONFIG_H_

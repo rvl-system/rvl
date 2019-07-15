@@ -24,11 +24,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/giggle_pixel/palette.h"
 #include "./rvl/protocols/giggle_pixel/wave.h"
 #include "./rvl/platform.h"
+#include "./rvl/config.h"
 
 namespace GigglePixel {
 
 #define PROTOCOL_VERSION 2
-#define CHANNEL_OFFSET 240
 
 void init() {
   Wave::init();

@@ -28,7 +28,7 @@ void init();
 void loop();
 void sync();
 
-bool parsePacket();
+void parsePacket();
 
 const uint8_t signature[4] = { 'R', 'V', 'L', 'S' };
 
