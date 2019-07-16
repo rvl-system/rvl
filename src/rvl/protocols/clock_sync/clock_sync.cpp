@@ -61,6 +61,8 @@ void parsePacket() {
     return;
   }
 
+  Platform::logging->debug("Processing Clock Sync Message sent from %d to %d", source, destination);
+
   Platform::platform->setClockOffset(
     static_cast<int32_t>(commandTime) -
     static_cast<int32_t>(Platform::platform->getLocalTime()));

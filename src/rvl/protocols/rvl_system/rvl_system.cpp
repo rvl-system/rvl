@@ -60,7 +60,7 @@ void sync() {
   Platform::transport->beginWrite();
   Platform::transport->write(const_cast<uint8_t*>(signature), sizeof(uint8_t) * 4);
   Platform::transport->write8(PROTOCOL_VERSION);
-  Platform::transport->write8(255);  // Always broadcast
+  Platform::transport->write8(ProtocolUtils::getMulticastAddress());  // Always broadcast
   Platform::transport->write8(Platform::platform->getDeviceId());
   Platform::transport->write8(Platform::platform->getPowerState());
   Platform::transport->write8(Platform::platform->getBrightness());
@@ -86,6 +86,8 @@ void parsePacket() {
   if (!ProtocolUtils::isPacketForMe(source, destination)) {
     return;
   }
+
+  Platform::logging->debug("Processing RVL System Message sent from %d to %d", source, destination);
 
   Platform::platform->setPowerState(power);
   Platform::platform->setBrightness(brightness);

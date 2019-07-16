@@ -24,6 +24,10 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ProtocolUtils {
 
+uint8_t getMulticastAddress() {
+  return CHANNEL_OFFSET + Platform::platform->getChannel();
+}
+
 bool isPacketForMe(uint8_t source, uint8_t destination) {
   // Ignore our own packets
   if (source == Platform::platform->getDeviceId()) {

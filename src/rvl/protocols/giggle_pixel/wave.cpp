@@ -52,7 +52,7 @@ void sync() {
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite();
-  GigglePixel::multicastHeader(
+  GigglePixel::sendHeader(
     RVLPacketType::Wave,
     0,  // Priority
     2 + length);

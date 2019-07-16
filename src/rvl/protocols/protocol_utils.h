@@ -26,6 +26,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ProtocolUtils {
 
+uint8_t getMulticastAddress();
 bool isPacketForMe(uint8_t source, uint8_t destination);
 
 }  // namespace ProtocolUtils

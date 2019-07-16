@@ -75,6 +75,8 @@ void parsePacket() {
     return;
   }
 
+  Platform::logging->debug("Processing Giggle Pixel Message sent from %d to %d", source, destination);
+
   switch (packetType) {
     case RVLPacketType::Wave:
       Wave::parsePacket();
@@ -84,27 +86,15 @@ void parsePacket() {
   }
 }
 
-void sendHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length) {
+void sendHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
   Platform::transport->write(const_cast<uint8_t*>(signature), sizeof(uint8_t) * 4);
   Platform::transport->write8(PROTOCOL_VERSION);
   Platform::transport->write16(length);
   Platform::transport->write8(packetType);
   Platform::transport->write8(priority);
-  Platform::transport->write8(address);
+  Platform::transport->write8(ProtocolUtils::getMulticastAddress());
   Platform::transport->write8(Platform::platform->getDeviceId());
   Platform::transport->write8(0);
-}
-
-void broadcastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
-  sendHeader(255, packetType, priority, length);
-}
-
-void multicastHeader(uint8_t packetType, uint8_t priority, uint16_t length) {
-  sendHeader(CHANNEL_OFFSET + Platform::platform->getChannel(), packetType, priority, length);
-}
-
-void unicastHeader(uint8_t address, uint8_t packetType, uint8_t priority, uint16_t length) {
-  sendHeader(address, packetType, priority, length);
 }
 
 }  // namespace GigglePixel
