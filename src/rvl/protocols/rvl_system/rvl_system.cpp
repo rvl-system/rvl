@@ -22,8 +22,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.h"
 #include "./rvl/protocols/rvl_system/rvl_system.h"
 #include "./rvl/platform.h"
-#include "./rvl/config.h"
-#include "./rvl/config.h"
+#include "./rvl/protocols/protocol_utils.h"
 
 namespace RVLSystem {
 
@@ -61,7 +60,7 @@ void sync() {
   Platform::transport->beginWrite();
   Platform::transport->write(const_cast<uint8_t*>(signature), sizeof(uint8_t) * 4);
   Platform::transport->write8(PROTOCOL_VERSION);
-  Platform::transport->write8(255); // Always broadcast
+  Platform::transport->write8(255);  // Always broadcast
   Platform::transport->write8(Platform::platform->getDeviceId());
   Platform::transport->write8(Platform::platform->getPowerState());
   Platform::transport->write8(Platform::platform->getBrightness());
@@ -74,30 +73,17 @@ void parsePacket() {
   Platform::logging->debug("Parsing RVL System packet");
   uint8_t version = Platform::transport->read8();
   if (version != PROTOCOL_VERSION) {
+    Platform::logging->error("Received unsupported RVL System protocol version packet %d, ignoring", version);
     return;
   }
-  uint8_t destination = Platform::transport->read8(); // destination
-  uint8_t source = Platform::transport->read8(); // source
+  uint8_t destination = Platform::transport->read8();  // destination
+  uint8_t source = Platform::transport->read8();  // source
   uint8_t power = Platform::transport->read8();  // power
   uint8_t brightness = Platform::transport->read8();  // brightness
   Platform::transport->read8();  // reserved
   Platform::transport->read16();  // reserved
 
-  // Ignore our own packets
-  if (source == Platform::platform->getDeviceId()) {
-    return;
-  }
-
-  // Ignore multicast packets meant for a different multicast group
-  if (
-    destination >= CHANNEL_OFFSET && destination < 255 &&
-    Platform::platform->getChannel() != destination - CHANNEL_OFFSET
-  ) {
-    return;
-  }
-
-  // Ignore unicast packets meant for a different destination
-  if (destination < CHANNEL_OFFSET && destination != Platform::platform->getDeviceId()) {
+  if (!ProtocolUtils::isPacketForMe(source, destination)) {
     return;
   }
 

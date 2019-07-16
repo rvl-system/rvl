@@ -21,10 +21,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.h"
 #include "./rvl/protocols/clock_sync/clock_sync.h"
 #include "./rvl/platform.h"
+#include "./rvl/protocols/protocol_utils.h"
 
 namespace ClockSync {
 
-#define PROTOCOL_VERSION 1
+#define PROTOCOL_VERSION 2
 
 void init() {
 }
@@ -35,29 +36,36 @@ void loop() {
 
 /*
 Signature: 4 bytes = "CLKS"
-Version: 1 byte = 1
+Version: 1 byte = 2
+Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
+Source: 1 byte = the address of the device that sent the message
 Type: 1 byte = 1:reference, 2:response
 Sequence: 2 bytes = always incrementing
 Clock: 4 bytes = running clock, relative to app start
-ClientID: 2 bytes = matches ClientID in GigglePixel, or 0 for transmitter
 */
 
-bool parsePacket() {
+void parsePacket() {
   Platform::logging->debug("Parsing Clock Sync packet");
   uint8_t version = Platform::transport->read8();
   if (version != PROTOCOL_VERSION) {
-    return false;
+    Platform::logging->error("Received unsupported Clock Sync protocol version packet %d, ignoring", version);
+    return;
   }
+  uint8_t destination = Platform::transport->read8();  // destination
+  uint8_t source = Platform::transport->read8();  // source
   Platform::transport->read8();  // type
   Platform::transport->read16();  // seq
   uint32_t commandTime = Platform::transport->read32();
-  Platform::transport->read16();  // clientId
+
+  if (!ProtocolUtils::isPacketForMe(source, destination)) {
+    return;
+  }
 
   Platform::platform->setClockOffset(
     static_cast<int32_t>(commandTime) -
     static_cast<int32_t>(Platform::platform->getLocalTime()));
 
-  return true;
+  return;
 }
 
 }  // namespace ClockSync
