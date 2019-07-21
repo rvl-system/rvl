@@ -17,18 +17,31 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_PROTOCOL_UTILS_H_
-#define RVL_PROTOCOLS_PROTOCOL_UTILS_H_
-
+#include <limits.h>
 #include <stdint.h>
+#include "./rvl.h"
+#include "./rvl/protocols/discover/discover.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 
-namespace ProtocolUtils {
+namespace ProtocolDiscover {
 
-uint8_t getMulticastAddress();
-bool isPacketForMe(uint8_t source, uint8_t destination);
+uint32_t nextSyncTime = INT_MAX;
 
-}  // namespace ProtocolUtils
+void init() {
+  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL / 4;
+}
 
-#endif  // RVL_PROTOCOLS_PROTOCOL_UTILS_H_
+void loop() {
+  if (Platform::platform->getLocalTime() < nextSyncTime) {
+    return;
+  }
+  // Do stuff
+}
+
+void parsePacket() {
+  Platform::logging->debug("Parsing Discover packet");
+  return;
+}
+
+}  // namespace ProtocolDiscover

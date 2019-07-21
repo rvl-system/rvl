@@ -23,15 +23,13 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include "./rvl.h"
 
-namespace ClockSync {
+namespace ProtocolClockSync {
 
 void init();
 void loop();
 
 void parsePacket();
 
-const uint8_t signature[4] = { 'C', 'L', 'K', 'S' };
-
-}  // namespace ClockSync
+}  // namespace ProtocolClockSync
 
 #endif  // RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_

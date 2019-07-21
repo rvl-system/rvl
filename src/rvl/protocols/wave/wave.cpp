@@ -21,12 +21,27 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include "./rvl.h"
 #include "./rvl/wave.h"
-#include "./rvl/protocols/giggle_pixel/wave.h"
-#include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
+#include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/wave/wave.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 
-namespace Wave {
+namespace ProtocolWave {
+
+/*
+Time Period: 1 byte = The time period for each wave
+Distance Period: 1 byte = The distance period for each wave
+Wave1: 20 bytes = See Wave Parameters below
+Wave2: 20 bytes = See Wave Parameters below
+Wave3: 20 bytes = See Wave Parameters below
+Wave4: 20 bytes = See Wave Parameters below
+
+Wave Parameters:
+h: a b w_t w_x phi
+s: a b w_t w_x phi
+v: a b w_t w_x phi
+a: a b w_t w_x phi
+*/
 
 uint32_t nextSyncTime = INT_MAX;
 
@@ -52,10 +67,7 @@ void sync() {
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite();
-  GigglePixel::sendHeader(
-    RVLPacketType::Wave,
-    0,  // Priority
-    2 + length);
+  Protocol::sendHeader(4);
   Platform::transport->write8(waveSettings->timePeriod);
   Platform::transport->write8(waveSettings->distancePeriod);
   Platform::transport->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
@@ -71,4 +83,4 @@ void parsePacket() {
   Platform::platform->setWaveSettings(&newWaveSettings);
 }
 
-}  // namespace Wave
+}  // namespace ProtocolWave

@@ -17,18 +17,6 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
-#define RVL_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
+#include "rvl/config.h"
 
-#include "./rvl.h"
-
-namespace Palette {
-
-void init();
-void loop();
-
-void parsePacket();
-
-}  // namespace Palette
-
-#endif  // RVL_PROTOCOLS_GIGGLE_PIXEL_PALETTE_H_
+uint8_t signature[4] = { 'R', 'V', 'L', 'X' };

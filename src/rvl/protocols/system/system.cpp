@@ -20,15 +20,14 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include <stdint.h>
 #include "./rvl.h"
-#include "./rvl/protocols/rvl_system/rvl_system.h"
+#include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/system/system.h"
 #include "./rvl/platform.h"
-#include "./rvl/protocols/protocol_utils.h"
+#include "./rvl/config.h"
 
-namespace RVLSystem {
+namespace ProtocolSystem {
 
 uint32_t nextSyncTime = INT_MAX;
-
-#define PROTOCOL_VERSION 1
 
 void init() {
   nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL / 4;
@@ -43,13 +42,9 @@ void loop() {
 }
 
 /*
-Signature: 4 bytes = "RVLS"
-Version: 1 byte = 1
-Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
-Source: 1 byte = the address of the device that sent the message
 Power: 1 byte = the power state of the system. 0 = LEDs off, 1 = LEDs on, > 1 reserved
 Brightness: 1 byte = the brightness of the system
-Reserved: 3 byte
+Reserved: 2 bytes
 */
 
 void sync() {
@@ -58,41 +53,23 @@ void sync() {
   }
   Platform::logging->debug("Syncing system parameters");
   Platform::transport->beginWrite();
-  Platform::transport->write(const_cast<uint8_t*>(signature), sizeof(uint8_t) * 4);
-  Platform::transport->write8(PROTOCOL_VERSION);
-  Platform::transport->write8(ProtocolUtils::getMulticastAddress());  // Always broadcast
-  Platform::transport->write8(Platform::platform->getDeviceId());
+  Protocol::sendHeader(1);
   Platform::transport->write8(Platform::platform->getPowerState());
   Platform::transport->write8(Platform::platform->getBrightness());
-  Platform::transport->write8(0);
   Platform::transport->write16(0);
   Platform::transport->endWrite();
 }
 
 void parsePacket() {
-  Platform::logging->debug("Parsing RVL System packet");
-  uint8_t version = Platform::transport->read8();
-  if (version != PROTOCOL_VERSION) {
-    Platform::logging->error("Received unsupported RVL System protocol version packet %d, ignoring", version);
-    return;
-  }
-  uint8_t destination = Platform::transport->read8();  // destination
-  uint8_t source = Platform::transport->read8();  // source
+  Platform::logging->debug("Parsing System packet");
+
   uint8_t power = Platform::transport->read8();  // power
   uint8_t brightness = Platform::transport->read8();  // brightness
-  Platform::transport->read8();  // reserved
   Platform::transport->read16();  // reserved
-
-  if (!ProtocolUtils::isPacketForMe(source, destination)) {
-    return;
-  }
-
-  Platform::logging->debug("Processing RVL System Message sent from %d to %d", source, destination);
 
   Platform::platform->setPowerState(power);
   Platform::platform->setBrightness(brightness);
-
   return;
 }
 
-}  // namespace RVLSystem
+}  // namespace ProtocolSystem

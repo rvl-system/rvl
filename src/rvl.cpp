@@ -22,10 +22,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdarg.h>
 #include <stdio.h>
 #include "./rvl.h"
+#include "./rvl/config.h"
 #include "./rvl/platform.h"
-#include "./rvl/protocols/clock_sync/clock_sync.h"
-#include "./rvl/protocols/giggle_pixel/giggle_pixel.h"
-#include "./rvl/protocols/rvl_system/rvl_system.h"
+#include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/wave/wave.h"
+#include "./rvl/protocols/system/system.h"
 
 uint32_t animationClock;
 
@@ -38,13 +39,7 @@ void RVLMessagingInit(
 ) {
   rvlPlatform = newPlatform;
   Platform::init(newPlatform, newTransport, newLogging);
-  RVLSystem::init();
-  ClockSync::init();
-  GigglePixel::init();
-}
-
-bool compareSignature(const uint8_t* reference, uint8_t* received, size_t len) {
-  return memcmp(reference, received, len) == 0;
+  Protocol::init();
 }
 
 void RVLMessagingLoop() {
@@ -55,20 +50,14 @@ void RVLMessagingLoop() {
 
   int packetSize = Platform::transport->parsePacket();
   if (packetSize != 0) {
-    uint8_t signature[4];
-    Platform::transport->read(signature, 4);
-    if (compareSignature(ClockSync::signature, signature, 4)) {
-      ClockSync::parsePacket();
-    } else if (compareSignature(GigglePixel::signature, signature, 4)) {
-      GigglePixel::parsePacket();
-    } else if (compareSignature(RVLSystem::signature, signature, 4)) {
-      RVLSystem::parsePacket();
+    uint8_t receivedSignature[4];
+    Platform::transport->read(receivedSignature, 4);
+    if (memcmp(receivedSignature, signature, 4) == 0) {
+      Protocol::parsePacket();
     }
   }
 
-  RVLSystem::loop();
-  ClockSync::loop();
-  GigglePixel::loop();
+  Protocol::loop();
 }
 
 RVLLogging::RVLLogging(RVLLoggingInterface* iface, RVLLogLevel level) {
@@ -118,7 +107,7 @@ void RVLLogging::debug(const char *s, ...) {
 }
 
 void RVLPlatformInterface::onWaveSettingsUpdated() {
-  GigglePixel::sync();
+  ProtocolWave::sync();
 }
 
 void RVLPlatformInterface::onDeviceModeUpdated() {
@@ -134,11 +123,11 @@ void RVLPlatformInterface::onChannelUpdated() {
 }
 
 void RVLPlatformInterface::onPowerStateUpdated() {
-  RVLSystem::sync();
+  ProtocolSystem::sync();
 }
 
 void RVLPlatformInterface::onBrightnessUpdated() {
-  RVLSystem::sync();
+  ProtocolSystem::sync();
 }
 
 uint32_t RVLPlatformInterface::getClockOffset() {

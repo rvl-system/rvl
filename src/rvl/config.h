@@ -20,7 +20,11 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_CONFIG_H_
 #define RVL_CONFIG_H_
 
+#include <stdint.h>
+
 #define CLIENT_SYNC_INTERVAL 2000
 #define CHANNEL_OFFSET 240
+
+extern uint8_t signature[4];
 
 #endif  // RVL_CONFIG_H_

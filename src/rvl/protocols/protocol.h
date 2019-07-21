@@ -17,23 +17,22 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
-#define RVL_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#ifndef RVL_PROTOCOLS_PROTOCOL_H_
+#define RVL_PROTOCOLS_PROTOCOL_H_
 
 #include <stdint.h>
-#include "./rvl.h"
+#include "./rvl/platform.h"
+#include "./rvl/config.h"
 
-namespace GigglePixel {
+namespace Protocol {
 
 void init();
 void loop();
-void sync();
 
 void parsePacket();
-void sendHeader(uint8_t packetType, uint8_t priority, uint16_t length);
 
-const uint8_t signature[4] = { 'G', 'L', 'P', 'X' };
+void sendHeader(uint8_t packetType);
 
-}  // namespace GigglePixel
+}  // namespace Protocol
 
-#endif  // RVL_PROTOCOLS_GIGGLE_PIXEL_GIGGLE_PIXEL_H_
+#endif  // RVL_PROTOCOLS_PROTOCOL_H_
