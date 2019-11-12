@@ -1,30 +1,31 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights Messaging.
+This file is part of RVL Arduino.
 
-Raver Lights Messaging is free software: you can redistribute it and/or modify
+RVL Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights Messaging is distributed in the hope that it will be useful,
+RVL Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
 #include <limits.h>
 #include "./rvl.h"
 #include "./rvl/wave.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/wave/wave.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
+#include "./rvl/protocols/network_state.h"
+#include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/wave/wave.h"
 
 namespace ProtocolWave {
 
@@ -43,19 +44,24 @@ v: a b w_t w_x phi
 a: a b w_t w_x phi
 */
 
-uint32_t nextSyncTime = INT_MAX;
-
-void sync();
+#define SYNC_ITERATION_MODULO 1750
+bool hasSyncedThisLoop = false;
 
 void init() {
-  nextSyncTime = Platform::platform->getLocalTime();
 }
 
 void loop() {
-  if (Platform::platform->getLocalTime() < nextSyncTime) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
+  if (Platform::platform->getLocalTime() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+    hasSyncedThisLoop = false;
+    return;
+  }
+  if (hasSyncedThisLoop) {
+    return;
+  }
+  hasSyncedThisLoop = true;
   sync();
 }
 
@@ -67,14 +73,17 @@ void sync() {
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite();
-  Protocol::sendHeader(4);
+  Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
   Platform::transport->write8(waveSettings->timePeriod);
   Platform::transport->write8(waveSettings->distancePeriod);
   Platform::transport->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
   Platform::transport->endWrite();
 }
 
-void parsePacket() {
+void parsePacket(uint8_t source) {
+  if (!NetworkState::isControllerNode(source)) {
+    return;
+  }
   Platform::logging->debug("Parsing Wave packet");
   RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();

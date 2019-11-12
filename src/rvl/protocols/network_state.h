@@ -17,18 +17,28 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
-#define RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#ifndef RVL_PROTOCOLS_NETWORK_STATE_H_
+#define RVL_PROTOCOLS_NETWORK_STATE_H_
 
 #include <stdint.h>
 
-namespace ProtocolClockSync {
+namespace NetworkState {
 
 void init();
 void loop();
 
-void parsePacket(uint8_t source);
+void refreshNode(uint8_t node);
+void refreshClockSynchronization();
 
-}  // namespace ProtocolClockSync
+bool isNodeActive(uint8_t node);
+uint8_t getNumNodes();
+uint8_t getNextNode(uint8_t node);
 
-#endif  // RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+bool isControllerNode(uint8_t node);
+bool isControllerActive();
+
+bool isClockSynchronizationActive();
+
+}  // namespace NetworkState
+
+#endif  // RVL_PROTOCOLS_NETWORK_STATE_H_

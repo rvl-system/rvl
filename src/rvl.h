@@ -1,20 +1,20 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights Messaging.
+This file is part of RVL Arduino.
 
-Raver Lights Messaging is free software: you can redistribute it and/or modify
+RVL Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights Messaging is distributed in the hope that it will be useful,
+RVL Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef RVL_H_
@@ -83,12 +83,12 @@ enum class RVLDeviceMode { Controller, Receiver };
 
 class RVLPlatformInterface {
  private:
-  uint32_t clockOffset = 0;
   uint8_t channel = 0;
   RVLDeviceMode deviceMode = RVLDeviceMode::Receiver;
   RVLWaveSettings waveSettings;
   bool powerState = 0;
   uint8_t brightness = 0;
+  bool synchronized = 0;
 
  protected:
   virtual void onWaveSettingsUpdated();
@@ -97,15 +97,15 @@ class RVLPlatformInterface {
   virtual void onChannelUpdated();
   virtual void onPowerStateUpdated();
   virtual void onBrightnessUpdated();
+  virtual void onSynchronizationStateUpdated();
 
  public:
   virtual uint32_t getLocalTime() = 0;
   virtual uint16_t getDeviceId() = 0;
   virtual bool isNetworkAvailable() = 0;
 
-  uint32_t getClockOffset();
-  void setClockOffset(uint32_t newOffset);
   uint32_t getAnimationClock();
+  void setAnimationClock(uint32_t newClock);
 
   uint8_t getChannel();
   void setChannel(uint8_t channel);
@@ -121,6 +121,9 @@ class RVLPlatformInterface {
 
   uint8_t getBrightness();
   void setBrightness(uint8_t newBrightness);
+
+  bool getSynchronizationState();
+  void setSynchronizationState(bool synchronized);
 };
 
 void RVLMessagingInit(

@@ -1,20 +1,20 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights Messaging.
+This file is part of RVL Arduino.
 
-Raver Lights Messaging is free software: you can redistribute it and/or modify
+RVL Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights Messaging is distributed in the hope that it will be useful,
+RVL Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
@@ -29,6 +29,7 @@ along with Raver Lights Messaging.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/system/system.h"
 
 uint32_t animationClock;
+int32_t clockOffset = 0;
 
 RVLPlatformInterface* rvlPlatform;
 
@@ -43,7 +44,7 @@ void RVLMessagingInit(
 }
 
 void RVLMessagingLoop() {
-  animationClock = rvlPlatform->getLocalTime() + rvlPlatform->getClockOffset();
+  animationClock = rvlPlatform->getLocalTime() + clockOffset;
   if (!rvlPlatform->isNetworkAvailable()) {
     return;
   }
@@ -71,9 +72,10 @@ void RVLLogging::log(const char *s) {
 
 void RVLLogging::log(const char *s, va_list argptr) {
   int bufferLength = strlen(s) * 3;
-  char str[bufferLength];
+  char* str = new char[bufferLength];
   vsnprintf(str, bufferLength, s, argptr);
   this->interface->print(str);
+  delete str;
 }
 
 void RVLLogging::error(const char *s, ...) {
@@ -130,15 +132,16 @@ void RVLPlatformInterface::onBrightnessUpdated() {
   ProtocolSystem::sync();
 }
 
-uint32_t RVLPlatformInterface::getClockOffset() {
-  return this->clockOffset;
-}
-void RVLPlatformInterface::setClockOffset(uint32_t newOffset) {
-  this->clockOffset = newOffset;
+void RVLPlatformInterface::onSynchronizationStateUpdated() {
+  // Do nothing
 }
 
 uint32_t RVLPlatformInterface::getAnimationClock() {
   return animationClock;
+}
+
+void RVLPlatformInterface::setAnimationClock(uint32_t newClock) {
+  clockOffset = newClock - rvlPlatform->getLocalTime();
 }
 
 uint8_t RVLPlatformInterface::getChannel() {
@@ -183,4 +186,13 @@ uint8_t RVLPlatformInterface::getBrightness() {
 void RVLPlatformInterface::setBrightness(uint8_t newBrightness) {
   this->brightness = newBrightness;
   this->onPowerStateUpdated();
+}
+
+bool RVLPlatformInterface::getSynchronizationState() {
+  return this->synchronized;
+}
+
+void RVLPlatformInterface::setSynchronizationState(bool synchronized) {
+  this->synchronized = synchronized;
+  this->onSynchronizationStateUpdated();
 }
