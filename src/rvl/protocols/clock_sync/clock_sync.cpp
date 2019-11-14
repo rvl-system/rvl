@@ -28,9 +28,9 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ProtocolClockSync {
 
-#define CLOCK_SYNC_PACKET_TYPE_START 1
-#define CLOCK_SYNC_PACKET_TYPE_REQUEST 2
-#define CLOCK_SYNC_PACKET_TYPE_RESPONSE 3
+#define CLOCK_SYNC_SUBPACKET_TYPE_START 1
+#define CLOCK_SYNC_SUBPACKET_TYPE_REQUEST 2
+#define CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE 3
 
 #define NUM_REQUESTS 3
 
@@ -57,16 +57,17 @@ Type: 1 byte = 1: Start, 2: Request, 3: Response
 ID: 2 bytes = A counter so that packets can be associated with each other, not currently used
 Reserved: 1 byte
 
-Start Packet Type (leader->follower):
+Start Packet Type (controller->receiver):
 No body
 
-Request Packet Type (follower->leader):
+Request Packet Type (receiver->controller):
 Observation: 1 byte = The observation number, between 1 and NUM_REQUESTS
 Reserved: 1 byte
 
-Response Packet Type (leader->follower):
+Response Packet Type (controller->receiver):
 clock: 4 bytes = the clock of the root node
 */
+
 // TODO(nebrius): add support for sync ID checking
 
 void init() {
@@ -110,7 +111,7 @@ void synchronizeNextNode() {
   // Send the Start packet
   Platform::transport->beginWrite();
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, currentSyncNode);
-  Platform::transport->write8(CLOCK_SYNC_PACKET_TYPE_START);
+  Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_START);
   Platform::transport->write16(syncId++);
   Platform::transport->write8(0);  // reserved
   Platform::transport->endWrite();
@@ -144,7 +145,7 @@ void sendRequestPacket(uint8_t source, uint16_t id) {
   observedRequestTimes[currentObservation] = observedTime;
   Platform::transport->beginWrite();
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
-  Platform::transport->write8(CLOCK_SYNC_PACKET_TYPE_REQUEST);
+  Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_REQUEST);
   Platform::transport->write16(id);
   Platform::transport->write8(0);  // reserved
   Platform::transport->write8(currentObservation);
@@ -154,12 +155,12 @@ void sendRequestPacket(uint8_t source, uint16_t id) {
 }
 
 void parsePacket(uint8_t source) {
-  uint8_t packetType = Platform::transport->read8();
+  uint8_t subPacketType = Platform::transport->read8();
   uint16_t id = Platform::transport->read16();
   Platform::transport->read8();  // reserved
 
-  switch (packetType) {
-    case CLOCK_SYNC_PACKET_TYPE_START: {
+  switch (subPacketType) {
+    case CLOCK_SYNC_SUBPACKET_TYPE_START: {
       currentObservation = 0;
       memset(observedRequestTimes, 0, sizeof(observedRequestTimes));
       memset(remoteTimes, 0, sizeof(remoteTimes));
@@ -167,11 +168,11 @@ void parsePacket(uint8_t source) {
       sendRequestPacket(source, id);
       break;
     }
-    case CLOCK_SYNC_PACKET_TYPE_REQUEST: {
+    case CLOCK_SYNC_SUBPACKET_TYPE_REQUEST: {
       uint32_t observedTime = Platform::platform->getAnimationClock();
       Platform::transport->beginWrite();
       Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
-      Platform::transport->write8(CLOCK_SYNC_PACKET_TYPE_RESPONSE);
+      Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE);
       Platform::transport->write16(id);
       Platform::transport->write8(0);  // reserved
       Platform::transport->write32(observedTime);
@@ -183,7 +184,7 @@ void parsePacket(uint8_t source) {
       }
       break;
     }
-    case CLOCK_SYNC_PACKET_TYPE_RESPONSE: {
+    case CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE: {
       uint32_t observedTime = Platform::platform->getAnimationClock();
       uint32_t remoteTime = Platform::transport->read32();
       observedResponseTimes[currentObservation] = observedTime;
@@ -198,7 +199,7 @@ void parsePacket(uint8_t source) {
     }
 
     default: {
-      Platform::logging->debug("Received unknown clock sync subpacket type %d", packetType);
+      Platform::logging->error("Received unknown clock sync subpacket type %d", subPacketType);
       break;
     }
   }

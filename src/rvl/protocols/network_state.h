@@ -28,6 +28,8 @@ void init();
 void loop();
 
 void refreshNode(uint8_t node);
+void setClockStaleness(uint8_t source, uint16_t clockStaleness);
+
 void refreshClockSynchronization();
 
 bool isNodeActive(uint8_t node);

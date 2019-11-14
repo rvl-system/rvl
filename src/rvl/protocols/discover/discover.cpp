@@ -28,14 +28,23 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ProtocolDiscover {
 
+#define DISCOVER_SUBPACKET_TYPE_PING 1
+#define DISCOVER_SUBPACKET_TYPE_PONG 2
+
 #define SYNC_ITERATION_MODULO 10
+
 bool hasSyncedThisLoop = false;
 
-void sync();
-
 /*
+Parent packet:
 Type: 1 byte = 1: ping, 2 pong
-Reserved: 3 bytes
+Reserved: 1 byte
+
+Ping Packet Type (controller->receiver):
+No body
+
+Pong Packet Type (receiver->controller):
+Clock Staleness: 2 bytes = time elapsed since the last time the clock was synced (UINT32_MAX for no sync)
 */
 
 void init() {
@@ -57,28 +66,45 @@ void loop() {
 }
 
 void sync() {
-  Platform::logging->debug("Broadcasting discover packet");
+  Platform::logging->debug("Multicasting discover packet");
   Platform::transport->beginWrite();
-  Protocol::sendBroadcastHeader(PACKET_TYPE_DISCOVER);
-  Platform::transport->write8(1);  // type = ping
+  Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
+  Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PING);
   Platform::transport->write8(0);  // reserved
-  Platform::transport->write16(0);  // reserved
   Platform::transport->endWrite();
 }
 
 void parsePacket(uint8_t source) {
   Platform::logging->debug("Parsing Discover packet");
-  uint8_t type = Platform::transport->read8();
+
+  uint8_t subPacketType = Platform::transport->read8();
   Platform::transport->read8();  // reserved
-  Platform::transport->read16();  // reserved
   NetworkState::refreshNode(source);
-  if (type == 1) {
-    Platform::transport->beginWrite();
-    Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
-    Platform::transport->write8(2);  // type = pong
-    Platform::transport->write8(0);  // reserved
-    Platform::transport->write16(0);  // reserved
-    Platform::transport->endWrite();
+
+  switch (subPacketType) {
+    case DISCOVER_SUBPACKET_TYPE_PING: {
+      Platform::transport->beginWrite();
+      Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
+      Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PONG);
+      Platform::transport->write8(0);  // reserved
+      uint16_t clockStaleness;
+      Platform::transport->write16(clockStaleness);
+      Platform::transport->endWrite();
+      break;
+    }
+
+    case DISCOVER_SUBPACKET_TYPE_PONG: {
+      if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+        uint16_t clockStaleness = Platform::transport->read16();
+        NetworkState::setClockStaleness(source, clockStaleness);
+      }
+      break;
+    }
+
+    default: {
+      Platform::logging->error("Received unknown clock sync subpacket type %d", subPacketType);
+      break;
+    }
   }
 }
 

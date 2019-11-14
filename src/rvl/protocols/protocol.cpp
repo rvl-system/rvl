@@ -109,7 +109,7 @@ void parsePacket() {
       ProtocolWave::parsePacket(source);
       break;
     default:
-      Platform::logging->debug("Received unknown subpacket type %d", packetType);
+      Platform::logging->error("Received unknown subpacket type %d", packetType);
       break;
   }
 }

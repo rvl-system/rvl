@@ -17,13 +17,14 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Arduino.h>
+#include <algorithm>
 #include <string.h>
 #include "./rvl/protocols/network_state.h"
 #include "./rvl/platform.h"
 
 namespace NetworkState {
 
+#define NUM_STALENESS_ENTRIES 8
 #define NUM_NODES 255
 #define CONTROLLER_NODE_EXPIRATION_DURATION 10000
 
@@ -33,8 +34,18 @@ uint8_t controllerNode;
 uint32_t controllerNodeLastRefreshed = 0;
 uint32_t clockLastRefreshed = 0;
 
+struct ClockStalenessEntry {
+  uint8_t node;
+  uint16_t staleness;
+};
+ClockStalenessEntry clockStalenesses[NUM_STALENESS_ENTRIES];
+
 void init() {
   memset(nodeTimestamps, 0, sizeof(uint32_t) * NUM_NODES);
+  for (uint8_t i = 0; i < NUM_STALENESS_ENTRIES; i++) {
+    clockStalenesses[i].node = 255;
+    clockStalenesses[i].staleness = 0;
+  }
 }
 
 void loop() {
@@ -61,6 +72,18 @@ void refreshNode(uint8_t node) {
     Platform::logging->debug("Adding node %d to the network map", node);
   }
   nodeTimestamps[node] = Platform::platform->getLocalTime();
+}
+
+bool clockStalenessComparator(ClockStalenessEntry a, ClockStalenessEntry b) {
+  return a.staleness < b.staleness;
+}
+
+void setClockStaleness(uint8_t node, uint16_t staleness) {
+  if (clockStalenesses[0].staleness < staleness) {
+    clockStalenesses[0].staleness = staleness;
+    clockStalenesses[0].node = node;
+    std::sort(std::begin(clockStalenesses), std::end(clockStalenesses), clockStalenessComparator);
+  }
 }
 
 void refreshClockSynchronization() {
