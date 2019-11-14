@@ -17,35 +17,26 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
 #include <string.h>
+#include <algorithm>
 #include "./rvl/protocols/network_state.h"
 #include "./rvl/platform.h"
+#include "./rvl/config.h"
 
 namespace NetworkState {
 
-#define NUM_STALENESS_ENTRIES 8
-#define NUM_NODES 255
 #define CONTROLLER_NODE_EXPIRATION_DURATION 10000
 
 uint32_t nodeTimestamps[NUM_NODES];
+uint32_t nodeClockTimestamps[NUM_NODES];
 
 uint8_t controllerNode;
 uint32_t controllerNodeLastRefreshed = 0;
-uint32_t clockLastRefreshed = 0;
-
-struct ClockStalenessEntry {
-  uint8_t node;
-  uint16_t staleness;
-};
-ClockStalenessEntry clockStalenesses[NUM_STALENESS_ENTRIES];
+uint32_t localClockLastRefreshed = 0;
 
 void init() {
   memset(nodeTimestamps, 0, sizeof(uint32_t) * NUM_NODES);
-  for (uint8_t i = 0; i < NUM_STALENESS_ENTRIES; i++) {
-    clockStalenesses[i].node = 255;
-    clockStalenesses[i].staleness = 0;
-  }
+  memset(nodeClockTimestamps, 0, sizeof(uint32_t) * NUM_NODES);
 }
 
 void loop() {
@@ -54,6 +45,7 @@ void loop() {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       Platform::logging->debug("Node %d expired from the network map", i);
       nodeTimestamps[i] = 0;
+      nodeClockTimestamps[i] = 0;
     }
   }
   bool synchronized = false;
@@ -72,22 +64,6 @@ void refreshNode(uint8_t node) {
     Platform::logging->debug("Adding node %d to the network map", node);
   }
   nodeTimestamps[node] = Platform::platform->getLocalTime();
-}
-
-bool clockStalenessComparator(ClockStalenessEntry a, ClockStalenessEntry b) {
-  return a.staleness < b.staleness;
-}
-
-void setClockStaleness(uint8_t node, uint16_t staleness) {
-  if (clockStalenesses[0].staleness < staleness) {
-    clockStalenesses[0].staleness = staleness;
-    clockStalenesses[0].node = node;
-    std::sort(std::begin(clockStalenesses), std::end(clockStalenesses), clockStalenessComparator);
-  }
-}
-
-void refreshClockSynchronization() {
-  clockLastRefreshed = Platform::platform->getLocalTime();
 }
 
 uint8_t getNumNodes() {
@@ -148,9 +124,32 @@ bool isControllerActive() {
     (Platform::platform->getLocalTime() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
+void refreshNodeClock(uint8_t node) {
+  if (nodeClockTimestamps[node] == 0) {
+    Platform::logging->debug("Adding node %d to the clock map", node);
+  }
+  nodeClockTimestamps[node] = Platform::platform->getLocalTime();
+}
+
+uint8_t getNextClockNode() {
+  uint32_t oldestClock = UINT32_MAX;
+  uint8_t oldestNode = 255;
+  for (uint8_t i = 0; i < NUM_NODES; i++) {
+    if (nodeClockTimestamps[i] > 0 && nodeClockTimestamps[i] < oldestClock) {
+      oldestNode = i;
+      oldestClock = nodeClockTimestamps[i];
+    }
+  }
+  return oldestNode;
+}
+
+void refreshLocalClockSynchronization() {
+  localClockLastRefreshed = Platform::platform->getLocalTime();
+}
+
 bool isClockSynchronizationActive() {
-  return (clockLastRefreshed > 0) &&
-    (Platform::platform->getLocalTime() - clockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+  return (localClockLastRefreshed > 0) &&
+    (Platform::platform->getLocalTime() - localClockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 }  // namespace NetworkState

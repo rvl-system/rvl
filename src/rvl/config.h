@@ -22,6 +22,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
+#define NUM_NODES 240
+
 #define CLIENT_SYNC_INTERVAL 2000
 #define CHANNEL_OFFSET 240
 

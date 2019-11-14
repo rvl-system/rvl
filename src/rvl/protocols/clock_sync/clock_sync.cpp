@@ -95,7 +95,7 @@ void synchronizeNextNode() {
 
   // First we check if the next node has value 255 (broadcast) which means there
   // are no other known nodes in this system, and we can stop here
-  uint8_t nextSyncNode = NetworkState::getNextNode(currentSyncNode);
+  uint8_t nextSyncNode = NetworkState::getNextClockNode();
   if (nextSyncNode == 255) {
     return;
   }
@@ -127,7 +127,6 @@ void loop() {
 void processObservations() {
   int32_t offsets[NUM_REQUESTS];
   for (uint8_t i = 0; i < NUM_REQUESTS; i++) {
-    Platform::logging->debug("Times: request=%d remote=%d response=%d", observedRequestTimes[i], observedResponseTimes[i], remoteTimes[i]);
     uint32_t delay = (observedResponseTimes[i] - observedRequestTimes[i]) / 2;
     uint32_t correctedRemoteTime = remoteTimes[i] - delay;
     offsets[i] = correctedRemoteTime - observedRequestTimes[i];
@@ -137,7 +136,7 @@ void processObservations() {
   Platform::logging->debug("Updating animation clock with offset=%d, synchronization took %dms",
     medianOffset, observedResponseTimes[NUM_REQUESTS - 1] - observedRequestTimes[1]);
   Platform::platform->setAnimationClock(Platform::platform->getAnimationClock() + medianOffset);
-  NetworkState::refreshClockSynchronization();
+  NetworkState::refreshLocalClockSynchronization();
 }
 
 void sendRequestPacket(uint8_t source, uint16_t id) {
@@ -181,6 +180,7 @@ void parsePacket(uint8_t source) {
       uint8_t remoteObservation = Platform::transport->read8();
       if (remoteObservation == NUM_REQUESTS) {
         syncTimeout = 0;
+        NetworkState::refreshNodeClock(source);
       }
       break;
     }

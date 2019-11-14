@@ -44,7 +44,7 @@ Ping Packet Type (controller->receiver):
 No body
 
 Pong Packet Type (receiver->controller):
-Clock Staleness: 2 bytes = time elapsed since the last time the clock was synced (UINT32_MAX for no sync)
+No body
 */
 
 void init() {
@@ -87,17 +87,12 @@ void parsePacket(uint8_t source) {
       Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
       Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PONG);
       Platform::transport->write8(0);  // reserved
-      uint16_t clockStaleness;
-      Platform::transport->write16(clockStaleness);
       Platform::transport->endWrite();
       break;
     }
 
     case DISCOVER_SUBPACKET_TYPE_PONG: {
-      if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
-        uint16_t clockStaleness = Platform::transport->read16();
-        NetworkState::setClockStaleness(source, clockStaleness);
-      }
+     // Don't need to do anything special here, since we already refreshed the node
       break;
     }
 
