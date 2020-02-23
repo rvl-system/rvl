@@ -118,7 +118,7 @@ void synchronizeNextNode() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   synchronizeNextNode();

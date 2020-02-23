@@ -66,7 +66,7 @@ void loop() {
 }
 
 void sync() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   Platform::logging->debug("Syncing preset");

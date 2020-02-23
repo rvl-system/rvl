@@ -66,6 +66,9 @@ void loop() {
 }
 
 void sync() {
+  if (!Platform::transport->isConnected()) {
+    return;
+  }
   Platform::logging->debug("Multicasting discover packet");
   Platform::transport->beginWrite();
   Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
