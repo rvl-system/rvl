@@ -60,8 +60,8 @@ void sync() {
     return;
   }
   Platform::logging->debug("Syncing system parameters");
-  Platform::transport->beginWrite();
-  Protocol::sendBroadcastHeader(PACKET_TYPE_SYSTEM);
+  Platform::transport->beginWrite(Protocol::getMulticastAddress());
+  Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
   Platform::transport->write8(Platform::platform->getPowerState());
   Platform::transport->write8(Platform::platform->getBrightness());
   Platform::transport->write16(0);

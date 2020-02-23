@@ -74,6 +74,8 @@ void parsePacket() {
   uint8_t packetType = Platform::transport->read8();
   Platform::transport->read16();  // reserved
 
+  Platform::logging->debug("Recieved packet from %d", source);
+
   // Ignore our own packets
   if (source == deviceId) {
     return;

@@ -109,7 +109,7 @@ void synchronizeNextNode() {
   syncTimeout = Platform::platform->getLocalTime() + SYNC_TIMEOUT;
 
   // Send the Start packet
-  Platform::transport->beginWrite();
+  Platform::transport->beginWrite(currentSyncNode);
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, currentSyncNode);
   Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_START);
   Platform::transport->write16(syncId++);
@@ -142,7 +142,7 @@ void processObservations() {
 void sendRequestPacket(uint8_t source, uint16_t id) {
   uint32_t observedTime = Platform::platform->getAnimationClock();
   observedRequestTimes[currentObservation] = observedTime;
-  Platform::transport->beginWrite();
+  Platform::transport->beginWrite(source);
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
   Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_REQUEST);
   Platform::transport->write16(id);
@@ -169,7 +169,7 @@ void parsePacket(uint8_t source) {
     }
     case CLOCK_SYNC_SUBPACKET_TYPE_REQUEST: {
       uint32_t observedTime = Platform::platform->getAnimationClock();
-      Platform::transport->beginWrite();
+      Platform::transport->beginWrite(source);
       Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
       Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE);
       Platform::transport->write16(id);

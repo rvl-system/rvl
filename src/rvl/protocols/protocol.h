@@ -31,6 +31,8 @@ void loop();
 
 void parsePacket();
 
+uint8_t getMulticastAddress();
+
 void sendHeader(uint8_t packetType, uint8_t destination);
 void sendBroadcastHeader(uint8_t packetType);
 void sendMulticastHeader(uint8_t packetType);

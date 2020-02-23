@@ -72,7 +72,7 @@ void sync() {
   Platform::logging->debug("Syncing preset");
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
-  Platform::transport->beginWrite();
+  Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
   Platform::transport->write8(waveSettings->timePeriod);
   Platform::transport->write8(waveSettings->distancePeriod);

@@ -65,7 +65,7 @@ namespace RVLPacketType {
 
 class RVLTransportInterface {
  public:
-  virtual void beginWrite() = 0;
+  virtual void beginWrite(uint8_t destination) = 0;
   virtual void write8(uint8_t data) = 0;
   virtual void write16(uint16_t data) = 0;
   virtual void write32(uint32_t data) = 0;
