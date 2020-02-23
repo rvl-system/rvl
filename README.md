@@ -1,4 +1,4 @@
-# Raver Lights Messaging
+# RVL
 
 Documentation coming soon!
 
