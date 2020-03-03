@@ -21,6 +21,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <list>
 #include "./rvl.h"
 #include "./rvl/config.h"
 #include "./rvl/platform.h"
@@ -34,6 +35,10 @@ int32_t clockOffset = 0;
 RVLPlatformInterface* rvlPlatform;
 
 namespace rvl {
+
+/**********************
+ * Logging            *
+ **********************/
 
 LogLevel logLevel = LogLevel::Debug;
 
@@ -80,6 +85,31 @@ void debug(const char *s, ...) {
     va_start(argptr, s);
     log(s, argptr);
     Serial.println();
+  }
+}
+
+/**********************
+ * Events             *
+ **********************/
+
+struct ListenerEntry {
+ public:
+  int eventType;
+  void (*listener)();
+};
+std::list<ListenerEntry> listeners;
+
+void on(uint8_t eventType, void (*listener)()) {
+  ListenerEntry entry = { eventType, listener };
+  listeners.push_back(entry);
+}
+
+void emit(uint8_t eventType) {
+  rvl::debug("Emitting event %d", eventType);
+  for (auto& listener : listeners) {
+    if (listener.eventType == eventType) {
+      listener.listener();
+    }
   }
 }
 

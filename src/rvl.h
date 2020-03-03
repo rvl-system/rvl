@@ -28,6 +28,10 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
+/**********************
+ * Logging            *
+ **********************/
+
 // These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
 enum class LogLevel {
   Error = 1,
@@ -40,6 +44,16 @@ void setLogLevel(LogLevel level);
 void error(const char *s, ...);
 void info(const char *s, ...);
 void debug(const char *s, ...);
+
+void on(uint8_t eventType, void (*listener)());
+void emit(uint8_t eventType);
+
+/**********************
+ * Events             *
+ **********************/
+
+void on(uint8_t eventType, void (*listener)());
+void emit(uint8_t eventType);
 
 }  // namespace rvl
 
