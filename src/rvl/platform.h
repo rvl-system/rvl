@@ -25,10 +25,9 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 namespace Platform {
 
 extern RVLTransportInterface* transport;
-extern RVLLogging* logging;
 extern RVLPlatformInterface* platform;
 
-void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLogging* newLogging);
+void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport);
 
 }  // namespace Platform
 

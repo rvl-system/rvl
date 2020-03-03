@@ -59,7 +59,7 @@ void sync() {
   if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
-  Platform::logging->debug("Syncing system parameters");
+  rvl::debug("Syncing system parameters");
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
   Platform::transport->write8(Platform::platform->getPowerState());
@@ -72,7 +72,7 @@ void parsePacket(uint8_t source) {
   if (!NetworkState::isControllerNode(source)) {
     return;
   }
-  Platform::logging->debug("Parsing System packet");
+  rvl::debug("Parsing System packet");
 
   uint8_t power = Platform::transport->read8();  // power
   uint8_t brightness = Platform::transport->read8();  // brightness

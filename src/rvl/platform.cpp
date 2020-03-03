@@ -23,15 +23,13 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 namespace Platform {
 
 RVLTransportInterface* transport;
-RVLLogging* logging;
 RVLPlatformInterface* platform;
 
 // Base case versions
 
-void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport, RVLLogging* newLogging) {
+void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport) {
   platform = newPlatform;
   transport = newTransport;
-  logging = newLogging;
 }
 
 }  // namespace Platform

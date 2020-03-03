@@ -20,40 +20,28 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_H_
 #define RVL_H_
 
+#include <Arduino.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
 #include "./rvl/wave.h"
 
+namespace rvl {
+
 // These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
-enum class RVLLogLevel {
+enum class LogLevel {
   Error = 1,
   Info = 2,
   Debug = 3
 };
 
-class RVLLoggingInterface {
- public:
-  virtual void print(const char *s) = 0;
-  virtual void println() = 0;
-  virtual void println(const char *s) = 0;
-};
+void setLogLevel(LogLevel level);
 
-class RVLLogging {
- private:
-  RVLLogLevel logLevel;
-  RVLLoggingInterface* interface;
+void error(const char *s, ...);
+void info(const char *s, ...);
+void debug(const char *s, ...);
 
-  void log(const char *s);
-  void log(const char *s, va_list argptr);
-
- public:
-  RVLLogging(RVLLoggingInterface* iface, RVLLogLevel level);
-
-  void error(const char *s, ...);
-  void info(const char *s, ...);
-  void debug(const char *s, ...);
-};
+}  // namespace rvl
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
 namespace RVLPacketType {
@@ -130,8 +118,7 @@ class RVLPlatformInterface {
 
 void RVLMessagingInit(
   RVLPlatformInterface* platform,
-  RVLTransportInterface* transport,
-  RVLLogging* logging);
+  RVLTransportInterface* transport);
 
 void RVLMessagingLoop();
 

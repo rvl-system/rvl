@@ -86,7 +86,7 @@ void synchronizeNextNode() {
     // Check if the sync has timed out and we need to move to the next one,
     // or let this sync continue doing its thing
     if (Platform::platform->getLocalTime() > syncTimeout) {
-      Platform::logging->debug("Clock synchronization with node %d has timed out", currentSyncNode);
+      rvl::debug("Clock synchronization with node %d has timed out", currentSyncNode);
       syncTimeout = 0;
     } else {
       return;
@@ -102,7 +102,7 @@ void synchronizeNextNode() {
 
   // If we got here, then this ia valid next sync node
   currentSyncNode = nextSyncNode;
-  Platform::logging->debug("Starting clock synchronization with node %d", currentSyncNode);
+  rvl::debug("Starting clock synchronization with node %d", currentSyncNode);
 
   // Start the timeout. If the two nodes don't finish exchanging information
   // within this time, we skip and go to the next one.
@@ -133,7 +133,7 @@ void processObservations() {
   }
   std::sort(std::begin(offsets), std::end(offsets));
   uint32_t medianOffset = offsets[NUM_REQUESTS / 2];
-  Platform::logging->debug("Updating animation clock with offset=%d, synchronization took %dms",
+  rvl::debug("Updating animation clock with offset=%d, synchronization took %dms",
     medianOffset, observedResponseTimes[NUM_REQUESTS - 1] - observedRequestTimes[1]);
   Platform::platform->setAnimationClock(Platform::platform->getAnimationClock() + medianOffset);
   NetworkState::refreshLocalClockSynchronization();
@@ -150,7 +150,7 @@ void sendRequestPacket(uint8_t source, uint16_t id) {
   Platform::transport->write8(currentObservation);
   Platform::transport->write8(0);  // reserved
   Platform::transport->endWrite();
-  Platform::logging->debug("Sent clock sync observation request at time %d", observedTime);
+  rvl::debug("Sent clock sync observation request at time %d", observedTime);
 }
 
 void parsePacket(uint8_t source) {
@@ -176,7 +176,7 @@ void parsePacket(uint8_t source) {
       Platform::transport->write8(0);  // reserved
       Platform::transport->write32(observedTime);
       Platform::transport->endWrite();
-      Platform::logging->debug("Responded to clock sync request from %d with observed time %d", source, observedTime);
+      rvl::debug("Responded to clock sync request from %d with observed time %d", source, observedTime);
       uint8_t remoteObservation = Platform::transport->read8();
       if (remoteObservation == NUM_REQUESTS) {
         syncTimeout = 0;
@@ -199,7 +199,7 @@ void parsePacket(uint8_t source) {
     }
 
     default: {
-      Platform::logging->error("Received unknown clock sync subpacket type %d", subPacketType);
+      rvl::error("Received unknown clock sync subpacket type %d", subPacketType);
       break;
     }
   }

@@ -43,7 +43,7 @@ void loop() {
   uint32_t expirationTime = Platform::platform->getLocalTime() - CONTROLLER_NODE_EXPIRATION_DURATION;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
-      Platform::logging->debug("Node %d expired from the network map", i);
+      rvl::debug("Node %d expired from the network map", i);
       nodeTimestamps[i] = 0;
       nodeClockTimestamps[i] = 0;
     }
@@ -61,7 +61,7 @@ void loop() {
 
 void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
-    Platform::logging->debug("Adding node %d to the network map", node);
+    rvl::debug("Adding node %d to the network map", node);
   }
   nodeTimestamps[node] = Platform::platform->getLocalTime();
 }
@@ -126,7 +126,7 @@ bool isControllerActive() {
 
 void refreshNodeClock(uint8_t node) {
   if (nodeClockTimestamps[node] == 0) {
-    Platform::logging->debug("Adding node %d to the clock map", node);
+    rvl::debug("Adding node %d to the clock map", node);
   }
   nodeClockTimestamps[node] = Platform::platform->getLocalTime();
 }

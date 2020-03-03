@@ -69,7 +69,7 @@ void sync() {
   if (!Platform::transport->isConnected()) {
     return;
   }
-  Platform::logging->debug("Multicasting discover packet");
+  rvl::debug("Multicasting discover packet");
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
   Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PING);
@@ -78,7 +78,7 @@ void sync() {
 }
 
 void parsePacket(uint8_t source) {
-  Platform::logging->debug("Parsing Discover packet");
+  rvl::debug("Parsing Discover packet");
 
   uint8_t subPacketType = Platform::transport->read8();
   Platform::transport->read8();  // reserved
@@ -100,7 +100,7 @@ void parsePacket(uint8_t source) {
     }
 
     default: {
-      Platform::logging->error("Received unknown clock sync subpacket type %d", subPacketType);
+      rvl::error("Received unknown clock sync subpacket type %d", subPacketType);
       break;
     }
   }

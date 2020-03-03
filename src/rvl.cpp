@@ -33,13 +33,64 @@ int32_t clockOffset = 0;
 
 RVLPlatformInterface* rvlPlatform;
 
+namespace rvl {
+
+LogLevel logLevel = LogLevel::Debug;
+
+void setLogLevel(LogLevel newLevel) {
+  logLevel = newLevel;
+}
+
+void log(const char *s) {
+  Serial.print(s);
+}
+
+void log(const char *s, va_list argptr) {
+  int bufferLength = strlen(s) * 3;
+  char* str = new char[bufferLength];
+  vsnprintf(str, bufferLength, s, argptr);
+  Serial.print(str);
+  delete str;
+}
+
+void error(const char *s, ...) {
+  if (logLevel >= LogLevel::Error) {
+    Serial.print("[error]: ");
+    va_list argptr;
+    va_start(argptr, s);
+    log(s, argptr);
+    Serial.println();
+  }
+}
+
+void info(const char *s, ...) {
+  if (logLevel >= LogLevel::Info) {
+    Serial.print("[info ]: ");
+    va_list argptr;
+    va_start(argptr, s);
+    log(s, argptr);
+    Serial.println();
+  }
+}
+
+void debug(const char *s, ...) {
+  if (logLevel >= LogLevel::Debug) {
+    Serial.print("[debug ]: ");
+    va_list argptr;
+    va_start(argptr, s);
+    log(s, argptr);
+    Serial.println();
+  }
+}
+
+}  // namespace rvl
+
 void RVLMessagingInit(
   RVLPlatformInterface* newPlatform,
-  RVLTransportInterface* newTransport,
-  RVLLogging* newLogging
+  RVLTransportInterface* newTransport
 ) {
   rvlPlatform = newPlatform;
-  Platform::init(newPlatform, newTransport, newLogging);
+  Platform::init(newPlatform, newTransport);
   Protocol::init();
 }
 
@@ -59,53 +110,6 @@ void RVLMessagingLoop() {
   }
 
   Protocol::loop();
-}
-
-RVLLogging::RVLLogging(RVLLoggingInterface* iface, RVLLogLevel level) {
-  this->interface = iface;
-  this->logLevel = level;
-}
-
-void RVLLogging::log(const char *s) {
-  this->interface->print(s);
-}
-
-void RVLLogging::log(const char *s, va_list argptr) {
-  int bufferLength = strlen(s) * 3;
-  char* str = new char[bufferLength];
-  vsnprintf(str, bufferLength, s, argptr);
-  this->interface->print(str);
-  delete str;
-}
-
-void RVLLogging::error(const char *s, ...) {
-  if (this->logLevel >= RVLLogLevel::Error) {
-    this->interface->print("[error]: ");
-    va_list argptr;
-    va_start(argptr, s);
-    this->log(s, argptr);
-    this->interface->println();
-  }
-}
-
-void RVLLogging::info(const char *s, ...) {
-  if (this->logLevel >= RVLLogLevel::Info) {
-    this->interface->print("[info ]: ");
-    va_list argptr;
-    va_start(argptr, s);
-    this->log(s, argptr);
-    this->interface->println();
-  }
-}
-
-void RVLLogging::debug(const char *s, ...) {
-  if (this->logLevel >= RVLLogLevel::Debug) {
-    this->interface->print("[debug ]: ");
-    va_list argptr;
-    va_start(argptr, s);
-    this->log(s, argptr);
-    this->interface->println();
-  }
 }
 
 void RVLPlatformInterface::onWaveSettingsUpdated() {

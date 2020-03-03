@@ -63,7 +63,7 @@ uint8_t getMulticastAddress() {
 void parsePacket() {
   uint8_t version = Platform::transport->read8();
   if (version != PROTOCOL_VERSION) {
-    Platform::logging->error("Received unsupported Raver Lights protocol packet version %d, ignoring", version);
+    rvl::error("Received unsupported Raver Lights protocol packet version %d, ignoring", version);
     return;
   }
 
@@ -74,7 +74,7 @@ void parsePacket() {
   uint8_t packetType = Platform::transport->read8();
   Platform::transport->read16();  // reserved
 
-  Platform::logging->debug("Recieved packet from %d", source);
+  rvl::debug("Recieved packet from %d", source);
 
   // Ignore our own packets
   if (source == deviceId) {
@@ -111,7 +111,7 @@ void parsePacket() {
       ProtocolWave::parsePacket(source);
       break;
     default:
-      Platform::logging->error("Received unknown subpacket type %d", packetType);
+      rvl::error("Received unknown subpacket type %d", packetType);
       break;
   }
 }

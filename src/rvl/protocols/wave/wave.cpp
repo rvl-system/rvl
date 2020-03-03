@@ -69,7 +69,7 @@ void sync() {
   if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
-  Platform::logging->debug("Syncing preset");
+  rvl::debug("Syncing preset");
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
@@ -84,7 +84,7 @@ void parsePacket(uint8_t source) {
   if (!NetworkState::isControllerNode(source)) {
     return;
   }
-  Platform::logging->debug("Parsing Wave packet");
+  rvl::debug("Parsing Wave packet");
   RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();
   newWaveSettings.distancePeriod = Platform::transport->read8();
