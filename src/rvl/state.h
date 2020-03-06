@@ -22,6 +22,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Arduino.h>
 #include "./rvl.h"
+#include "./wave.h"
 
 enum class RVLDeviceMode { Controller, Receiver };
 

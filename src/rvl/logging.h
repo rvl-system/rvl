@@ -21,7 +21,6 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_LOGGING_H_
 
 #include <Arduino.h>
-#include "./rvl/wave.h"
 
 namespace rvl {
 

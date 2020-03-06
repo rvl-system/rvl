@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_WAVE_H_
-#define RVL_WAVE_H_
+#ifndef WAVE_H_
+#define WAVE_H_
 
 #include <stdint.h>
 
@@ -45,4 +45,4 @@ struct RVLWaveSettings {
   RVLWave waves[NUM_WAVES];
 };
 
-#endif  // RVL_WAVE_H_
+#endif  // WAVE_H_

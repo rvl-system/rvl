@@ -21,24 +21,12 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_H_
 
 #include <Arduino.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdarg.h>
-#include "./rvl/wave.h"
 
 #include "./rvl/logging.h"
 #include "./rvl/event.h"
 #include "./rvl/state.h"
 
 // TODO(nebrius): remove rvl:: prefixes once everything is in the same namespace
-
-// Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
-namespace RVLPacketType {
-  enum RVLPacketType {
-    Palette = 1,
-    Wave = 2
-  };
-}
 
 class RVLTransportInterface {
  public:

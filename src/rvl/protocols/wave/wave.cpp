@@ -20,7 +20,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <limits.h>
 #include "./rvl.h"
-#include "./rvl/wave.h"
+#include "./wave.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 #include "./rvl/protocols/network_state.h"

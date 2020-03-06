@@ -26,6 +26,14 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Protocol {
 
+// Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
+namespace RVLPacketType {
+  enum RVLPacketType {
+    Palette = 1,
+    Wave = 2
+  };
+}
+
 void init();
 void loop();
 
