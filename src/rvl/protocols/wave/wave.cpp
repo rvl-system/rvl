@@ -50,6 +50,7 @@ a: a b w_t w_x phi
 bool hasSyncedThisLoop = false;
 
 void init() {
+  on(EVENT_WAVE_SETTINGS_UPDATED, sync);
 }
 
 void loop() {

@@ -58,10 +58,6 @@ void RVLMessagingLoop() {
   rvl::Protocol::loop();
 }
 
-void RVLPlatformInterface::onWaveSettingsUpdated() {
-  rvl::ProtocolWave::sync();
-}
-
 void RVLPlatformInterface::onDeviceModeUpdated() {
   // Do nothing
 }

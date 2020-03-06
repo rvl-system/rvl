@@ -26,7 +26,13 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/event.h"
 #include "./rvl/state.h"
 
-// TODO(nebrius): remove rvl:: prefixes once everything is in the same namespace
+#define EVENT_WAVE_SETTINGS_UPDATED 1
+#define EVENT_DEVICE_MODE_UPDATED 2
+#define EVENT_ANIMATION_CLOCK_UPDATED 3
+#define EVENT_CHANNEL_UPDATED 4
+#define EVENT_POWER_STATE_UPDATED 5
+#define EVENT_BRIGHTNESS_UPDATED 6
+#define EVENT_SYNCHRONIZATION_STATE_UPDATED 7
 
 class RVLTransportInterface {
  public:
@@ -50,7 +56,6 @@ class RVLTransportInterface {
 
 class RVLPlatformInterface {
  public:
-  virtual void onWaveSettingsUpdated();
   virtual void onDeviceModeUpdated();
   virtual void onClockOffsetUpdated();
   virtual void onChannelUpdated();

@@ -66,7 +66,7 @@ RVLWaveSettings* getWaveSettings() {
 
 void setWaveSettings(RVLWaveSettings* newWaveSettings) {
   memcpy(&waveSettings, newWaveSettings, sizeof(RVLWaveSettings));
-  Platform::platform->onWaveSettingsUpdated();
+  emit(EVENT_WAVE_SETTINGS_UPDATED);
 }
 
 bool getPowerState() {
@@ -84,7 +84,7 @@ uint8_t getBrightness() {
 
 void setBrightness(uint8_t newBrightness) {
   brightness = newBrightness;
-  Platform::platform->onPowerStateUpdated();
+  Platform::platform->onBrightnessUpdated();
 }
 
 bool getSynchronizationState() {
