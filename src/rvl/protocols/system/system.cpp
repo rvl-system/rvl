@@ -26,6 +26,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/protocol.h"
 #include "./rvl/protocols/system/system.h"
 
+namespace rvl {
+
 namespace ProtocolSystem {
 
 #define SYNC_ITERATION_MODULO 1500
@@ -35,7 +37,7 @@ void init() {
 }
 
 void loop() {
-  if (rvl::getDeviceMode() != RVLDeviceMode::Controller) {
+  if (getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -56,14 +58,14 @@ Reserved: 2 bytes
 */
 
 void sync() {
-  if (rvl::getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
-  rvl::debug("Syncing system parameters");
+  debug("Syncing system parameters");
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
-  Platform::transport->write8(rvl::getPowerState());
-  Platform::transport->write8(rvl::getBrightness());
+  Platform::transport->write8(getPowerState());
+  Platform::transport->write8(getBrightness());
   Platform::transport->write16(0);
   Platform::transport->endWrite();
 }
@@ -72,15 +74,17 @@ void parsePacket(uint8_t source) {
   if (!NetworkState::isControllerNode(source)) {
     return;
   }
-  rvl::debug("Parsing System packet");
+  debug("Parsing System packet");
 
   uint8_t power = Platform::transport->read8();  // power
   uint8_t brightness = Platform::transport->read8();  // brightness
   Platform::transport->read16();  // reserved
 
-  rvl::setPowerState(power);
-  rvl::setBrightness(brightness);
+  setPowerState(power);
+  setBrightness(brightness);
   return;
 }
 
 }  // namespace ProtocolSystem
+
+}  // namespace rvl

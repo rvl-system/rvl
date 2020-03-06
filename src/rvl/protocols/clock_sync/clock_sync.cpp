@@ -27,6 +27,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/network_state.h"
 #include "./rvl/protocols/clock_sync/clock_sync.h"
 
+namespace rvl {
+
 namespace ProtocolClockSync {
 
 #define CLOCK_SYNC_SUBPACKET_TYPE_START 1
@@ -87,7 +89,7 @@ void synchronizeNextNode() {
     // Check if the sync has timed out and we need to move to the next one,
     // or let this sync continue doing its thing
     if (millis() > syncTimeout) {
-      rvl::debug("Clock synchronization with node %d has timed out", currentSyncNode);
+      debug("Clock synchronization with node %d has timed out", currentSyncNode);
       syncTimeout = 0;
     } else {
       return;
@@ -103,7 +105,7 @@ void synchronizeNextNode() {
 
   // If we got here, then this ia valid next sync node
   currentSyncNode = nextSyncNode;
-  rvl::debug("Starting clock synchronization with node %d", currentSyncNode);
+  debug("Starting clock synchronization with node %d", currentSyncNode);
 
   // Start the timeout. If the two nodes don't finish exchanging information
   // within this time, we skip and go to the next one.
@@ -119,7 +121,7 @@ void synchronizeNextNode() {
 }
 
 void loop() {
-  if (rvl::getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   synchronizeNextNode();
@@ -134,14 +136,14 @@ void processObservations() {
   }
   std::sort(std::begin(offsets), std::end(offsets));
   uint32_t medianOffset = offsets[NUM_REQUESTS / 2];
-  rvl::debug("Updating animation clock with offset=%d, synchronization took %dms",
+  debug("Updating animation clock with offset=%d, synchronization took %dms",
     medianOffset, observedResponseTimes[NUM_REQUESTS - 1] - observedRequestTimes[1]);
-  rvl::setAnimationClock(rvl::getAnimationClock() + medianOffset);
+  setAnimationClock(getAnimationClock() + medianOffset);
   NetworkState::refreshLocalClockSynchronization();
 }
 
 void sendRequestPacket(uint8_t source, uint16_t id) {
-  uint32_t observedTime = rvl::getAnimationClock();
+  uint32_t observedTime = getAnimationClock();
   observedRequestTimes[currentObservation] = observedTime;
   Platform::transport->beginWrite(source);
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
@@ -151,7 +153,7 @@ void sendRequestPacket(uint8_t source, uint16_t id) {
   Platform::transport->write8(currentObservation);
   Platform::transport->write8(0);  // reserved
   Platform::transport->endWrite();
-  rvl::debug("Sent clock sync observation request at time %d", observedTime);
+  debug("Sent clock sync observation request at time %d", observedTime);
 }
 
 void parsePacket(uint8_t source) {
@@ -169,7 +171,7 @@ void parsePacket(uint8_t source) {
       break;
     }
     case CLOCK_SYNC_SUBPACKET_TYPE_REQUEST: {
-      uint32_t observedTime = rvl::getAnimationClock();
+      uint32_t observedTime = getAnimationClock();
       Platform::transport->beginWrite(source);
       Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
       Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE);
@@ -177,7 +179,7 @@ void parsePacket(uint8_t source) {
       Platform::transport->write8(0);  // reserved
       Platform::transport->write32(observedTime);
       Platform::transport->endWrite();
-      rvl::debug("Responded to clock sync request from %d with observed time %d", source, observedTime);
+      debug("Responded to clock sync request from %d with observed time %d", source, observedTime);
       uint8_t remoteObservation = Platform::transport->read8();
       if (remoteObservation == NUM_REQUESTS) {
         syncTimeout = 0;
@@ -186,7 +188,7 @@ void parsePacket(uint8_t source) {
       break;
     }
     case CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE: {
-      uint32_t observedTime = rvl::getAnimationClock();
+      uint32_t observedTime = getAnimationClock();
       uint32_t remoteTime = Platform::transport->read32();
       observedResponseTimes[currentObservation] = observedTime;
       remoteTimes[currentObservation] = remoteTime;
@@ -200,10 +202,12 @@ void parsePacket(uint8_t source) {
     }
 
     default: {
-      rvl::error("Received unknown clock sync subpacket type %d", subPacketType);
+      error("Received unknown clock sync subpacket type %d", subPacketType);
       break;
     }
   }
 }
 
 }  // namespace ProtocolClockSync
+
+}  // namespace rvl

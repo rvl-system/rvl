@@ -19,4 +19,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "rvl/config.h"
 
+namespace rvl {
+
 uint8_t signature[4] = { 'R', 'V', 'L', 'X' };
+
+}  // namespace rvl

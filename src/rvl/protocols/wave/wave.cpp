@@ -27,6 +27,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/protocol.h"
 #include "./rvl/protocols/wave/wave.h"
 
+namespace rvl {
+
 namespace ProtocolWave {
 
 /*
@@ -51,7 +53,7 @@ void init() {
 }
 
 void loop() {
-  if (rvl::getDeviceMode() != RVLDeviceMode::Controller) {
+  if (getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -66,11 +68,11 @@ void loop() {
 }
 
 void sync() {
-  if (rvl::getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
-  rvl::debug("Syncing preset");
-  auto waveSettings = rvl::getWaveSettings();
+  debug("Syncing preset");
+  auto waveSettings = getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
@@ -84,12 +86,14 @@ void parsePacket(uint8_t source) {
   if (!NetworkState::isControllerNode(source)) {
     return;
   }
-  rvl::debug("Parsing Wave packet");
+  debug("Parsing Wave packet");
   RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();
   newWaveSettings.distancePeriod = Platform::transport->read8();
   Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVLWave) * NUM_WAVES);
-  rvl::setWaveSettings(&newWaveSettings);
+  setWaveSettings(&newWaveSettings);
 }
 
 }  // namespace ProtocolWave
+
+}  // namespace rvl

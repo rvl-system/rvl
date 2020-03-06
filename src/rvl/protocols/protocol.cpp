@@ -27,6 +27,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/clock_sync/clock_sync.h"
 #include "./rvl/protocols/wave/wave.h"
 
+namespace rvl {
+
 namespace Protocol {
 
 #define PROTOCOL_VERSION 1
@@ -57,13 +59,13 @@ void loop() {
 }
 
 uint8_t getMulticastAddress() {
-  return CHANNEL_OFFSET + rvl::getChannel();
+  return CHANNEL_OFFSET + getChannel();
 }
 
 void parsePacket() {
   uint8_t version = Platform::transport->read8();
   if (version != PROTOCOL_VERSION) {
-    rvl::error("Received unsupported Raver Lights protocol packet version %d, ignoring", version);
+    error("Received unsupported Raver Lights protocol packet version %d, ignoring", version);
     return;
   }
 
@@ -74,7 +76,7 @@ void parsePacket() {
   uint8_t packetType = Platform::transport->read8();
   Platform::transport->read16();  // reserved
 
-  rvl::debug("Recieved packet from %d", source);
+  debug("Recieved packet from %d", source);
 
   // Ignore our own packets
   if (source == deviceId) {
@@ -87,7 +89,7 @@ void parsePacket() {
   // Ignore multicast packets meant for a different multicast group
   if (
     destination >= CHANNEL_OFFSET && destination < 255 &&
-    rvl::getChannel() != destination - CHANNEL_OFFSET
+    getChannel() != destination - CHANNEL_OFFSET
   ) {
     return;
   }
@@ -111,7 +113,7 @@ void parsePacket() {
       ProtocolWave::parsePacket(source);
       break;
     default:
-      rvl::error("Received unknown subpacket type %d", packetType);
+      error("Received unknown subpacket type %d", packetType);
       break;
   }
 }
@@ -134,3 +136,5 @@ void sendMulticastHeader(uint8_t packetType) {
 }
 
 }  // namespace Protocol
+
+}  // namespace rvl

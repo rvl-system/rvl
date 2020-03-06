@@ -22,6 +22,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
+namespace rvl {
+
 // TODO(nebrius): move to variable sent to init() method
 #define NUM_NODES 240
 
@@ -35,5 +37,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #define PACKET_TYPE_WAVE_ANIMATION 4
 
 extern uint8_t signature[4];
+
+}  // namespace rvl
 
 #endif  // RVL_CONFIG_H_

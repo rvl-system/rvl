@@ -22,6 +22,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
+namespace rvl {
+
 namespace ProtocolWave {
 
 void init();
@@ -31,5 +33,7 @@ void sync();
 void parsePacket(uint8_t source);
 
 }  // namespace ProtocolWave
+
+}  // namespace rvl
 
 #endif  // RVL_PROTOCOLS_WAVE_WAVE_H_

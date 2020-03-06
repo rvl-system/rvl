@@ -23,6 +23,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 
+namespace rvl {
+
 namespace NetworkState {
 
 #define CONTROLLER_NODE_EXPIRATION_DURATION 10000
@@ -43,25 +45,25 @@ void loop() {
   uint32_t expirationTime = millis() - CONTROLLER_NODE_EXPIRATION_DURATION;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
-      rvl::debug("Node %d expired from the network map", i);
+      debug("Node %d expired from the network map", i);
       nodeTimestamps[i] = 0;
       nodeClockTimestamps[i] = 0;
     }
   }
   bool synchronized = false;
-  if (rvl::getDeviceMode() == RVLDeviceMode::Controller) {
+  if (getDeviceMode() == RVLDeviceMode::Controller) {
     synchronized = isClockSynchronizationActive();
   } else {
     synchronized = isClockSynchronizationActive() && isControllerActive();
   }
-  if (synchronized != rvl::getSynchronizationState()) {
-    rvl::setSynchronizationState(synchronized);
+  if (synchronized != getSynchronizationState()) {
+    setSynchronizationState(synchronized);
   }
 }
 
 void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
-    rvl::debug("Adding node %d to the network map", node);
+    debug("Adding node %d to the network map", node);
   }
   nodeTimestamps[node] = millis();
 }
@@ -97,7 +99,7 @@ bool isNodeActive(uint8_t node) {
 bool isControllerNode(uint8_t node) {
   // First, we check if we're in controller mode, in which case we always ignore
   // remote control
-  if (rvl::getDeviceMode() == RVLDeviceMode::Controller) {
+  if (getDeviceMode() == RVLDeviceMode::Controller) {
     return node == Platform::transport->getDeviceId();
   }
 
@@ -126,7 +128,7 @@ bool isControllerActive() {
 
 void refreshNodeClock(uint8_t node) {
   if (nodeClockTimestamps[node] == 0) {
-    rvl::debug("Adding node %d to the clock map", node);
+    debug("Adding node %d to the clock map", node);
   }
   nodeClockTimestamps[node] = millis();
 }
@@ -153,3 +155,5 @@ bool isClockSynchronizationActive() {
 }
 
 }  // namespace NetworkState
+
+}  // namespace rvl

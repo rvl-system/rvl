@@ -24,6 +24,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 
+namespace rvl {
+
 namespace Protocol {
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
@@ -46,5 +48,7 @@ void sendBroadcastHeader(uint8_t packetType);
 void sendMulticastHeader(uint8_t packetType);
 
 }  // namespace Protocol
+
+}  // namespace rvl
 
 #endif  // RVL_PROTOCOLS_PROTOCOL_H_

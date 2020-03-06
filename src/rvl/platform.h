@@ -22,6 +22,8 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "./rvl.h"
 
+namespace rvl {
+
 namespace Platform {
 
 extern RVLTransportInterface* transport;
@@ -30,5 +32,7 @@ extern RVLPlatformInterface* platform;
 void init(RVLPlatformInterface* newPlatform, RVLTransportInterface* newTransport);
 
 }  // namespace Platform
+
+}  // namespace rvl
 
 #endif  // RVL_PLATFORM_H_

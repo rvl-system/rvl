@@ -22,6 +22,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
+namespace rvl {
+
 namespace NetworkState {
 
 void init();
@@ -43,5 +45,7 @@ void refreshLocalClockSynchronization();
 bool isClockSynchronizationActive();
 
 }  // namespace NetworkState
+
+}  // namespace rvl
 
 #endif  // RVL_PROTOCOLS_NETWORK_STATE_H_

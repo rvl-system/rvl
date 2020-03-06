@@ -23,6 +23,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include "./rvl.h"
 
+namespace rvl {
+
 namespace ProtocolDiscover {
 
 void init();
@@ -32,5 +34,7 @@ void sync();
 void parsePacket(uint8_t source);
 
 }  // namespace ProtocolDiscover
+
+}  // namespace rvl
 
 #endif  // RVL_PROTOCOLS_DISCOVER_DISCOVER_H_

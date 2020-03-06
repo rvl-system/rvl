@@ -26,6 +26,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 
+namespace rvl {
+
 namespace ProtocolDiscover {
 
 #define DISCOVER_SUBPACKET_TYPE_PING 1
@@ -51,7 +53,7 @@ void init() {
 }
 
 void loop() {
-  if (rvl::getDeviceMode() != RVLDeviceMode::Controller) {
+  if (getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -69,7 +71,7 @@ void sync() {
   if (!Platform::transport->isConnected()) {
     return;
   }
-  rvl::debug("Multicasting discover packet");
+  debug("Multicasting discover packet");
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
   Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PING);
@@ -78,7 +80,7 @@ void sync() {
 }
 
 void parsePacket(uint8_t source) {
-  rvl::debug("Parsing Discover packet");
+  debug("Parsing Discover packet");
 
   uint8_t subPacketType = Platform::transport->read8();
   Platform::transport->read8();  // reserved
@@ -100,10 +102,12 @@ void parsePacket(uint8_t source) {
     }
 
     default: {
-      rvl::error("Received unknown clock sync subpacket type %d", subPacketType);
+      error("Received unknown clock sync subpacket type %d", subPacketType);
       break;
     }
   }
 }
 
 }  // namespace ProtocolDiscover
+
+}  // namespace rvl

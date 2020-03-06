@@ -36,30 +36,30 @@ void RVLMessagingInit(
   RVLTransportInterface* newTransport
 ) {
   rvlPlatform = newPlatform;
-  Platform::init(newPlatform, newTransport);
-  Protocol::init();
+  rvl::Platform::init(newPlatform, newTransport);
+  rvl::Protocol::init();
 }
 
 void RVLMessagingLoop() {
   rvl::stateLoop();
-  if (!Platform::transport->isNetworkAvailable()) {
+  if (!rvl::Platform::transport->isNetworkAvailable()) {
     return;
   }
 
-  int packetSize = Platform::transport->parsePacket();
+  int packetSize = rvl::Platform::transport->parsePacket();
   if (packetSize != 0) {
     uint8_t receivedSignature[4];
-    Platform::transport->read(receivedSignature, 4);
-    if (memcmp(receivedSignature, signature, 4) == 0) {
-      Protocol::parsePacket();
+    rvl::Platform::transport->read(receivedSignature, 4);
+    if (memcmp(receivedSignature, rvl::signature, 4) == 0) {
+      rvl::Protocol::parsePacket();
     }
   }
 
-  Protocol::loop();
+  rvl::Protocol::loop();
 }
 
 void RVLPlatformInterface::onWaveSettingsUpdated() {
-  ProtocolWave::sync();
+  rvl::ProtocolWave::sync();
 }
 
 void RVLPlatformInterface::onDeviceModeUpdated() {
@@ -75,11 +75,11 @@ void RVLPlatformInterface::onChannelUpdated() {
 }
 
 void RVLPlatformInterface::onPowerStateUpdated() {
-  ProtocolSystem::sync();
+  rvl::ProtocolSystem::sync();
 }
 
 void RVLPlatformInterface::onBrightnessUpdated() {
-  ProtocolSystem::sync();
+  rvl::ProtocolSystem::sync();
 }
 
 void RVLPlatformInterface::onSynchronizationStateUpdated() {

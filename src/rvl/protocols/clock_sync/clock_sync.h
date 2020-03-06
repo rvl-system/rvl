@@ -22,6 +22,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
+namespace rvl {
+
 namespace ProtocolClockSync {
 
 void init();
@@ -30,5 +32,7 @@ void loop();
 void parsePacket(uint8_t source);
 
 }  // namespace ProtocolClockSync
+
+}  // namespace rvl
 
 #endif  // RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
