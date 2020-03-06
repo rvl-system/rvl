@@ -40,7 +40,7 @@ void init() {
 }
 
 void loop() {
-  uint32_t expirationTime = Platform::platform->getLocalTime() - CONTROLLER_NODE_EXPIRATION_DURATION;
+  uint32_t expirationTime = millis() - CONTROLLER_NODE_EXPIRATION_DURATION;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       rvl::debug("Node %d expired from the network map", i);
@@ -63,7 +63,7 @@ void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
     rvl::debug("Adding node %d to the network map", node);
   }
-  nodeTimestamps[node] = Platform::platform->getLocalTime();
+  nodeTimestamps[node] = millis();
 }
 
 uint8_t getNumNodes() {
@@ -104,7 +104,7 @@ bool isControllerNode(uint8_t node) {
   // Check if this is the same controller node we've seen before, or not. If not,
   // there *may* two active controllers at the same time, but it's also possible
   // the old one is no longer a controller
-  uint32_t currentTime = Platform::platform->getLocalTime();
+  uint32_t currentTime = millis();
   if (controllerNode != node) {
     // Check if the old controller hasn't broadcast in a while, meaning it's
     // likely offline or no longer in controller mode and can be replaced with
@@ -121,14 +121,14 @@ bool isControllerNode(uint8_t node) {
 
 bool isControllerActive() {
   return (controllerNodeLastRefreshed > 0) &&
-    (Platform::platform->getLocalTime() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+    (millis() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 void refreshNodeClock(uint8_t node) {
   if (nodeClockTimestamps[node] == 0) {
     rvl::debug("Adding node %d to the clock map", node);
   }
-  nodeClockTimestamps[node] = Platform::platform->getLocalTime();
+  nodeClockTimestamps[node] = millis();
 }
 
 uint8_t getNextClockNode() {
@@ -144,12 +144,12 @@ uint8_t getNextClockNode() {
 }
 
 void refreshLocalClockSynchronization() {
-  localClockLastRefreshed = Platform::platform->getLocalTime();
+  localClockLastRefreshed = millis();
 }
 
 bool isClockSynchronizationActive() {
   return (localClockLastRefreshed > 0) &&
-    (Platform::platform->getLocalTime() - localClockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+    (millis() - localClockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 }  // namespace NetworkState

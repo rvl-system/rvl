@@ -76,7 +76,6 @@ class RVLPlatformInterface {
   virtual void onSynchronizationStateUpdated();
 
  public:
-  virtual uint32_t getLocalTime() = 0;
   virtual uint16_t getDeviceId() = 0;
   virtual bool isNetworkAvailable() = 0;
 

@@ -38,7 +38,7 @@ void loop() {
   if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
-  if (Platform::platform->getLocalTime() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
     hasSyncedThisLoop = false;
     return;
   }

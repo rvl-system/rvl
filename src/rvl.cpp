@@ -44,7 +44,7 @@ void RVLMessagingInit(
 }
 
 void RVLMessagingLoop() {
-  animationClock = rvlPlatform->getLocalTime() + clockOffset;
+  animationClock = millis() + clockOffset;
   if (!rvlPlatform->isNetworkAvailable()) {
     return;
   }
@@ -94,7 +94,7 @@ uint32_t RVLPlatformInterface::getAnimationClock() {
 }
 
 void RVLPlatformInterface::setAnimationClock(uint32_t newClock) {
-  clockOffset = newClock - rvlPlatform->getLocalTime();
+  clockOffset = newClock - millis();
 }
 
 uint8_t RVLPlatformInterface::getChannel() {

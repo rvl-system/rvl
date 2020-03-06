@@ -75,7 +75,7 @@ void init() {
 
 void synchronizeNextNode() {
   // Make sure we are in our alloted network usage time, and if not, skip for now
-  uint32_t localTime = Platform::platform->getLocalTime();
+  uint32_t localTime = millis();
   uint32_t syncTime = localTime % CLIENT_SYNC_INTERVAL;
   if (syncTime < SYNC_ITERATION_MODULO || syncTime > SYNC_ITERATION_MODULO_MAX) {
     return;
@@ -85,7 +85,7 @@ void synchronizeNextNode() {
   if (syncTimeout > 0) {
     // Check if the sync has timed out and we need to move to the next one,
     // or let this sync continue doing its thing
-    if (Platform::platform->getLocalTime() > syncTimeout) {
+    if (millis() > syncTimeout) {
       rvl::debug("Clock synchronization with node %d has timed out", currentSyncNode);
       syncTimeout = 0;
     } else {
@@ -106,7 +106,7 @@ void synchronizeNextNode() {
 
   // Start the timeout. If the two nodes don't finish exchanging information
   // within this time, we skip and go to the next one.
-  syncTimeout = Platform::platform->getLocalTime() + SYNC_TIMEOUT;
+  syncTimeout = millis() + SYNC_TIMEOUT;
 
   // Send the Start packet
   Platform::transport->beginWrite(currentSyncNode);
