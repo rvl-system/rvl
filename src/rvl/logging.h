@@ -17,23 +17,30 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_CONFIG_H_
-#define RVL_CONFIG_H_
+#ifndef RVL_LOGGING_H_
+#define RVL_LOGGING_H_
 
-#include <stdint.h>
+#include <Arduino.h>
+#include "./rvl/wave.h"
 
-// TODO (nebrius): move to variable sent to init() method
-#define NUM_NODES 240
+namespace rvl {
 
-#define CLIENT_SYNC_INTERVAL 2000
-#define CHANNEL_OFFSET 240
+// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
+enum class LogLevel {
+  Error = 1,
+  Info = 2,
+  Debug = 3
+};
 
-// Packet type: 1 byte = 1: System, 2: Discover, 3: Clock Sync, 4: Wave Animation
-#define PACKET_TYPE_SYSTEM 1
-#define PACKET_TYPE_DISCOVER 2
-#define PACKET_TYPE_CLOCK_SYNC 3
-#define PACKET_TYPE_WAVE_ANIMATION 4
+void setLogLevel(LogLevel level);
 
-extern uint8_t signature[4];
+void error(const char *s, ...);
+void info(const char *s, ...);
+void debug(const char *s, ...);
 
-#endif  // RVL_CONFIG_H_
+void on(uint8_t eventType, void (*listener)());
+void emit(uint8_t eventType);
+
+}  // namespace rvl
+
+#endif  // RVL_LOGGING_H_

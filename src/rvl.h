@@ -26,36 +26,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdarg.h>
 #include "./rvl/wave.h"
 
-namespace rvl {
-
-/**********************
- * Logging            *
- **********************/
-
-// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
-enum class LogLevel {
-  Error = 1,
-  Info = 2,
-  Debug = 3
-};
-
-void setLogLevel(LogLevel level);
-
-void error(const char *s, ...);
-void info(const char *s, ...);
-void debug(const char *s, ...);
-
-void on(uint8_t eventType, void (*listener)());
-void emit(uint8_t eventType);
-
-/**********************
- * Events             *
- **********************/
-
-void on(uint8_t eventType, void (*listener)());
-void emit(uint8_t eventType);
-
-}  // namespace rvl
+#include "./rvl/logging.h"
+#include "./rvl/event.h"
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
 namespace RVLPacketType {

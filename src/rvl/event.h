@@ -17,23 +17,17 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_CONFIG_H_
-#define RVL_CONFIG_H_
+#ifndef RVL_EVENT_H_
+#define RVL_EVENT_H_
 
-#include <stdint.h>
+#include <Arduino.h>
+#include "./rvl/event.h"
 
-// TODO (nebrius): move to variable sent to init() method
-#define NUM_NODES 240
+namespace rvl {
 
-#define CLIENT_SYNC_INTERVAL 2000
-#define CHANNEL_OFFSET 240
+void on(uint8_t eventType, void (*listener)());
+void emit(uint8_t eventType);
 
-// Packet type: 1 byte = 1: System, 2: Discover, 3: Clock Sync, 4: Wave Animation
-#define PACKET_TYPE_SYSTEM 1
-#define PACKET_TYPE_DISCOVER 2
-#define PACKET_TYPE_CLOCK_SYNC 3
-#define PACKET_TYPE_WAVE_ANIMATION 4
+}  // namespace rvl
 
-extern uint8_t signature[4];
-
-#endif  // RVL_CONFIG_H_
+#endif  // RVL_EVENT_H_
