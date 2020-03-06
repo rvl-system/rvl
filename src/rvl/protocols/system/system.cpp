@@ -35,7 +35,7 @@ void init() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+  if (rvl::getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -56,14 +56,14 @@ Reserved: 2 bytes
 */
 
 void sync() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (rvl::getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   rvl::debug("Syncing system parameters");
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
-  Platform::transport->write8(Platform::platform->getPowerState());
-  Platform::transport->write8(Platform::platform->getBrightness());
+  Platform::transport->write8(rvl::getPowerState());
+  Platform::transport->write8(rvl::getBrightness());
   Platform::transport->write16(0);
   Platform::transport->endWrite();
 }
@@ -78,8 +78,8 @@ void parsePacket(uint8_t source) {
   uint8_t brightness = Platform::transport->read8();  // brightness
   Platform::transport->read16();  // reserved
 
-  Platform::platform->setPowerState(power);
-  Platform::platform->setBrightness(brightness);
+  rvl::setPowerState(power);
+  rvl::setBrightness(brightness);
   return;
 }
 

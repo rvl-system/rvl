@@ -28,6 +28,9 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "./rvl/logging.h"
 #include "./rvl/event.h"
+#include "./rvl/state.h"
+
+// TODO(nebrius): remove rvl:: prefixes once everything is in the same namespace
 
 // Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
 namespace RVLPacketType {
@@ -57,18 +60,8 @@ class RVLTransportInterface {
   virtual uint16_t getDeviceId() = 0;
 };
 
-enum class RVLDeviceMode { Controller, Receiver };
-
 class RVLPlatformInterface {
- private:
-  uint8_t channel = 0;
-  RVLDeviceMode deviceMode = RVLDeviceMode::Receiver;
-  RVLWaveSettings waveSettings;
-  bool powerState = 0;
-  uint8_t brightness = 0;
-  bool synchronized = 0;
-
- protected:
+ public:
   virtual void onWaveSettingsUpdated();
   virtual void onDeviceModeUpdated();
   virtual void onClockOffsetUpdated();
@@ -76,28 +69,6 @@ class RVLPlatformInterface {
   virtual void onPowerStateUpdated();
   virtual void onBrightnessUpdated();
   virtual void onSynchronizationStateUpdated();
-
- public:
-  uint32_t getAnimationClock();
-  void setAnimationClock(uint32_t newClock);
-
-  uint8_t getChannel();
-  void setChannel(uint8_t channel);
-
-  RVLDeviceMode getDeviceMode();
-  void setDeviceMode(RVLDeviceMode newDeviceMode);
-
-  RVLWaveSettings* getWaveSettings();
-  void setWaveSettings(RVLWaveSettings* newWaveSettings);
-
-  bool getPowerState();
-  void setPowerState(bool newPowerState);
-
-  uint8_t getBrightness();
-  void setBrightness(uint8_t newBrightness);
-
-  bool getSynchronizationState();
-  void setSynchronizationState(bool synchronized);
 };
 
 void RVLMessagingInit(

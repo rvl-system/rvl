@@ -29,9 +29,6 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/wave/wave.h"
 #include "./rvl/protocols/system/system.h"
 
-uint32_t animationClock;
-int32_t clockOffset = 0;
-
 RVLPlatformInterface* rvlPlatform;
 
 void RVLMessagingInit(
@@ -44,7 +41,7 @@ void RVLMessagingInit(
 }
 
 void RVLMessagingLoop() {
-  animationClock = millis() + clockOffset;
+  rvl::stateLoop();
   if (!Platform::transport->isNetworkAvailable()) {
     return;
   }
@@ -87,65 +84,4 @@ void RVLPlatformInterface::onBrightnessUpdated() {
 
 void RVLPlatformInterface::onSynchronizationStateUpdated() {
   // Do nothing
-}
-
-uint32_t RVLPlatformInterface::getAnimationClock() {
-  return animationClock;
-}
-
-void RVLPlatformInterface::setAnimationClock(uint32_t newClock) {
-  clockOffset = newClock - millis();
-}
-
-uint8_t RVLPlatformInterface::getChannel() {
-  return this->channel;
-}
-
-void RVLPlatformInterface::setChannel(uint8_t channel) {
-  this->channel = channel;
-  this->onChannelUpdated();
-}
-
-RVLDeviceMode RVLPlatformInterface::getDeviceMode() {
-  return this->deviceMode;
-}
-
-void RVLPlatformInterface::setDeviceMode(RVLDeviceMode newDeviceMode) {
-  this->deviceMode = newDeviceMode;
-}
-
-RVLWaveSettings* RVLPlatformInterface::getWaveSettings() {
-  return &(this->waveSettings);
-}
-
-void RVLPlatformInterface::setWaveSettings(RVLWaveSettings* newWaveSettings) {
-  memcpy(&(this->waveSettings), newWaveSettings, sizeof(RVLWaveSettings));
-  this->onWaveSettingsUpdated();
-}
-
-bool RVLPlatformInterface::getPowerState() {
-  return this->powerState;
-}
-
-void RVLPlatformInterface::setPowerState(bool newPowerState) {
-  this->powerState = newPowerState;
-  this->onPowerStateUpdated();
-}
-
-uint8_t RVLPlatformInterface::getBrightness() {
-  return this->brightness;
-}
-
-void RVLPlatformInterface::setBrightness(uint8_t newBrightness) {
-  this->brightness = newBrightness;
-  this->onPowerStateUpdated();
-}
-
-bool RVLPlatformInterface::getSynchronizationState() {
-  return this->synchronized;
-}
-
-void RVLPlatformInterface::setSynchronizationState(bool synchronized) {
-  this->synchronized = synchronized;
-  this->onSynchronizationStateUpdated();
 }

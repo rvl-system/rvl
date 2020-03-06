@@ -51,7 +51,7 @@ void init() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+  if (rvl::getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -66,11 +66,11 @@ void loop() {
 }
 
 void sync() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (rvl::getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   rvl::debug("Syncing preset");
-  auto waveSettings = Platform::platform->getWaveSettings();
+  auto waveSettings = rvl::getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
@@ -89,7 +89,7 @@ void parsePacket(uint8_t source) {
   newWaveSettings.timePeriod = Platform::transport->read8();
   newWaveSettings.distancePeriod = Platform::transport->read8();
   Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVLWave) * NUM_WAVES);
-  Platform::platform->setWaveSettings(&newWaveSettings);
+  rvl::setWaveSettings(&newWaveSettings);
 }
 
 }  // namespace ProtocolWave

@@ -57,7 +57,7 @@ void loop() {
 }
 
 uint8_t getMulticastAddress() {
-  return CHANNEL_OFFSET + Platform::platform->getChannel();
+  return CHANNEL_OFFSET + rvl::getChannel();
 }
 
 void parsePacket() {
@@ -87,7 +87,7 @@ void parsePacket() {
   // Ignore multicast packets meant for a different multicast group
   if (
     destination >= CHANNEL_OFFSET && destination < 255 &&
-    Platform::platform->getChannel() != destination - CHANNEL_OFFSET
+    rvl::getChannel() != destination - CHANNEL_OFFSET
   ) {
     return;
   }

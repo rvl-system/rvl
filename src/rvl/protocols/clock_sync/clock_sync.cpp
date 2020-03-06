@@ -18,6 +18,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
+#include <iterator>
 #include <algorithm>
 #include "./rvl.h"
 #include "./rvl/config.h"
@@ -118,7 +119,7 @@ void synchronizeNextNode() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (rvl::getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   synchronizeNextNode();
@@ -135,12 +136,12 @@ void processObservations() {
   uint32_t medianOffset = offsets[NUM_REQUESTS / 2];
   rvl::debug("Updating animation clock with offset=%d, synchronization took %dms",
     medianOffset, observedResponseTimes[NUM_REQUESTS - 1] - observedRequestTimes[1]);
-  Platform::platform->setAnimationClock(Platform::platform->getAnimationClock() + medianOffset);
+  rvl::setAnimationClock(rvl::getAnimationClock() + medianOffset);
   NetworkState::refreshLocalClockSynchronization();
 }
 
 void sendRequestPacket(uint8_t source, uint16_t id) {
-  uint32_t observedTime = Platform::platform->getAnimationClock();
+  uint32_t observedTime = rvl::getAnimationClock();
   observedRequestTimes[currentObservation] = observedTime;
   Platform::transport->beginWrite(source);
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
@@ -168,7 +169,7 @@ void parsePacket(uint8_t source) {
       break;
     }
     case CLOCK_SYNC_SUBPACKET_TYPE_REQUEST: {
-      uint32_t observedTime = Platform::platform->getAnimationClock();
+      uint32_t observedTime = rvl::getAnimationClock();
       Platform::transport->beginWrite(source);
       Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
       Platform::transport->write8(CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE);
@@ -185,7 +186,7 @@ void parsePacket(uint8_t source) {
       break;
     }
     case CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE: {
-      uint32_t observedTime = Platform::platform->getAnimationClock();
+      uint32_t observedTime = rvl::getAnimationClock();
       uint32_t remoteTime = Platform::transport->read32();
       observedResponseTimes[currentObservation] = observedTime;
       remoteTimes[currentObservation] = remoteTime;

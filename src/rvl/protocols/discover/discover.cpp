@@ -51,7 +51,7 @@ void init() {
 }
 
 void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+  if (rvl::getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
