@@ -67,7 +67,7 @@ void parsePacket() {
     return;
   }
 
-  uint8_t deviceId = Platform::platform->getDeviceId();
+  uint8_t deviceId = Platform::transport->getDeviceId();
 
   uint8_t destination = Platform::transport->read8();  // destination
   uint8_t source = Platform::transport->read8();  // source
@@ -120,7 +120,7 @@ void sendHeader(uint8_t packetType, uint8_t destination) {
   Platform::transport->write(signature, 4);
   Platform::transport->write8(PROTOCOL_VERSION);
   Platform::transport->write8(destination);
-  Platform::transport->write8(Platform::platform->getDeviceId());
+  Platform::transport->write8(Platform::transport->getDeviceId());
   Platform::transport->write8(packetType);
   Platform::transport->write16(0);
 }

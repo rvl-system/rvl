@@ -98,7 +98,7 @@ bool isControllerNode(uint8_t node) {
   // First, we check if we're in controller mode, in which case we always ignore
   // remote control
   if (Platform::platform->getDeviceMode() == RVLDeviceMode::Controller) {
-    return node == Platform::platform->getDeviceId();
+    return node == Platform::transport->getDeviceId();
   }
 
   // Check if this is the same controller node we've seen before, or not. If not,

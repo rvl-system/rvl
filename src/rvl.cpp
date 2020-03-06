@@ -45,7 +45,7 @@ void RVLMessagingInit(
 
 void RVLMessagingLoop() {
   animationClock = millis() + clockOffset;
-  if (!rvlPlatform->isNetworkAvailable()) {
+  if (!Platform::transport->isNetworkAvailable()) {
     return;
   }
 

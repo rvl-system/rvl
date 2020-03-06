@@ -53,6 +53,8 @@ class RVLTransportInterface {
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
 
   virtual bool isConnected() = 0;
+  virtual bool isNetworkAvailable() = 0;
+  virtual uint16_t getDeviceId() = 0;
 };
 
 enum class RVLDeviceMode { Controller, Receiver };
@@ -76,9 +78,6 @@ class RVLPlatformInterface {
   virtual void onSynchronizationStateUpdated();
 
  public:
-  virtual uint16_t getDeviceId() = 0;
-  virtual bool isNetworkAvailable() = 0;
-
   uint32_t getAnimationClock();
   void setAnimationClock(uint32_t newClock);
 
