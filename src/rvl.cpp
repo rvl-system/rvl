@@ -29,14 +29,8 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/wave/wave.h"
 #include "./rvl/protocols/system/system.h"
 
-RVLPlatformInterface* rvlPlatform;
-
-void RVLMessagingInit(
-  RVLPlatformInterface* newPlatform,
-  RVLTransportInterface* newTransport
-) {
-  rvlPlatform = newPlatform;
-  rvl::Platform::init(newPlatform, newTransport);
+void RVLMessagingInit(RVLTransportInterface* newTransport) {
+  rvl::Platform::init(newTransport);
   rvl::Protocol::init();
 }
 
@@ -56,28 +50,4 @@ void RVLMessagingLoop() {
   }
 
   rvl::Protocol::loop();
-}
-
-void RVLPlatformInterface::onDeviceModeUpdated() {
-  // Do nothing
-}
-
-void RVLPlatformInterface::onClockOffsetUpdated() {
-  // Do nothing
-}
-
-void RVLPlatformInterface::onChannelUpdated() {
-  // Do nothing
-}
-
-void RVLPlatformInterface::onPowerStateUpdated() {
-  rvl::ProtocolSystem::sync();
-}
-
-void RVLPlatformInterface::onBrightnessUpdated() {
-  rvl::ProtocolSystem::sync();
-}
-
-void RVLPlatformInterface::onSynchronizationStateUpdated() {
-  // Do nothing
 }

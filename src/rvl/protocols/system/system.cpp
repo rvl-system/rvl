@@ -34,6 +34,8 @@ namespace ProtocolSystem {
 bool hasSyncedThisLoop = false;
 
 void init() {
+  on(EVENT_POWER_STATE_UPDATED, sync);
+  on(EVENT_BRIGHTNESS_UPDATED, sync);
 }
 
 void loop() {

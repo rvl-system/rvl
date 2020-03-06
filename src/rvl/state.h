@@ -51,6 +51,8 @@ void setBrightness(uint8_t newBrightness);
 bool getSynchronizationState();
 void setSynchronizationState(bool synchronized);
 
+bool isNetworkConnected();
+
 }  // namespace rvl
 
 #endif  // RVL_STATE_H_

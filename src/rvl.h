@@ -54,19 +54,7 @@ class RVLTransportInterface {
   virtual uint16_t getDeviceId() = 0;
 };
 
-class RVLPlatformInterface {
- public:
-  virtual void onDeviceModeUpdated();
-  virtual void onClockOffsetUpdated();
-  virtual void onChannelUpdated();
-  virtual void onPowerStateUpdated();
-  virtual void onBrightnessUpdated();
-  virtual void onSynchronizationStateUpdated();
-};
-
-void RVLMessagingInit(
-  RVLPlatformInterface* platform,
-  RVLTransportInterface* transport);
+void RVLMessagingInit(RVLTransportInterface* transport);
 
 void RVLMessagingLoop();
 

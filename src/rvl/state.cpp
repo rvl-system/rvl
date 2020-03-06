@@ -41,6 +41,7 @@ uint32_t getAnimationClock() {
 
 void setAnimationClock(uint32_t newClock) {
   clockOffset = newClock - millis();
+  emit(EVENT_ANIMATION_CLOCK_UPDATED);
 }
 
 uint8_t getChannel() {
@@ -49,7 +50,7 @@ uint8_t getChannel() {
 
 void setChannel(uint8_t newChannel) {
   channel = newChannel;
-  Platform::platform->onChannelUpdated();
+  emit(EVENT_CHANNEL_UPDATED);
 }
 
 RVLDeviceMode getDeviceMode() {
@@ -58,6 +59,7 @@ RVLDeviceMode getDeviceMode() {
 
 void setDeviceMode(RVLDeviceMode newDeviceMode) {
   deviceMode = newDeviceMode;
+  emit(EVENT_DEVICE_MODE_UPDATED);
 }
 
 RVLWaveSettings* getWaveSettings() {
@@ -75,7 +77,7 @@ bool getPowerState() {
 
 void setPowerState(bool newPowerState) {
   powerState = newPowerState;
-  Platform::platform->onPowerStateUpdated();
+  emit(EVENT_POWER_STATE_UPDATED);
 }
 
 uint8_t getBrightness() {
@@ -84,7 +86,7 @@ uint8_t getBrightness() {
 
 void setBrightness(uint8_t newBrightness) {
   brightness = newBrightness;
-  Platform::platform->onBrightnessUpdated();
+  emit(EVENT_BRIGHTNESS_UPDATED);
 }
 
 bool getSynchronizationState() {
@@ -93,7 +95,11 @@ bool getSynchronizationState() {
 
 void setSynchronizationState(bool newSynchronized) {
   synchronized = newSynchronized;
-  Platform::platform->onSynchronizationStateUpdated();
+  emit(EVENT_SYNCHRONIZATION_STATE_UPDATED);
+}
+
+bool isNetworkConnected() {
+  return Platform::transport->isNetworkAvailable();
 }
 
 }  // namespace rvl
