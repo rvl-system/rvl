@@ -26,9 +26,9 @@ namespace rvl {
 
 namespace Platform {
 
-extern RVLTransportInterface* transport;
+extern RVLTransport* transport;
 
-void init(RVLTransportInterface* newTransport);
+void init(RVLTransport* newTransport);
 
 }  // namespace Platform
 

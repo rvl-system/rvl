@@ -33,9 +33,16 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENT_POWER_STATE_UPDATED 5
 #define EVENT_BRIGHTNESS_UPDATED 6
 #define EVENT_SYNCHRONIZATION_STATE_UPDATED 7
+#define EVENT_CONNECTION_STATE_CHANGED 8
 
-class RVLTransportInterface {
+class RVLTransport {
+ protected:
+  void setConnectedState(bool connected);
  public:
+  bool isConnected();
+
+  virtual void loop() = 0;
+
   virtual void beginWrite(uint8_t destination) = 0;
   virtual void write8(uint8_t data) = 0;
   virtual void write16(uint16_t data) = 0;
@@ -49,13 +56,11 @@ class RVLTransportInterface {
   virtual uint32_t read32() = 0;
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
 
-  virtual bool isConnected() = 0;
-  virtual bool isNetworkAvailable() = 0;
   virtual uint16_t getDeviceId() = 0;
 };
 
-void RVLMessagingInit(RVLTransportInterface* transport);
+void RVLInit(RVLTransport* transport);
 
-void RVLMessagingLoop();
+void RVLLoop();
 
 #endif  // RVL_H_

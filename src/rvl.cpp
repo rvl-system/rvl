@@ -29,14 +29,15 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/wave/wave.h"
 #include "./rvl/protocols/system/system.h"
 
-void RVLMessagingInit(RVLTransportInterface* newTransport) {
+void RVLInit(RVLTransport* newTransport) {
   rvl::Platform::init(newTransport);
   rvl::Protocol::init();
 }
 
-void RVLMessagingLoop() {
+void RVLLoop() {
+  rvl::Platform::transport->loop();
   rvl::stateLoop();
-  if (!rvl::Platform::transport->isNetworkAvailable()) {
+  if (!rvl::Platform::transport->isConnected()) {
     return;
   }
 
@@ -50,4 +51,17 @@ void RVLMessagingLoop() {
   }
 
   rvl::Protocol::loop();
+}
+
+bool rvlConnectedState = false;
+
+void RVLTransport::setConnectedState(bool connected) {
+  if (rvlConnectedState != connected) {
+    rvlConnectedState = connected;
+    rvl::emit(EVENT_CONNECTION_STATE_CHANGED);
+  }
+}
+
+bool RVLTransport::isConnected() {
+  return rvlConnectedState;
 }
