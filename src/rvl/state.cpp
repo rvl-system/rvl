@@ -99,7 +99,7 @@ void setSynchronizationState(bool newSynchronized) {
 }
 
 bool isNetworkConnected() {
-  return Platform::transport->isNetworkAvailable();
+  return Platform::transport->isConnected();
 }
 
 }  // namespace rvl
