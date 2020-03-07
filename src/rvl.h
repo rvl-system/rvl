@@ -35,7 +35,9 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENT_SYNCHRONIZATION_STATE_UPDATED 7
 #define EVENT_CONNECTION_STATE_CHANGED 8
 
-class RVLTransport {
+namespace rvl {
+
+class Transport {
  protected:
   void setConnectedState(bool connected);
  public:
@@ -59,8 +61,10 @@ class RVLTransport {
   virtual uint16_t getDeviceId() = 0;
 };
 
-void RVLInit(RVLTransport* transport);
+void init(Transport* transport);
 
-void RVLLoop();
+void loop();
+
+}  // namespace rvl
 
 #endif  // RVL_H_

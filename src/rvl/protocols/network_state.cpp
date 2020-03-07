@@ -51,7 +51,7 @@ void loop() {
     }
   }
   bool synchronized = false;
-  if (getDeviceMode() == RVLDeviceMode::Controller) {
+  if (getDeviceMode() == DeviceMode::Controller) {
     synchronized = isClockSynchronizationActive();
   } else {
     synchronized = isClockSynchronizationActive() && isControllerActive();
@@ -99,7 +99,7 @@ bool isNodeActive(uint8_t node) {
 bool isControllerNode(uint8_t node) {
   // First, we check if we're in controller mode, in which case we always ignore
   // remote control
-  if (getDeviceMode() == RVLDeviceMode::Controller) {
+  if (getDeviceMode() == DeviceMode::Controller) {
     return node == Platform::transport->getDeviceId();
   }
 

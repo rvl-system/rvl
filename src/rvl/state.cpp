@@ -25,11 +25,12 @@ namespace rvl {
 uint32_t animationClock;
 int32_t clockOffset = 0;
 uint8_t channel = 0;
-RVLDeviceMode deviceMode = RVLDeviceMode::Receiver;
+DeviceMode deviceMode = DeviceMode::Receiver;
 RVLWaveSettings waveSettings;
-bool powerState = 0;
+bool powerState = false;
 uint8_t brightness = 0;
-bool synchronized = 0;
+bool remoteBrightness = false;
+bool synchronized = false;
 
 void stateLoop() {
   animationClock = millis() + clockOffset;
@@ -53,11 +54,11 @@ void setChannel(uint8_t newChannel) {
   emit(EVENT_CHANNEL_UPDATED);
 }
 
-RVLDeviceMode getDeviceMode() {
+DeviceMode getDeviceMode() {
   return deviceMode;
 }
 
-void setDeviceMode(RVLDeviceMode newDeviceMode) {
+void setDeviceMode(DeviceMode newDeviceMode) {
   deviceMode = newDeviceMode;
   emit(EVENT_DEVICE_MODE_UPDATED);
 }
@@ -87,6 +88,14 @@ uint8_t getBrightness() {
 void setBrightness(uint8_t newBrightness) {
   brightness = newBrightness;
   emit(EVENT_BRIGHTNESS_UPDATED);
+}
+
+bool getRemoteBrightnessState() {
+  return remoteBrightness;
+}
+
+bool setRemoteBrightnessState(bool newRemoteBrightness) {
+  remoteBrightness = newRemoteBrightness;
 }
 
 bool getSynchronizationState() {

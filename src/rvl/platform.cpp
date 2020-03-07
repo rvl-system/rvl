@@ -24,11 +24,11 @@ namespace rvl {
 
 namespace Platform {
 
-RVLTransport* transport;
+Transport* transport;
 
 // Base case versions
 
-void init(RVLTransport* newTransport) {
+void init(Transport* newTransport) {
   transport = newTransport;
 }
 

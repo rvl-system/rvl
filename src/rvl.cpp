@@ -29,39 +29,43 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/wave/wave.h"
 #include "./rvl/protocols/system/system.h"
 
-void RVLInit(RVLTransport* newTransport) {
-  rvl::Platform::init(newTransport);
-  rvl::Protocol::init();
+namespace rvl {
+
+void init(Transport* newTransport) {
+  Platform::init(newTransport);
+  Protocol::init();
 }
 
-void RVLLoop() {
-  rvl::Platform::transport->loop();
-  rvl::stateLoop();
-  if (!rvl::Platform::transport->isConnected()) {
+void loop() {
+  Platform::transport->loop();
+  stateLoop();
+  if (!Platform::transport->isConnected()) {
     return;
   }
 
-  int packetSize = rvl::Platform::transport->parsePacket();
+  int packetSize = Platform::transport->parsePacket();
   if (packetSize != 0) {
     uint8_t receivedSignature[4];
-    rvl::Platform::transport->read(receivedSignature, 4);
+    Platform::transport->read(receivedSignature, 4);
     if (memcmp(receivedSignature, rvl::signature, 4) == 0) {
-      rvl::Protocol::parsePacket();
+      Protocol::parsePacket();
     }
   }
 
-  rvl::Protocol::loop();
+  Protocol::loop();
 }
 
 bool rvlConnectedState = false;
 
-void RVLTransport::setConnectedState(bool connected) {
+void Transport::setConnectedState(bool connected) {
   if (rvlConnectedState != connected) {
     rvlConnectedState = connected;
-    rvl::emit(EVENT_CONNECTION_STATE_CHANGED);
+    emit(EVENT_CONNECTION_STATE_CHANGED);
   }
 }
 
-bool RVLTransport::isConnected() {
+bool Transport::isConnected() {
   return rvlConnectedState;
 }
+
+}  // namespace rvl

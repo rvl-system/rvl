@@ -24,9 +24,9 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.h"
 #include "./wave.h"
 
-enum class RVLDeviceMode { Controller, Receiver };
-
 namespace rvl {
+
+enum class DeviceMode { Controller, Receiver };
 
 void stateLoop();
 
@@ -36,8 +36,8 @@ void setAnimationClock(uint32_t newClock);
 uint8_t getChannel();
 void setChannel(uint8_t channel);
 
-RVLDeviceMode getDeviceMode();
-void setDeviceMode(RVLDeviceMode newDeviceMode);
+DeviceMode getDeviceMode();
+void setDeviceMode(DeviceMode newDeviceMode);
 
 RVLWaveSettings* getWaveSettings();
 void setWaveSettings(RVLWaveSettings* newWaveSettings);
@@ -47,6 +47,9 @@ void setPowerState(bool newPowerState);
 
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);
+
+bool getRemoteBrightnessState();
+bool setRemoteBrightnessState(bool newRemoteBrightness);
 
 bool getSynchronizationState();
 void setSynchronizationState(bool synchronized);

@@ -54,7 +54,7 @@ void init() {
 }
 
 void loop() {
-  if (getDeviceMode() != RVLDeviceMode::Controller) {
+  if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -69,7 +69,7 @@ void loop() {
 }
 
 void sync() {
-  if (getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   debug("Syncing preset");

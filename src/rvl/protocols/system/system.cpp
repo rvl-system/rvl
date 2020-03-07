@@ -22,6 +22,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
+#include "./rvl/state.h"
 #include "./rvl/protocols/network_state.h"
 #include "./rvl/protocols/protocol.h"
 #include "./rvl/protocols/system/system.h"
@@ -39,7 +40,7 @@ void init() {
 }
 
 void loop() {
-  if (getDeviceMode() != RVLDeviceMode::Controller) {
+  if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
   if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
@@ -60,7 +61,7 @@ Reserved: 2 bytes
 */
 
 void sync() {
-  if (getDeviceMode() != RVLDeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
   }
   debug("Syncing system parameters");
@@ -83,8 +84,10 @@ void parsePacket(uint8_t source) {
   Platform::transport->read16();  // reserved
 
   setPowerState(power);
-  setBrightness(brightness);
-  return;
+
+  if (getRemoteBrightnessState()) {
+    setBrightness(brightness);
+  }
 }
 
 }  // namespace ProtocolSystem
