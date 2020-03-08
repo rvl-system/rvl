@@ -50,8 +50,10 @@ uint8_t getChannel() {
 }
 
 void setChannel(uint8_t newChannel) {
-  channel = newChannel;
-  emit(EVENT_CHANNEL_UPDATED);
+  if (channel != newChannel) {
+    channel = newChannel;
+    emit(EVENT_CHANNEL_UPDATED);
+  }
 }
 
 DeviceMode getDeviceMode() {
@@ -59,8 +61,10 @@ DeviceMode getDeviceMode() {
 }
 
 void setDeviceMode(DeviceMode newDeviceMode) {
-  deviceMode = newDeviceMode;
-  emit(EVENT_DEVICE_MODE_UPDATED);
+  if (deviceMode != newDeviceMode) {
+    deviceMode = newDeviceMode;
+    emit(EVENT_DEVICE_MODE_UPDATED);
+  }
 }
 
 RVLWaveSettings* getWaveSettings() {
@@ -77,8 +81,10 @@ bool getPowerState() {
 }
 
 void setPowerState(bool newPowerState) {
-  powerState = newPowerState;
-  emit(EVENT_POWER_STATE_UPDATED);
+  if (powerState != newPowerState) {
+    powerState = newPowerState;
+    emit(EVENT_POWER_STATE_UPDATED);
+  }
 }
 
 uint8_t getBrightness() {
@@ -86,25 +92,33 @@ uint8_t getBrightness() {
 }
 
 void setBrightness(uint8_t newBrightness) {
-  brightness = newBrightness;
-  emit(EVENT_BRIGHTNESS_UPDATED);
+  if (brightness != newBrightness) {
+    brightness = newBrightness;
+    emit(EVENT_BRIGHTNESS_UPDATED);
+  }
 }
 
 bool getRemoteBrightnessState() {
   return remoteBrightness;
 }
 
-bool setRemoteBrightnessState(bool newRemoteBrightness) {
+void setRemoteBrightnessState(bool newRemoteBrightness) {
   remoteBrightness = newRemoteBrightness;
 }
 
 bool getSynchronizationState() {
-  return synchronized;
+  if (getDeviceMode() == DeviceMode::Controller) {
+    return true;
+  } else {
+    return synchronized;
+  }
 }
 
 void setSynchronizationState(bool newSynchronized) {
-  synchronized = newSynchronized;
-  emit(EVENT_SYNCHRONIZATION_STATE_UPDATED);
+  if (synchronized != newSynchronized) {
+    synchronized = newSynchronized;
+    emit(EVENT_SYNCHRONIZATION_STATE_UPDATED);
+  }
 }
 
 bool isNetworkConnected() {
