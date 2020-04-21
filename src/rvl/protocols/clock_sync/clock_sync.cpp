@@ -183,7 +183,7 @@ void parsePacket(uint8_t source) {
       uint8_t remoteObservation = Platform::transport->read8();
       if (remoteObservation == NUM_REQUESTS) {
         syncTimeout = 0;
-        NetworkState::refreshNodeClock(source);
+        NetworkState::refreshNode(source);
       }
       break;
     }

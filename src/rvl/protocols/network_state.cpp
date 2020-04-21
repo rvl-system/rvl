@@ -42,7 +42,7 @@ void init() {
 }
 
 void loop() {
-  uint32_t expirationTime = millis() - CONTROLLER_NODE_EXPIRATION_DURATION;
+  int32_t expirationTime = std::max(0, static_cast<int32_t>(millis()) - CONTROLLER_NODE_EXPIRATION_DURATION);
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       debug("Node %d expired from the network map", i);
@@ -76,20 +76,6 @@ uint8_t getNumNodes() {
     }
   }
   return numNodes;
-}
-
-uint8_t getNextNode(uint8_t node) {
-  for (uint8_t i = node + 1; i < NUM_NODES; i++) {
-    if (isNodeActive(i)) {
-      return i;
-    }
-  }
-  for (uint8_t i = 0; i < node; i++) {
-    if (isNodeActive(i)) {
-      return i;
-    }
-  }
-  return 255;
 }
 
 bool isNodeActive(uint8_t node) {
@@ -126,16 +112,10 @@ bool isControllerActive() {
     (millis() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
-void refreshNodeClock(uint8_t node) {
-  if (nodeClockTimestamps[node] == 0) {
-    debug("Adding node %d to the clock map", node);
-  }
-  nodeClockTimestamps[node] = millis();
-}
-
 uint8_t getNextClockNode() {
   uint32_t oldestClock = UINT32_MAX;
   uint8_t oldestNode = 255;
+  rvl::debug("Total nodes = %d", getNumNodes());
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeClockTimestamps[i] > 0 && nodeClockTimestamps[i] < oldestClock) {
       oldestNode = i;

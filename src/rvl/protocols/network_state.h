@@ -33,12 +33,10 @@ void refreshNode(uint8_t node);
 
 bool isNodeActive(uint8_t node);
 uint8_t getNumNodes();
-uint8_t getNextNode(uint8_t node);
 
 bool isControllerNode(uint8_t node);
 bool isControllerActive();
 
-void refreshNodeClock(uint8_t node);
 uint8_t getNextClockNode();
 
 void refreshLocalClockSynchronization();
