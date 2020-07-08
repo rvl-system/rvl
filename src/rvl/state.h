@@ -33,6 +33,8 @@ void stateLoop();
 uint32_t getAnimationClock();
 void setAnimationClock(uint32_t newClock);
 
+uint8_t getDeviceId();
+
 uint8_t getChannel();
 void setChannel(uint8_t channel);
 

@@ -40,6 +40,10 @@ uint32_t getAnimationClock() {
   return animationClock;
 }
 
+uint8_t getDeviceId() {
+  return Platform::transport->getDeviceId();
+}
+
 void setAnimationClock(uint32_t newClock) {
   clockOffset = newClock - millis();
   emit(EVENT_ANIMATION_CLOCK_UPDATED);
