@@ -30,6 +30,7 @@ void init();
 void loop();
 
 void refreshNode(uint8_t node);
+void refreshNodeClockSyncTime(uint8_t node);
 
 bool isNodeActive(uint8_t node);
 uint8_t getNumNodes();

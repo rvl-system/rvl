@@ -37,7 +37,6 @@ void on(uint8_t eventType, void (*listener)()) {
 }
 
 void emit(uint8_t eventType) {
-  debug("Emitting event %d", eventType);
   for (auto& listener : listeners) {
     if (listener.eventType == eventType) {
       listener.listener();

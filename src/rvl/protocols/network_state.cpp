@@ -68,6 +68,10 @@ void refreshNode(uint8_t node) {
   nodeTimestamps[node] = millis();
 }
 
+void refreshNodeClockSyncTime(uint8_t node) {
+  nodeClockTimestamps[node] = millis();
+}
+
 uint8_t getNumNodes() {
   uint8_t numNodes = 0;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
@@ -115,9 +119,8 @@ bool isControllerActive() {
 uint8_t getNextClockNode() {
   uint32_t oldestClock = UINT32_MAX;
   uint8_t oldestNode = 255;
-  rvl::debug("Total nodes = %d", getNumNodes());
   for (uint8_t i = 0; i < NUM_NODES; i++) {
-    if (nodeClockTimestamps[i] > 0 && nodeClockTimestamps[i] < oldestClock) {
+    if (nodeTimestamps[i] > 0 && nodeClockTimestamps[i] < oldestClock) {
       oldestNode = i;
       oldestClock = nodeClockTimestamps[i];
     }

@@ -103,7 +103,7 @@ void synchronizeNextNode() {
     return;
   }
 
-  // If we got here, then this ia valid next sync node
+  // If we got here, then this is a valid next sync node
   currentSyncNode = nextSyncNode;
   debug("Starting clock synchronization with node %d", currentSyncNode);
 
@@ -130,12 +130,12 @@ void loop() {
 void processObservations() {
   int32_t offsets[NUM_REQUESTS];
   for (uint8_t i = 0; i < NUM_REQUESTS; i++) {
-    uint32_t delay = (observedResponseTimes[i] - observedRequestTimes[i]) / 2;
-    uint32_t correctedRemoteTime = remoteTimes[i] - delay;
+    int32_t delay = (observedResponseTimes[i] - observedRequestTimes[i]) / 2;
+    int32_t correctedRemoteTime = remoteTimes[i] - delay;
     offsets[i] = correctedRemoteTime - observedRequestTimes[i];
   }
   std::sort(std::begin(offsets), std::end(offsets));
-  uint32_t medianOffset = offsets[NUM_REQUESTS / 2];
+  int32_t medianOffset = offsets[NUM_REQUESTS / 2];
   debug("Updating animation clock with offset=%d, synchronization took %dms",
     medianOffset, observedResponseTimes[NUM_REQUESTS - 1] - observedRequestTimes[1]);
   setAnimationClock(getAnimationClock() + medianOffset);
@@ -153,7 +153,7 @@ void sendRequestPacket(uint8_t source, uint16_t id) {
   Platform::transport->write8(currentObservation);
   Platform::transport->write8(0);  // reserved
   Platform::transport->endWrite();
-  debug("Sent clock sync observation request at time %d", observedTime);
+  debug("Sent clock sync observation request #%d at time %d to %d", currentObservation, observedTime, source);
 }
 
 void parsePacket(uint8_t source) {
@@ -162,6 +162,7 @@ void parsePacket(uint8_t source) {
   Platform::transport->read8();  // reserved
 
   switch (subPacketType) {
+    // Received by receiver
     case CLOCK_SYNC_SUBPACKET_TYPE_START: {
       currentObservation = 0;
       memset(observedRequestTimes, 0, sizeof(observedRequestTimes));
@@ -170,7 +171,9 @@ void parsePacket(uint8_t source) {
       sendRequestPacket(source, id);
       break;
     }
+    // Received by controller
     case CLOCK_SYNC_SUBPACKET_TYPE_REQUEST: {
+      uint8_t remoteObservation = Platform::transport->read8();
       uint32_t observedTime = getAnimationClock();
       Platform::transport->beginWrite(source);
       Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
@@ -179,14 +182,14 @@ void parsePacket(uint8_t source) {
       Platform::transport->write8(0);  // reserved
       Platform::transport->write32(observedTime);
       Platform::transport->endWrite();
-      debug("Responded to clock sync request from %d with observed time %d", source, observedTime);
-      uint8_t remoteObservation = Platform::transport->read8();
+      debug("Responded to clock sync request #%d from %d with observed time %d", remoteObservation, source, observedTime);
       if (remoteObservation == NUM_REQUESTS) {
         syncTimeout = 0;
-        NetworkState::refreshNode(source);
+        NetworkState::refreshNodeClockSyncTime(source);
       }
       break;
     }
+    // Received by receiver
     case CLOCK_SYNC_SUBPACKET_TYPE_RESPONSE: {
       uint32_t observedTime = getAnimationClock();
       uint32_t remoteTime = Platform::transport->read32();
