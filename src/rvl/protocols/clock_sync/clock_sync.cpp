@@ -153,10 +153,12 @@ void sendRequestPacket(uint8_t source, uint16_t id) {
   Platform::transport->write8(currentObservation);
   Platform::transport->write8(0);  // reserved
   Platform::transport->endWrite();
-  debug("Sent clock sync observation request #%d at time %d to %d", currentObservation, observedTime, source);
+  debug("Sent clock sync observation request #%d at time %d to %d",
+    currentObservation, observedTime, source);
 }
 
 void parsePacket(uint8_t source) {
+  debug("Parsing clock sync packet");
   uint8_t subPacketType = Platform::transport->read8();
   uint16_t id = Platform::transport->read16();
   Platform::transport->read8();  // reserved
@@ -182,7 +184,8 @@ void parsePacket(uint8_t source) {
       Platform::transport->write8(0);  // reserved
       Platform::transport->write32(observedTime);
       Platform::transport->endWrite();
-      debug("Responded to clock sync request #%d from %d with observed time %d", remoteObservation, source, observedTime);
+      debug("Responded to clock sync request #%d from %d with observed time %d",
+        remoteObservation, source, observedTime);
       if (remoteObservation == NUM_REQUESTS) {
         syncTimeout = 0;
         NetworkState::refreshNodeClockSyncTime(source);

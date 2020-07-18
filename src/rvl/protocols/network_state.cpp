@@ -32,7 +32,7 @@ namespace NetworkState {
 uint32_t nodeTimestamps[NUM_NODES];
 uint32_t nodeClockTimestamps[NUM_NODES];
 
-uint8_t controllerNode;
+uint8_t controllerNode = 255;
 uint32_t controllerNodeLastRefreshed = 0;
 uint32_t localClockLastRefreshed = 0;
 
@@ -93,10 +93,18 @@ bool isControllerNode(uint8_t node) {
     return node == Platform::transport->getDeviceId();
   }
 
+  uint32_t currentTime = millis();
+
+  // Check if we've never seen a controller node before
+  if (controllerNode == 255) {
+    controllerNode = node;
+    controllerNodeLastRefreshed = currentTime;
+    return true;
+  }
+
   // Check if this is the same controller node we've seen before, or not. If not,
   // there *may* two active controllers at the same time, but it's also possible
   // the old one is no longer a controller
-  uint32_t currentTime = millis();
   if (controllerNode != node) {
     // Check if the old controller hasn't broadcast in a while, meaning it's
     // likely offline or no longer in controller mode and can be replaced with

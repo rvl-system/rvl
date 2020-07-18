@@ -63,7 +63,7 @@ void info(const char *s, ...) {
 
 void debug(const char *s, ...) {
   if (logLevel >= LogLevel::Debug) {
-    Serial.print("[debug ]: ");
+    Serial.print("[debug]: ");
     va_list argptr;
     va_start(argptr, s);
     log(s, argptr);
