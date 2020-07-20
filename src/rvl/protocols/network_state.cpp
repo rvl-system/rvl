@@ -28,6 +28,7 @@ namespace rvl {
 namespace NetworkState {
 
 #define CONTROLLER_NODE_EXPIRATION_DURATION 10000
+#define CLOCK_SYNC_MIN_INTERVAL 10000
 
 uint32_t nodeTimestamps[NUM_NODES];
 uint32_t nodeClockTimestamps[NUM_NODES];
@@ -69,6 +70,7 @@ void refreshNode(uint8_t node) {
 }
 
 void refreshNodeClockSyncTime(uint8_t node) {
+  debug("Finished updating clock for node %d", node);
   nodeClockTimestamps[node] = millis();
 }
 
@@ -133,7 +135,11 @@ uint8_t getNextClockNode() {
       oldestClock = nodeClockTimestamps[i];
     }
   }
-  return oldestNode;
+  if (millis() - oldestClock > CLOCK_SYNC_MIN_INTERVAL) {
+    return oldestNode;
+  } else {
+    return 255;
+  }
 }
 
 void refreshLocalClockSynchronization() {
