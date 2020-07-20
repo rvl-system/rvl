@@ -77,19 +77,19 @@ void init() {
 void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observations) {
   if (getDeviceMode() == DeviceMode::Controller) {
     observationNumber++;
-    observations[(observationNumber - 1) * 2] = millis();
+    observations[(observationNumber - 1) * 2] = getAnimationClock();
     if (observationNumber == NUM_REQUESTS) {
       NetworkState::refreshNodeClockSyncTime(node);
     }
   } else {
-    observations[(observationNumber - 1) * 2 + 1] = millis();
+    observations[(observationNumber - 1) * 2 + 1] = getAnimationClock();
     if (observationNumber == NUM_REQUESTS) {
       debug("Processing clock sync observation #%d", observationNumber, node);
 
       // Step 4.1
       int32_t periods[(NUM_REQUESTS - 1) * 2];
       for (uint8_t i = 0; i < NUM_REQUESTS * 2 - 3; i++) {
-        periods[i] = observations[i + 2] - observations[i];
+        periods[i] = static_cast<int32_t>(observations[i + 2]) - static_cast<int32_t>(observations[i]);
       }
       std::sort(std::begin(periods), std::end(periods));
       int16_t P = periods[NUM_REQUESTS - 1] / 2;
