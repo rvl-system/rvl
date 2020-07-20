@@ -135,11 +135,7 @@ uint8_t getNextClockNode() {
       oldestClock = nodeClockTimestamps[i];
     }
   }
-  if (millis() - oldestClock > CLOCK_SYNC_MIN_INTERVAL) {
-    return oldestNode;
-  } else {
-    return 255;
-  }
+  return oldestNode;
 }
 
 void refreshLocalClockSynchronization() {

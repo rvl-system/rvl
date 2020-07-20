@@ -82,6 +82,9 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
       NetworkState::refreshNodeClockSyncTime(node);
     }
   } else {
+    if (!NetworkState::isControllerNode(node)) {
+      return;
+    }
     observations[(observationNumber - 1) * 2 + 1] = getAnimationClock();
     if (observationNumber == NUM_REQUESTS) {
       debug("Processing clock sync observation #%d", observationNumber, node);
@@ -109,7 +112,7 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
   }
   debug("Sending clock sync observation #%d to source %d", observationNumber, node);
   Platform::transport->beginWrite(Protocol::getMulticastAddress());
-  Protocol::sendMulticastHeader(PACKET_TYPE_CLOCK_SYNC);
+  Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, node);
   Platform::transport->write8(CLOCK_SYNC_TYPE_P2P);
   Platform::transport->write8(0);  // reserved
   Platform::transport->write8(observationNumber);
