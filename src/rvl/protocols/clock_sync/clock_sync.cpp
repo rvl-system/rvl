@@ -114,30 +114,32 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
     }
   }
   debug("Sending clock sync observation #%d to source %d", observationNumber, node);
-  Platform::transport->beginWrite(Protocol::getMulticastAddress());
+  Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, node);
-  Platform::transport->write8(CLOCK_SYNC_TYPE_P2P);
-  Platform::transport->write8(0);  // reserved
-  Platform::transport->write8(observationNumber);
-  Platform::transport->write8(0);  // reserved
-  Platform::transport->write(reinterpret_cast<uint8_t*>(observations), NUM_REQUESTS * 2 * sizeof(uint32_t));
-  Platform::transport->endWrite();
+  Platform::system->write8(CLOCK_SYNC_TYPE_P2P);
+  Platform::system->write8(0);  // reserved
+  Platform::system->write8(observationNumber);
+  Platform::system->write8(0);  // reserved
+  Platform::system->write(reinterpret_cast<uint8_t*>(observations), NUM_REQUESTS * 2 * sizeof(uint32_t));
+  Platform::system->endWrite();
 }
 
 void loop() {
-  if (getDeviceMode() != DeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller || !Platform::system->isConnected()) {
     return;
   }
 
   // Check if we're in our alloted time window
-  if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO || millis() % CLIENT_SYNC_INTERVAL > SYNC_ITERATION_MODULO_MAX) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO ||
+    Platform::system->localClock() % CLIENT_SYNC_INTERVAL > SYNC_ITERATION_MODULO_MAX
+  ) {
     return;
   }
 
   // Check if a synchronization is currently in progress
   if (syncTimeout > 0) {
     // Check if the synchronization has timed out
-    if (millis() > syncTimeout) {
+    if (Platform::system->localClock() > syncTimeout) {
       // If so, reset the timeout and get the next node
       debug("Clock sync with node timed out");
       syncTimeout = 0;
@@ -152,7 +154,7 @@ void loop() {
   if (nextNodeToSync == 255) {
     return;
   }
-  syncTimeout = millis() + SYNC_TIMEOUT;
+  syncTimeout = Platform::system->localClock() + SYNC_TIMEOUT;
 
   // If we got here, it's time to sync the next node
   uint32_t observations[NUM_REQUESTS * 2];
@@ -164,15 +166,15 @@ void loop() {
 
 void parsePacket(uint8_t source) {
   debug("Parsing clock sync packet");
-  uint8_t subPacketType = Platform::transport->read8();
-  Platform::transport->read8();  // Reserved
+  uint8_t subPacketType = Platform::system->read8();
+  Platform::system->read8();  // Reserved
 
   switch (subPacketType) {
     case CLOCK_SYNC_TYPE_P2P: {
-      uint8_t observationNumber = Platform::transport->read8();
-      Platform::transport->read8();  // reserved
+      uint8_t observationNumber = Platform::system->read8();
+      Platform::system->read8();  // reserved
       uint32_t observations[NUM_REQUESTS * 2];
-      Platform::transport->read(reinterpret_cast<uint8_t*>(observations), NUM_REQUESTS * 2 * sizeof(uint32_t));
+      Platform::system->read(reinterpret_cast<uint8_t*>(observations), NUM_REQUESTS * 2 * sizeof(uint32_t));
       sendResponse(source, observationNumber, observations);
       break;
     }

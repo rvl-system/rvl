@@ -63,18 +63,18 @@ uint8_t getMulticastAddress() {
 }
 
 void parsePacket() {
-  uint8_t version = Platform::transport->read8();
+  uint8_t version = Platform::system->read8();
   if (version != PROTOCOL_VERSION) {
     error("Received unsupported Raver Lights protocol packet version %d, ignoring", version);
     return;
   }
 
-  uint8_t deviceId = Platform::transport->getDeviceId();
+  uint8_t deviceId = Platform::system->getDeviceId();
 
-  uint8_t destination = Platform::transport->read8();  // destination
-  uint8_t source = Platform::transport->read8();  // source
-  uint8_t packetType = Platform::transport->read8();
-  Platform::transport->read16();  // reserved
+  uint8_t destination = Platform::system->read8();  // destination
+  uint8_t source = Platform::system->read8();  // source
+  uint8_t packetType = Platform::system->read8();
+  Platform::system->read16();  // reserved
 
   debug("Recieved packet source=%d destination=%d packetType=%d", source, destination, packetType);
 
@@ -119,12 +119,12 @@ void parsePacket() {
 }
 
 void sendHeader(uint8_t packetType, uint8_t destination) {
-  Platform::transport->write(signature, 4);
-  Platform::transport->write8(PROTOCOL_VERSION);
-  Platform::transport->write8(destination);
-  Platform::transport->write8(Platform::transport->getDeviceId());
-  Platform::transport->write8(packetType);
-  Platform::transport->write16(0);
+  Platform::system->write(signature, 4);
+  Platform::system->write8(PROTOCOL_VERSION);
+  Platform::system->write8(destination);
+  Platform::system->write8(Platform::system->getDeviceId());
+  Platform::system->write8(packetType);
+  Platform::system->write16(0);
 }
 
 void sendBroadcastHeader(uint8_t packetType) {

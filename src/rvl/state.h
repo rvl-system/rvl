@@ -20,7 +20,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_STATE_H_
 #define RVL_STATE_H_
 
-#include <Arduino.h>
+#include <stdint.h>
 #include "./rvl.h"
 #include "./wave.h"
 

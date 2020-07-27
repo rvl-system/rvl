@@ -43,7 +43,7 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
     hasSyncedThisLoop = false;
     return;
   }
@@ -61,16 +61,16 @@ Reserved: 2 bytes
 */
 
 void sync() {
-  if (getDeviceMode() != DeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller || !Platform::system->isConnected()) {
     return;
   }
   debug("Syncing system parameters");
-  Platform::transport->beginWrite(Protocol::getMulticastAddress());
+  Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
-  Platform::transport->write8(getPowerState());
-  Platform::transport->write8(getBrightness());
-  Platform::transport->write16(0);
-  Platform::transport->endWrite();
+  Platform::system->write8(getPowerState());
+  Platform::system->write8(getBrightness());
+  Platform::system->write16(0);
+  Platform::system->endWrite();
 }
 
 void parsePacket(uint8_t source) {
@@ -79,9 +79,9 @@ void parsePacket(uint8_t source) {
   }
   debug("Parsing System packet");
 
-  uint8_t power = Platform::transport->read8();  // power
-  uint8_t brightness = Platform::transport->read8();  // brightness
-  Platform::transport->read16();  // reserved
+  uint8_t power = Platform::system->read8();  // power
+  uint8_t brightness = Platform::system->read8();  // brightness
+  Platform::system->read16();  // reserved
 
   setPowerState(power);
 

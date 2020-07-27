@@ -43,7 +43,7 @@ void init() {
 }
 
 void loop() {
-  int32_t expirationTime = std::max(0, static_cast<int32_t>(millis()) - CONTROLLER_NODE_EXPIRATION_DURATION);
+  int32_t expirationTime = std::max(0, static_cast<int32_t>(Platform::system->localClock()) - CONTROLLER_NODE_EXPIRATION_DURATION);
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       debug("Node %d expired from the network map", i);
@@ -66,12 +66,12 @@ void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
     debug("Adding node %d to the network map", node);
   }
-  nodeTimestamps[node] = millis();
+  nodeTimestamps[node] = Platform::system->localClock();
 }
 
 void refreshNodeClockSyncTime(uint8_t node) {
   debug("Finished updating clock for node %d", node);
-  nodeClockTimestamps[node] = millis();
+  nodeClockTimestamps[node] = Platform::system->localClock();
 }
 
 uint8_t getNumNodes() {
@@ -92,10 +92,10 @@ bool isControllerNode(uint8_t node) {
   // First, we check if we're in controller mode, in which case we always ignore
   // remote control
   if (getDeviceMode() == DeviceMode::Controller) {
-    return node == Platform::transport->getDeviceId();
+    return node == Platform::system->getDeviceId();
   }
 
-  uint32_t currentTime = millis();
+  uint32_t currentTime = Platform::system->localClock();
 
   // Check if we've never seen a controller node before
   if (controllerNode == 255) {
@@ -123,7 +123,7 @@ bool isControllerNode(uint8_t node) {
 
 bool isControllerActive() {
   return (controllerNodeLastRefreshed > 0) &&
-    (millis() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+    (Platform::system->localClock() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 uint8_t getNextClockNode() {
@@ -139,12 +139,12 @@ uint8_t getNextClockNode() {
 }
 
 void refreshLocalClockSynchronization() {
-  localClockLastRefreshed = millis();
+  localClockLastRefreshed = Platform::system->localClock();
 }
 
 bool isClockSynchronizationActive() {
   return (localClockLastRefreshed > 0) &&
-    (millis() - localClockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+    (Platform::system->localClock() - localClockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 }  // namespace NetworkState

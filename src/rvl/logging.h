@@ -20,7 +20,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_LOGGING_H_
 #define RVL_LOGGING_H_
 
-#include <Arduino.h>
+#include <stdint.h>
 
 namespace rvl {
 

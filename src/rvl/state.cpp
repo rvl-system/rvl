@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string.h>
 #include "./rvl/state.h"
 #include "./rvl/platform.h"
 
@@ -33,7 +34,7 @@ bool remoteBrightness = false;
 bool synchronized = false;
 
 void stateLoop() {
-  animationClock = millis() + clockOffset;
+  animationClock = Platform::system->localClock() + clockOffset;
 }
 
 uint32_t getAnimationClock() {
@@ -41,11 +42,11 @@ uint32_t getAnimationClock() {
 }
 
 uint8_t getDeviceId() {
-  return Platform::transport->getDeviceId();
+  return Platform::system->getDeviceId();
 }
 
 void setAnimationClock(uint32_t newClock) {
-  clockOffset = newClock - millis();
+  clockOffset = newClock - Platform::system->localClock();
   emit(EVENT_ANIMATION_CLOCK_UPDATED);
 }
 
@@ -126,7 +127,7 @@ void setSynchronizationState(bool newSynchronized) {
 }
 
 bool isNetworkConnected() {
-  return Platform::transport->isConnected();
+  return Platform::system->isConnected();
 }
 
 }  // namespace rvl

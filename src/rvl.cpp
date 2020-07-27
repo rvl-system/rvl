@@ -31,22 +31,22 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-void init(Transport* newTransport) {
-  Platform::init(newTransport);
+void init(System* newSystem) {
+  Platform::init(newSystem);
   Protocol::init();
 }
 
 void loop() {
-  Platform::transport->loop();
+  Platform::system->loop();
   stateLoop();
-  if (!Platform::transport->isConnected()) {
+  if (!Platform::system->isConnected()) {
     return;
   }
 
-  int packetSize = Platform::transport->parsePacket();
+  int packetSize = Platform::system->parsePacket();
   if (packetSize != 0) {
     uint8_t receivedSignature[4];
-    Platform::transport->read(receivedSignature, 4);
+    Platform::system->read(receivedSignature, 4);
     if (memcmp(receivedSignature, rvl::signature, 4) == 0) {
       Protocol::parsePacket();
     }
@@ -57,14 +57,14 @@ void loop() {
 
 bool rvlConnectedState = false;
 
-void Transport::setConnectedState(bool connected) {
+void System::setConnectedState(bool connected) {
   if (rvlConnectedState != connected) {
     rvlConnectedState = connected;
     emit(EVENT_CONNECTION_STATE_CHANGED);
   }
 }
 
-bool Transport::isConnected() {
+bool System::isConnected() {
   return rvlConnectedState;
 }
 

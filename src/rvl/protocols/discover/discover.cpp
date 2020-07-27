@@ -56,7 +56,7 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
     hasSyncedThisLoop = false;
     return;
   }
@@ -68,31 +68,31 @@ void loop() {
 }
 
 void sync() {
-  if (!Platform::transport->isConnected()) {
+  if (!Platform::system->isConnected()) {
     return;
   }
   debug("Multicasting discover packet");
-  Platform::transport->beginWrite(Protocol::getMulticastAddress());
+  Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
-  Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PING);
-  Platform::transport->write8(0);  // reserved
-  Platform::transport->endWrite();
+  Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PING);
+  Platform::system->write8(0);  // reserved
+  Platform::system->endWrite();
 }
 
 void parsePacket(uint8_t source) {
   debug("Parsing Discover packet");
 
-  uint8_t subPacketType = Platform::transport->read8();
-  Platform::transport->read8();  // reserved
+  uint8_t subPacketType = Platform::system->read8();
+  Platform::system->read8();  // reserved
   NetworkState::refreshNode(source);
 
   switch (subPacketType) {
     case DISCOVER_SUBPACKET_TYPE_PING: {
-      Platform::transport->beginWrite(Protocol::getMulticastAddress());
+      Platform::system->beginWrite(Protocol::getMulticastAddress());
       Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
-      Platform::transport->write8(DISCOVER_SUBPACKET_TYPE_PONG);
-      Platform::transport->write8(0);  // reserved
-      Platform::transport->endWrite();
+      Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PONG);
+      Platform::system->write8(0);  // reserved
+      Platform::system->endWrite();
       break;
     }
 

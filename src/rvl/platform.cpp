@@ -24,12 +24,12 @@ namespace rvl {
 
 namespace Platform {
 
-Transport* transport;
+System* system;
 
 // Base case versions
 
-void init(Transport* newTransport) {
-  transport = newTransport;
+void init(System* newSystem) {
+  system = newSystem;
 }
 
 }  // namespace Platform

@@ -20,7 +20,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_EVENT_H_
 #define RVL_EVENT_H_
 
-#include <Arduino.h>
+#include <stdint.h>
 #include "./rvl/event.h"
 
 namespace rvl {

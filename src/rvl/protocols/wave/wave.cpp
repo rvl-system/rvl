@@ -57,7 +57,7 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (millis() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
     hasSyncedThisLoop = false;
     return;
   }
@@ -69,18 +69,18 @@ void loop() {
 }
 
 void sync() {
-  if (getDeviceMode() != DeviceMode::Controller || !Platform::transport->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller || !Platform::system->isConnected()) {
     return;
   }
   debug("Syncing preset");
   auto waveSettings = getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
-  Platform::transport->beginWrite(Protocol::getMulticastAddress());
+  Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
-  Platform::transport->write8(waveSettings->timePeriod);
-  Platform::transport->write8(waveSettings->distancePeriod);
-  Platform::transport->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
-  Platform::transport->endWrite();
+  Platform::system->write8(waveSettings->timePeriod);
+  Platform::system->write8(waveSettings->distancePeriod);
+  Platform::system->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
+  Platform::system->endWrite();
 }
 
 void parsePacket(uint8_t source) {
@@ -89,9 +89,9 @@ void parsePacket(uint8_t source) {
   }
   debug("Parsing Wave packet");
   RVLWaveSettings newWaveSettings;
-  newWaveSettings.timePeriod = Platform::transport->read8();
-  newWaveSettings.distancePeriod = Platform::transport->read8();
-  Platform::transport->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVLWave) * NUM_WAVES);
+  newWaveSettings.timePeriod = Platform::system->read8();
+  newWaveSettings.distancePeriod = Platform::system->read8();
+  Platform::system->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVLWave) * NUM_WAVES);
   setWaveSettings(&newWaveSettings);
 }
 

@@ -20,7 +20,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_H_
 #define RVL_H_
 
-#include <Arduino.h>
+#include <stdint.h>
 
 #include "./rvl/logging.h"
 #include "./rvl/event.h"
@@ -37,7 +37,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-class Transport {
+class System {
  protected:
   void setConnectedState(bool connected);
  public:
@@ -59,9 +59,13 @@ class Transport {
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
 
   virtual uint16_t getDeviceId() = 0;
+
+  virtual uint32_t localClock() = 0;
+  virtual void print(const char* str) = 0;
+  virtual void println(const char* str) = 0;
 };
 
-void init(Transport* transport);
+void init(System* system);
 
 void loop();
 
