@@ -40,6 +40,8 @@ namespace ProtocolClockSync {
 
 #define SYNC_TIMEOUT SYNC_ITERATION_MODULO_MAX - SYNC_ITERATION_MODULO
 
+uint32_t syncTimeout = 0;
+
 /*
 Packet:
 Algorithm Type: 1 byte = 1: Point to Point (other types maybe coming soon)
@@ -80,6 +82,7 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
     observations[(observationNumber - 1) * 2] = getAnimationClock();
     if (observationNumber == NUM_REQUESTS) {
       NetworkState::refreshNodeClockSyncTime(node);
+      syncTimeout = 0;
     }
   } else {
     if (!NetworkState::isControllerNode(node)) {
@@ -121,7 +124,6 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
   Platform::transport->endWrite();
 }
 
-uint32_t syncTimeout = 0;
 void loop() {
   if (getDeviceMode() != DeviceMode::Controller || !Platform::transport->isConnected()) {
     return;
@@ -137,6 +139,7 @@ void loop() {
     // Check if the synchronization has timed out
     if (millis() > syncTimeout) {
       // If so, reset the timeout and get the next node
+      debug("Clock sync with node timed out");
       syncTimeout = 0;
     } else {
       // Otherwise skip
