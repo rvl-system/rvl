@@ -42,7 +42,7 @@ void log(const char *s, va_list argptr) {
   char* str = new char[bufferLength];
   vsnprintf(str, bufferLength, s, argptr);
   Platform::system->print(str);
-  delete str;
+  delete[] str;
 }
 
 void error(const char *s, ...) {
