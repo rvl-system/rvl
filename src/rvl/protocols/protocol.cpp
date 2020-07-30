@@ -39,7 +39,8 @@ Version: 1 byte = PROTOCOL_VERSION
 Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
 Source: 1 byte = the address of the device that sent the message
 Packet type: 1 byte = 1: System, 2: Discover, 3: Clock Sync, 4: Wave Animation
-Reserved: 2 bytes = Reserved for future use
+Channel: 1 byte = the channel this system is on (needed for disambiguation on systems running multiple controller instances)
+Reserved: 1 bytes = Reserved for future use
 */
 
 void init() {
@@ -74,7 +75,8 @@ void parsePacket() {
   uint8_t destination = Platform::system->read8();  // destination
   uint8_t source = Platform::system->read8();  // source
   uint8_t packetType = Platform::system->read8();
-  Platform::system->read16();  // reserved
+  uint8_t channel = Platform::system->read8();
+  Platform::system->read8();  // reserved
 
   debug("Recieved packet source=%d destination=%d packetType=%d", source, destination, packetType);
 
@@ -89,7 +91,7 @@ void parsePacket() {
   // Ignore multicast packets meant for a different multicast group
   if (
     destination >= CHANNEL_OFFSET && destination < 255 &&
-    getChannel() != destination - CHANNEL_OFFSET
+    getChannel() != channel
   ) {
     return;
   }
@@ -124,7 +126,8 @@ void sendHeader(uint8_t packetType, uint8_t destination) {
   Platform::system->write8(destination);
   Platform::system->write8(Platform::system->getDeviceId());
   Platform::system->write8(packetType);
-  Platform::system->write16(0);
+  Platform::system->write8(getChannel());
+  Platform::system->write8(0);
 }
 
 void sendBroadcastHeader(uint8_t packetType) {
