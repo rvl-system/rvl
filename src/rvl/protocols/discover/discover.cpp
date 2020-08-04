@@ -33,8 +33,9 @@ namespace ProtocolDiscover {
 #define DISCOVER_SUBPACKET_TYPE_PING 1
 #define DISCOVER_SUBPACKET_TYPE_PONG 2
 
-#define SYNC_ITERATION_MODULO 10
+#define SYNC_ITERATION_MODULO_MAX 100
 
+// TODO (nebrius): create centralizedscheduler to manage this, instead of one-offs in each protocol
 bool hasSyncedThisLoop = false;
 
 /*
@@ -56,7 +57,7 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO_MAX) {
     hasSyncedThisLoop = false;
     return;
   }
