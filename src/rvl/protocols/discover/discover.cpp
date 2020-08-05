@@ -89,8 +89,9 @@ void parsePacket(uint8_t source) {
 
   switch (subPacketType) {
     case DISCOVER_SUBPACKET_TYPE_PING: {
-      Platform::system->beginWrite(Protocol::getMulticastAddress());
-      Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
+      // TODO (nebrius): wrap Platform::system->beginWrite and Protocol::sendHeader in single function
+      Platform::system->beginWrite(source);
+      Protocol::sendHeader(PACKET_TYPE_DISCOVER, source);
       Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PONG);
       Platform::system->write8(0);  // reserved
       Platform::system->endWrite();
