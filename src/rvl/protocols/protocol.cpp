@@ -78,8 +78,6 @@ void parsePacket() {
   uint8_t channel = Platform::system->read8();
   Platform::system->read8();  // reserved
 
-  debug("Recieved packet source=%d destination=%d packetType=%d", source, destination, packetType);
-
   // Ignore our own packets
   if (source == deviceId) {
     return;

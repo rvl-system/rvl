@@ -127,10 +127,15 @@ bool isControllerActive() {
 }
 
 uint8_t getNextClockNode() {
+  uint32_t now = Platform::system->localClock();
   uint32_t oldestClock = UINT32_MAX;
   uint8_t oldestNode = 255;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
-    if (nodeTimestamps[i] > 0 && nodeClockTimestamps[i] < oldestClock) {
+    if (
+      nodeTimestamps[i] > 0 &&
+      nodeClockTimestamps[i] < oldestClock &&
+      (nodeClockTimestamps[i] == 0 || now - nodeClockTimestamps[i] > CLOCK_SYNC_MIN_INTERVAL)
+    ) {
       oldestNode = i;
       oldestClock = nodeClockTimestamps[i];
     }
