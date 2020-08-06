@@ -99,12 +99,13 @@ void parsePacket(uint8_t source) {
     }
 
     case DISCOVER_SUBPACKET_TYPE_PONG: {
-     // Don't need to do anything special here, since we already refreshed the node
+      // Don't need to do anything special here, since we already refreshed the node
+      debug("Received discover packet from %d", source);
       break;
     }
 
     default: {
-      error("Received unknown clock sync subpacket type %d", subPacketType);
+      error("Received unknown discover subpacket type %d", subPacketType);
       break;
     }
   }
