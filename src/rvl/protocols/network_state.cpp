@@ -46,7 +46,7 @@ void loop() {
   int32_t expirationTime = std::max(0, static_cast<int32_t>(Platform::system->localClock()) - CONTROLLER_NODE_EXPIRATION_DURATION);
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
-      debug("Node %d expired from the network map", i);
+      info("Node %d expired from the network map", i);
       nodeTimestamps[i] = 0;
       nodeClockTimestamps[i] = 0;
     }
@@ -64,7 +64,7 @@ void loop() {
 
 void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
-    debug("Adding node %d to the network map", node);
+    info("Adding node %d to the network map", node);
   }
   nodeTimestamps[node] = Platform::system->localClock();
 }

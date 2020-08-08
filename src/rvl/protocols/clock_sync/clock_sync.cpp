@@ -141,7 +141,7 @@ void loop() {
     // Check if the synchronization has timed out
     if (Platform::system->localClock() > syncTimeout) {
       // If so, reset the timeout and get the next node
-      debug("Clock sync with node timed out");
+      info("Clock sync with node timed out");
       syncTimeout = 0;
     } else {
       // Otherwise skip
