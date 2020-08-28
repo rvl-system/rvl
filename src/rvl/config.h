@@ -24,7 +24,6 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-// TODO(nebrius): move to variable sent to init() method
 #define NUM_NODES 240
 
 #define CLIENT_SYNC_INTERVAL 2000

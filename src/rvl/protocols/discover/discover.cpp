@@ -35,7 +35,6 @@ namespace ProtocolDiscover {
 
 #define SYNC_ITERATION_MODULO_MAX 100
 
-// TODO (nebrius): create centralizedscheduler to manage this, instead of one-offs in each protocol
 bool hasSyncedThisLoop = false;
 
 /*
@@ -89,7 +88,6 @@ void parsePacket(uint8_t source) {
 
   switch (subPacketType) {
     case DISCOVER_SUBPACKET_TYPE_PING: {
-      // TODO (nebrius): wrap Platform::system->beginWrite and Protocol::sendHeader in single function
       Platform::system->beginWrite(source);
       Protocol::sendHeader(PACKET_TYPE_DISCOVER, source);
       Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PONG);
