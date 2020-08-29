@@ -108,7 +108,10 @@ bool getRemoteBrightnessState() {
 }
 
 void setRemoteBrightnessState(bool newRemoteBrightness) {
-  remoteBrightness = newRemoteBrightness;
+  if (remoteBrightness != newRemoteBrightness) {
+    remoteBrightness = newRemoteBrightness;
+    emit(EVENT_REMOTE_BRIGHTNESS_UPDATED);
+  }
 }
 
 bool getSynchronizationState() {

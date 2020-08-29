@@ -34,6 +34,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENT_BRIGHTNESS_UPDATED 6
 #define EVENT_SYNCHRONIZATION_STATE_UPDATED 7
 #define EVENT_CONNECTION_STATE_CHANGED 8
+#define EVENT_REMOTE_BRIGHTNESS_UPDATED 9
 
 namespace rvl {
 
