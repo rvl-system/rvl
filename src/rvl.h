@@ -41,6 +41,7 @@ namespace rvl {
 class System {
  protected:
   void setConnectedState(bool connected);
+
  public:
   bool isConnected();
 

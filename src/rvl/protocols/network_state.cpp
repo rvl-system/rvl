@@ -43,7 +43,9 @@ void init() {
 }
 
 void loop() {
-  int32_t expirationTime = std::max(0, static_cast<int32_t>(Platform::system->localClock()) - CONTROLLER_NODE_EXPIRATION_DURATION);
+  int32_t expirationTime =
+    std::max(0, static_cast<int32_t>(Platform::system->localClock()) -
+    CONTROLLER_NODE_EXPIRATION_DURATION);
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       info("Node %d expired from the network map", i);
@@ -104,14 +106,17 @@ bool isControllerNode(uint8_t node) {
     return true;
   }
 
-  // Check if this is the same controller node we've seen before, or not. If not,
+  // Check if this is the same controller node we've seen before, or not. If not
   // there *may* two active controllers at the same time, but it's also possible
   // the old one is no longer a controller
   if (controllerNode != node) {
     // Check if the old controller hasn't broadcast in a while, meaning it's
     // likely offline or no longer in controller mode and can be replaced with
     // this new controller
-    if (currentTime - controllerNodeLastRefreshed > CONTROLLER_NODE_EXPIRATION_DURATION) {
+    if (
+      currentTime - controllerNodeLastRefreshed >
+      CONTROLLER_NODE_EXPIRATION_DURATION
+    ) {
       controllerNode = node;
       controllerNodeLastRefreshed = currentTime;
     }
@@ -122,8 +127,8 @@ bool isControllerNode(uint8_t node) {
 }
 
 bool isControllerActive() {
-  return (controllerNodeLastRefreshed > 0) &&
-    (Platform::system->localClock() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+  return (controllerNodeLastRefreshed > 0) && (Platform::system->localClock() -
+    controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 uint8_t getNextClockNode() {
@@ -133,8 +138,10 @@ uint8_t getNextClockNode() {
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (
       nodeTimestamps[i] > 0 &&
-      nodeClockTimestamps[i] < oldestClock &&
-      (nodeClockTimestamps[i] == 0 || now - nodeClockTimestamps[i] > CLOCK_SYNC_MIN_INTERVAL)
+      nodeClockTimestamps[i] < oldestClock && (
+        nodeClockTimestamps[i] == 0 || now -
+        nodeClockTimestamps[i] > CLOCK_SYNC_MIN_INTERVAL
+      )
     ) {
       oldestNode = i;
       oldestClock = nodeClockTimestamps[i];
@@ -148,8 +155,9 @@ void refreshLocalClockSynchronization() {
 }
 
 bool isClockSynchronizationActive() {
-  return (localClockLastRefreshed > 0) &&
-    (Platform::system->localClock() - localClockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+  return (localClockLastRefreshed > 0) && (
+    Platform::system->localClock() - localClockLastRefreshed <
+    CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 }  // namespace NetworkState
