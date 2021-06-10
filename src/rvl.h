@@ -59,6 +59,7 @@ class System {
   virtual uint16_t read16() = 0;
   virtual uint32_t read32() = 0;
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
+  virtual void endRead() = 0;
 
   virtual uint16_t getDeviceId() = 0;
 

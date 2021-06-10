@@ -66,7 +66,9 @@ uint8_t getMulticastAddress() {
 void parsePacket() {
   uint8_t version = Platform::system->read8();
   if (version != PROTOCOL_VERSION) {
-    error("Received unsupported Raver Lights protocol packet version %d, ignoring", version);
+    error(
+      "Received unsupported Raver Lights protocol packet version %d, ignoring",
+      version);
     return;
   }
 
@@ -80,6 +82,7 @@ void parsePacket() {
 
   // Ignore our own packets
   if (source == deviceId) {
+    Platform::system->endRead();
     return;
   }
 
@@ -91,11 +94,13 @@ void parsePacket() {
     destination >= CHANNEL_OFFSET && destination < 255 &&
     getChannel() != channel
   ) {
+    Platform::system->endRead();
     return;
   }
 
   // Ignore unicast packets meant for a different destination
   if (destination < CHANNEL_OFFSET && destination != deviceId) {
+    Platform::system->endRead();
     return;
   }
 
@@ -116,6 +121,7 @@ void parsePacket() {
       error("Received unknown subpacket type %d", packetType);
       break;
   }
+  Platform::system->endRead();
 }
 
 void sendHeader(uint8_t packetType, uint8_t destination) {
