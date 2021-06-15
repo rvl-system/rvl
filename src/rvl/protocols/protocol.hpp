@@ -32,7 +32,7 @@ namespace Protocol {
 // uint8_t values and these enum values
 namespace RVLPacketType {
 enum RVLPacketType { Palette = 1, Wave = 2 };
-}
+} // namespace RVLPacketType
 
 void init();
 void loop();

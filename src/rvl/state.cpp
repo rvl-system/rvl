@@ -117,9 +117,8 @@ void setRemoteBrightnessState(bool newRemoteBrightness) {
 bool getSynchronizationState() {
   if (getDeviceMode() == DeviceMode::Controller) {
     return true;
-  } else {
-    return synchronized;
   }
+  return synchronized;
 }
 
 void setSynchronizationState(bool newSynchronized) {
