@@ -23,11 +23,11 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/protocol.hpp"
 #include "./rvl/protocols/system/system.hpp"
 #include "./rvl/protocols/wave/wave.hpp"
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <list>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
 namespace rvl {
 
