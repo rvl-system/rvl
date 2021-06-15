@@ -17,32 +17,36 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef WAVE_H_
-#define WAVE_H_
+#ifndef RVL_PROTOCOLS_PROTOCOL_H_
+#define RVL_PROTOCOLS_PROTOCOL_H_
 
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
 #include <stdint.h>
 
-#define NUM_WAVES 4
+namespace rvl {
 
-struct RVLWaveChannel {
-  uint8_t a = 0;
-  uint8_t b = 0;
-  int8_t w_t = 0;
-  int8_t w_x = 0;
-  int8_t phi = 0;
-};
+namespace Protocol {
 
-struct RVLWave {
-  RVLWaveChannel h;
-  RVLWaveChannel s;
-  RVLWaveChannel v;
-  RVLWaveChannel a;
-};
+// Note: we use the old style of enums here because we regularly switch between
+// uint8_t values and these enum values
+namespace RVLPacketType {
+enum RVLPacketType { Palette = 1, Wave = 2 };
+}
 
-struct RVLWaveSettings {
-  uint8_t timePeriod = 255;
-  uint8_t distancePeriod = 32;
-  RVLWave waves[NUM_WAVES];
-};
+void init();
+void loop();
 
-#endif  // WAVE_H_
+void parsePacket();
+
+uint8_t getMulticastAddress();
+
+void sendHeader(uint8_t packetType, uint8_t destination);
+void sendBroadcastHeader(uint8_t packetType);
+void sendMulticastHeader(uint8_t packetType);
+
+} // namespace Protocol
+
+} // namespace rvl
+
+#endif // RVL_PROTOCOLS_PROTOCOL_H_

@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "./rvl/protocols/protocol.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
+#include "./rvl/protocols/clock_sync/clock_sync.hpp"
+#include "./rvl/protocols/discover/discover.hpp"
+#include "./rvl/protocols/network_state.hpp"
+#include "./rvl/protocols/system/system.hpp"
+#include "./rvl/protocols/wave/wave.hpp"
 #include <stdint.h>
-#include "./rvl/platform.h"
-#include "./rvl/config.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/network_state.h"
-#include "./rvl/protocols/system/system.h"
-#include "./rvl/protocols/discover/discover.h"
-#include "./rvl/protocols/clock_sync/clock_sync.h"
-#include "./rvl/protocols/wave/wave.h"
 
 namespace rvl {
 
@@ -36,11 +36,12 @@ namespace Protocol {
 /*
 Signature: 4 bytes = "RVLX"
 Version: 1 byte = PROTOCOL_VERSION
-Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
-Source: 1 byte = the address of the device that sent the message
+Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255:
+broadcast Source: 1 byte = the address of the device that sent the message
 Packet type: 1 byte = 1: System, 2: Discover, 3: Clock Sync, 4: Wave Animation
-Channel: 1 byte = the channel this system is on (needed for disambiguation on systems running multiple controller instances)
-Reserved: 1 bytes = Reserved for future use
+Channel: 1 byte = the channel this system is on (needed for disambiguation on
+systems running multiple controller instances) Reserved: 1 bytes = Reserved for
+future use
 */
 
 void init() {
@@ -66,19 +67,19 @@ uint8_t getMulticastAddress() {
 void parsePacket() {
   uint8_t version = Platform::system->read8();
   if (version != PROTOCOL_VERSION) {
-    error(
-      "Received unsupported Raver Lights protocol packet version %d, ignoring",
-      version);
+    error("Received unsupported Raver Lights protocol packet version %d, "
+          "ignoring",
+        version);
     return;
   }
 
   uint8_t deviceId = Platform::system->getDeviceId();
 
-  uint8_t destination = Platform::system->read8();  // destination
-  uint8_t source = Platform::system->read8();  // source
+  uint8_t destination = Platform::system->read8(); // destination
+  uint8_t source = Platform::system->read8(); // source
   uint8_t packetType = Platform::system->read8();
   uint8_t channel = Platform::system->read8();
-  Platform::system->read8();  // reserved
+  Platform::system->read8(); // reserved
 
   // Ignore our own packets
   if (source == deviceId) {
@@ -90,10 +91,9 @@ void parsePacket() {
   NetworkState::refreshNode(source);
 
   // Ignore multicast packets meant for a different multicast group
-  if (
-    destination >= CHANNEL_OFFSET && destination < 255 &&
-    getChannel() != channel
-  ) {
+  if (destination >= CHANNEL_OFFSET && destination < 255 &&
+      getChannel() != channel)
+  {
     Platform::system->endRead();
     return;
   }
@@ -105,21 +105,21 @@ void parsePacket() {
   }
 
   switch (packetType) {
-    case PACKET_TYPE_SYSTEM:
-      ProtocolSystem::parsePacket(source);
-      break;
-    case PACKET_TYPE_DISCOVER:
-      ProtocolDiscover::parsePacket(source);
-      break;
-    case PACKET_TYPE_CLOCK_SYNC:
-      ProtocolClockSync::parsePacket(source);
-      break;
-    case PACKET_TYPE_WAVE_ANIMATION:
-      ProtocolWave::parsePacket(source);
-      break;
-    default:
-      error("Received unknown subpacket type %d", packetType);
-      break;
+  case PACKET_TYPE_SYSTEM:
+    ProtocolSystem::parsePacket(source);
+    break;
+  case PACKET_TYPE_DISCOVER:
+    ProtocolDiscover::parsePacket(source);
+    break;
+  case PACKET_TYPE_CLOCK_SYNC:
+    ProtocolClockSync::parsePacket(source);
+    break;
+  case PACKET_TYPE_WAVE_ANIMATION:
+    ProtocolWave::parsePacket(source);
+    break;
+  default:
+    error("Received unknown subpacket type %d", packetType);
+    break;
   }
   Platform::system->endRead();
 }
@@ -142,6 +142,6 @@ void sendMulticastHeader(uint8_t packetType) {
   sendHeader(packetType, getMulticastAddress());
 }
 
-}  // namespace Protocol
+} // namespace Protocol
 
-}  // namespace rvl
+} // namespace rvl

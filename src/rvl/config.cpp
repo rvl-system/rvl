@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "rvl/config.h"
+#include "rvl/config.hpp"
 
 namespace rvl {
 
-uint8_t signature[4] = { 'R', 'V', 'L', 'X' };
+uint8_t signature[4] = {'R', 'V', 'L', 'X'};
 
-}  // namespace rvl
+} // namespace rvl

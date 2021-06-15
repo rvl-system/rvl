@@ -17,22 +17,22 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdint.h>
+#include "./rvl/event.hpp"
+#include "./rvl.hpp"
 #include <list>
-#include "./rvl.h"
-#include "./rvl/event.h"
+#include <stdint.h>
 
 namespace rvl {
 
 struct ListenerEntry {
- public:
+public:
   int eventType;
   void (*listener)();
 };
 std::list<ListenerEntry> listeners;
 
 void on(uint8_t eventType, void (*listener)()) {
-  ListenerEntry entry = { eventType, listener };
+  ListenerEntry entry = {eventType, listener};
   listeners.push_back(entry);
 }
 
@@ -44,4 +44,4 @@ void emit(uint8_t eventType) {
   }
 }
 
-}  // namespace rvl
+} // namespace rvl

@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "./rvl/protocols/discover/discover.hpp"
+#include "./rvl.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
+#include "./rvl/protocols/network_state.hpp"
+#include "./rvl/protocols/protocol.hpp"
 #include <limits.h>
 #include <stdint.h>
-#include "./rvl.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/discover/discover.h"
-#include "./rvl/protocols/network_state.h"
-#include "./rvl/platform.h"
-#include "./rvl/config.h"
 
 namespace rvl {
 
@@ -56,7 +56,9 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO_MAX) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL <
+      SYNC_ITERATION_MODULO_MAX)
+  {
     hasSyncedThisLoop = false;
     return;
   }
@@ -75,7 +77,7 @@ void sync() {
   Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
   Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PING);
-  Platform::system->write8(0);  // reserved
+  Platform::system->write8(0); // reserved
   Platform::system->endWrite();
 }
 
@@ -83,32 +85,33 @@ void parsePacket(uint8_t source) {
   debug("Parsing Discover packet");
 
   uint8_t subPacketType = Platform::system->read8();
-  Platform::system->read8();  // reserved
+  Platform::system->read8(); // reserved
   NetworkState::refreshNode(source);
 
   switch (subPacketType) {
-    case DISCOVER_SUBPACKET_TYPE_PING: {
-      Platform::system->beginWrite(source);
-      Protocol::sendHeader(PACKET_TYPE_DISCOVER, source);
-      Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PONG);
-      Platform::system->write8(0);  // reserved
-      Platform::system->endWrite();
-      break;
-    }
+  case DISCOVER_SUBPACKET_TYPE_PING: {
+    Platform::system->beginWrite(source);
+    Protocol::sendHeader(PACKET_TYPE_DISCOVER, source);
+    Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PONG);
+    Platform::system->write8(0); // reserved
+    Platform::system->endWrite();
+    break;
+  }
 
-    case DISCOVER_SUBPACKET_TYPE_PONG: {
-      // Don't need to do anything special here, since we already refreshed the node
-      debug("Received discover packet from %d", source);
-      break;
-    }
+  case DISCOVER_SUBPACKET_TYPE_PONG: {
+    // Don't need to do anything special here, since we already refreshed the
+    // node
+    debug("Received discover packet from %d", source);
+    break;
+  }
 
-    default: {
-      error("Received unknown discover subpacket type %d", subPacketType);
-      break;
-    }
+  default: {
+    error("Received unknown discover subpacket type %d", subPacketType);
+    break;
+  }
   }
 }
 
-}  // namespace ProtocolDiscover
+} // namespace ProtocolDiscover
 
-}  // namespace rvl
+} // namespace rvl

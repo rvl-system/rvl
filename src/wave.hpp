@@ -17,24 +17,32 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_DISCOVER_DISCOVER_H_
-#define RVL_PROTOCOLS_DISCOVER_DISCOVER_H_
+#ifndef WAVE_H_
+#define WAVE_H_
 
 #include <stdint.h>
-#include "./rvl.h"
 
-namespace rvl {
+#define NUM_WAVES 4
 
-namespace ProtocolDiscover {
+struct RVLWaveChannel {
+  uint8_t a = 0;
+  uint8_t b = 0;
+  int8_t w_t = 0;
+  int8_t w_x = 0;
+  int8_t phi = 0;
+};
 
-void init();
-void loop();
+struct RVLWave {
+  RVLWaveChannel h;
+  RVLWaveChannel s;
+  RVLWaveChannel v;
+  RVLWaveChannel a;
+};
 
-void sync();
-void parsePacket(uint8_t source);
+struct RVLWaveSettings {
+  uint8_t timePeriod = 255;
+  uint8_t distancePeriod = 32;
+  RVLWave waves[NUM_WAVES];
+};
 
-}  // namespace ProtocolDiscover
-
-}  // namespace rvl
-
-#endif  // RVL_PROTOCOLS_DISCOVER_DISCOVER_H_
+#endif // WAVE_H_

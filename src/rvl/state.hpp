@@ -20,9 +20,9 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_STATE_H_
 #define RVL_STATE_H_
 
+#include "./rvl.hpp"
+#include "./wave.hpp"
 #include <stdint.h>
-#include "./rvl.h"
-#include "./wave.h"
 
 namespace rvl {
 
@@ -58,6 +58,6 @@ void setSynchronizationState(bool synchronized);
 
 bool isNetworkConnected();
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_STATE_H_
+#endif // RVL_STATE_H_

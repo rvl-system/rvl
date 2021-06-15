@@ -22,9 +22,9 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 
-#include "./rvl/logging.h"
-#include "./rvl/event.h"
-#include "./rvl/state.h"
+#include "./rvl/event.hpp"
+#include "./rvl/logging.hpp"
+#include "./rvl/state.hpp"
 
 #define EVENT_WAVE_SETTINGS_UPDATED 1
 #define EVENT_DEVICE_MODE_UPDATED 2
@@ -39,10 +39,10 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 namespace rvl {
 
 class System {
- protected:
+protected:
   void setConnectedState(bool connected);
 
- public:
+public:
   bool isConnected();
 
   virtual void loop() = 0;
@@ -72,6 +72,6 @@ void init(System* system);
 
 void loop();
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_H_
+#endif // RVL_H_

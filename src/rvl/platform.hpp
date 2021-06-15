@@ -20,7 +20,7 @@ along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_PLATFORM_H_
 #define RVL_PLATFORM_H_
 
-#include "./rvl.h"
+#include "./rvl.hpp"
 
 namespace rvl {
 
@@ -30,8 +30,8 @@ extern System* system;
 
 void init(System* newSystem);
 
-}  // namespace Platform
+} // namespace Platform
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_PLATFORM_H_
+#endif // RVL_PLATFORM_H_

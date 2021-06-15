@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdint.h>
+#include "./wave.hpp"
+#include "./rvl.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
+#include "./rvl/protocols/network_state.hpp"
+#include "./rvl/protocols/protocol.hpp"
+#include "./rvl/protocols/wave/wave.hpp"
 #include <limits.h>
-#include "./rvl.h"
-#include "./wave.h"
-#include "./rvl/platform.h"
-#include "./rvl/config.h"
-#include "./rvl/protocols/network_state.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/wave/wave.h"
+#include <stdint.h>
 
 namespace rvl {
 
@@ -57,7 +57,9 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL <
+      SYNC_ITERATION_MODULO)
+  {
     hasSyncedThisLoop = false;
     return;
   }
@@ -69,7 +71,9 @@ void loop() {
 }
 
 void sync() {
-  if (getDeviceMode() != DeviceMode::Controller || !Platform::system->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller ||
+      !Platform::system->isConnected())
+  {
     return;
   }
   debug("Syncing preset");
@@ -79,7 +83,8 @@ void sync() {
   Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
   Platform::system->write8(waveSettings->timePeriod);
   Platform::system->write8(waveSettings->distancePeriod);
-  Platform::system->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
+  Platform::system->write(
+      reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
   Platform::system->endWrite();
 }
 
@@ -91,10 +96,11 @@ void parsePacket(uint8_t source) {
   RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::system->read8();
   newWaveSettings.distancePeriod = Platform::system->read8();
-  Platform::system->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves), sizeof(RVLWave) * NUM_WAVES);
+  Platform::system->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves),
+      sizeof(RVLWave) * NUM_WAVES);
   setWaveSettings(&newWaveSettings);
 }
 
-}  // namespace ProtocolWave
+} // namespace ProtocolWave
 
-}  // namespace rvl
+} // namespace rvl

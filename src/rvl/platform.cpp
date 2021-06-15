@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./rvl.h"
-#include "./rvl/platform.h"
+#include "./rvl/platform.hpp"
+#include "./rvl.hpp"
 
 namespace rvl {
 
@@ -32,6 +32,6 @@ void init(System* newSystem) {
   system = newSystem;
 }
 
-}  // namespace Platform
+} // namespace Platform
 
-}  // namespace rvl
+} // namespace rvl

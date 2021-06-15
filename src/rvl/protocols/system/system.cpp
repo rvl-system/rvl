@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "./rvl/protocols/system/system.hpp"
+#include "./rvl.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
+#include "./rvl/protocols/network_state.hpp"
+#include "./rvl/protocols/protocol.hpp"
+#include "./rvl/state.hpp"
 #include <limits.h>
 #include <stdint.h>
-#include "./rvl.h"
-#include "./rvl/platform.h"
-#include "./rvl/config.h"
-#include "./rvl/state.h"
-#include "./rvl/protocols/network_state.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/system/system.h"
 
 namespace rvl {
 
@@ -43,7 +43,9 @@ void loop() {
   if (getDeviceMode() != DeviceMode::Controller) {
     return;
   }
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL <
+      SYNC_ITERATION_MODULO)
+  {
     hasSyncedThisLoop = false;
     return;
   }
@@ -55,13 +57,14 @@ void loop() {
 }
 
 /*
-Power: 1 byte = the power state of the system. 0 = LEDs off, 1 = LEDs on, > 1 reserved
-Brightness: 1 byte = the brightness of the system
-Reserved: 2 bytes
+Power: 1 byte = the power state of the system. 0 = LEDs off, 1 = LEDs on, > 1
+reserved Brightness: 1 byte = the brightness of the system Reserved: 2 bytes
 */
 
 void sync() {
-  if (getDeviceMode() != DeviceMode::Controller || !Platform::system->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller ||
+      !Platform::system->isConnected())
+  {
     return;
   }
   debug("Syncing system parameters");
@@ -79,9 +82,9 @@ void parsePacket(uint8_t source) {
   }
   debug("Parsing System packet");
 
-  uint8_t power = Platform::system->read8();  // power
-  uint8_t brightness = Platform::system->read8();  // brightness
-  Platform::system->read16();  // reserved
+  uint8_t power = Platform::system->read8(); // power
+  uint8_t brightness = Platform::system->read8(); // brightness
+  Platform::system->read16(); // reserved
 
   setPowerState(power);
 
@@ -90,6 +93,6 @@ void parsePacket(uint8_t source) {
   }
 }
 
-}  // namespace ProtocolSystem
+} // namespace ProtocolSystem
 
-}  // namespace rvl
+} // namespace rvl

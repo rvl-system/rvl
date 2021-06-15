@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdint.h>
-#include <iterator>
+#include "./rvl/protocols/clock_sync/clock_sync.hpp"
+#include "./rvl.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
+#include "./rvl/protocols/network_state.hpp"
+#include "./rvl/protocols/protocol.hpp"
 #include <algorithm>
-#include "./rvl.h"
-#include "./rvl/config.h"
-#include "./rvl/platform.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/network_state.h"
-#include "./rvl/protocols/clock_sync/clock_sync.h"
+#include <iterator>
+#include <stdint.h>
 
 namespace rvl {
 
@@ -53,30 +53,35 @@ Reserved: 1 byte
 c1 (Controller Observation 1): 4 bytes = The first clock of the controller node
 r1 (Receiver Observation 1): 4 bytes = The first clock of the receiver node
 ...
-cN (Controller Observation NUM_REQUESTS): 4 bytes = The fourth clock of the controller node
-rN (Receiver Observation NUM_REQUESTS): 4 bytes = The fourth clock of the receiver node
+cN (Controller Observation NUM_REQUESTS): 4 bytes = The fourth clock of the
+controller node rN (Receiver Observation NUM_REQUESTS): 4 bytes = The fourth
+clock of the receiver node
 */
 
 /* Algorithm Type 1
-1. The controller initializes a packet with the observation number set to 0 and all clock observations set to 0
+1. The controller initializes a packet with the observation number set to 0 and
+all clock observations set to 0
 2. The controller processes the received/initialized packet
   2.1 The controller increments the observation number
-  2.2 The controller sets the appropriate observation slot in the packet based on the observation number
-  2.3 The controller sends the packet to the receiver
+  2.2 The controller sets the appropriate observation slot in the packet based
+on the observation number 2.3 The controller sends the packet to the receiver
 3. The receiver process the received packet
-  3.1 The receiver sets the appropriate observation slot in the packet based on the observation number
-  3.2 If the observation number equals NUM_REQUESTS, then we skip to step 4
-  3.3 Otherwise, send the packet to the server and skip to step 2
+  3.1 The receiver sets the appropriate observation slot in the packet based on
+the observation number 3.2 If the observation number equals NUM_REQUESTS, then
+we skip to step 4 3.3 Otherwise, send the packet to the server and skip to step
+2
 4. The receiver processes the observations
-  4.1. Calculate the periods between c1 and c2, c2 and c3, c3 and c4, r1 and r2, r2 and r3, r3 and r4, and take the median / 2 as P
-  4.2. Calculate offsets On=rn-(cn+P) and find the median O
-  4.3. Update the animation clock by adding O to the current animation clock
+  4.1. Calculate the periods between c1 and c2, c2 and c3, c3 and c4, r1 and r2,
+r2 and r3, r3 and r4, and take the median / 2 as P 4.2. Calculate offsets
+On=rn-(cn+P) and find the median O 4.3. Update the animation clock by adding O
+to the current animation clock
 */
 
 void init() {
 }
 
-void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observations) {
+void sendResponse(
+    uint8_t node, uint8_t observationNumber, uint32_t* observations) {
   if (getDeviceMode() == DeviceMode::Controller) {
     observationNumber++;
     observations[(observationNumber - 1) * 2] = getAnimationClock();
@@ -95,7 +100,8 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
       // Step 4.1
       int32_t periods[(NUM_REQUESTS - 1) * 2];
       for (uint8_t i = 0; i < NUM_REQUESTS * 2 - 3; i++) {
-        periods[i] = static_cast<int32_t>(observations[i + 2]) - static_cast<int32_t>(observations[i]);
+        periods[i] = static_cast<int32_t>(observations[i + 2]) -
+            static_cast<int32_t>(observations[i]);
       }
       std::sort(std::begin(periods), std::end(periods));
       int16_t P = periods[NUM_REQUESTS - 1] / 2;
@@ -103,7 +109,8 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
       // Step 4.2
       int32_t offsets[NUM_REQUESTS];
       for (uint8_t i = 0; i < NUM_REQUESTS; i++) {
-        offsets[i] = static_cast<int32_t>(observations[i * 2 + 1]) - static_cast<int32_t>(observations[i * 2] + P);
+        offsets[i] = static_cast<int32_t>(observations[i * 2 + 1]) -
+            static_cast<int32_t>(observations[i * 2] + P);
       }
       int32_t offset = offsets[(NUM_REQUESTS - 1) / 2];
 
@@ -113,26 +120,32 @@ void sendResponse(uint8_t node, uint8_t observationNumber, uint32_t* observation
       return;
     }
   }
-  debug("Sending clock sync observation #%d to source %d", observationNumber, node);
+  debug("Sending clock sync observation #%d to source %d", observationNumber,
+      node);
   Platform::system->beginWrite(node);
   Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, node);
   Platform::system->write8(CLOCK_SYNC_TYPE_P2P);
-  Platform::system->write8(0);  // reserved
+  Platform::system->write8(0); // reserved
   Platform::system->write8(observationNumber);
-  Platform::system->write8(0);  // reserved
-  Platform::system->write(reinterpret_cast<uint8_t*>(observations), NUM_REQUESTS * 2 * sizeof(uint32_t));
+  Platform::system->write8(0); // reserved
+  Platform::system->write(reinterpret_cast<uint8_t*>(observations),
+      NUM_REQUESTS * 2 * sizeof(uint32_t));
   Platform::system->endWrite();
 }
 
 void loop() {
-  if (getDeviceMode() != DeviceMode::Controller || !Platform::system->isConnected()) {
+  if (getDeviceMode() != DeviceMode::Controller ||
+      !Platform::system->isConnected())
+  {
     return;
   }
 
   // Check if we're in our alloted time window
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO ||
-    Platform::system->localClock() % CLIENT_SYNC_INTERVAL > SYNC_ITERATION_MODULO_MAX
-  ) {
+  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL <
+          SYNC_ITERATION_MODULO ||
+      Platform::system->localClock() % CLIENT_SYNC_INTERVAL >
+          SYNC_ITERATION_MODULO_MAX)
+  {
     return;
   }
 
@@ -167,25 +180,26 @@ void loop() {
 void parsePacket(uint8_t source) {
   debug("Parsing clock sync packet");
   uint8_t subPacketType = Platform::system->read8();
-  Platform::system->read8();  // Reserved
+  Platform::system->read8(); // Reserved
 
   switch (subPacketType) {
-    case CLOCK_SYNC_TYPE_P2P: {
-      uint8_t observationNumber = Platform::system->read8();
-      Platform::system->read8();  // reserved
-      uint32_t observations[NUM_REQUESTS * 2];
-      Platform::system->read(reinterpret_cast<uint8_t*>(observations), NUM_REQUESTS * 2 * sizeof(uint32_t));
-      sendResponse(source, observationNumber, observations);
-      break;
-    }
+  case CLOCK_SYNC_TYPE_P2P: {
+    uint8_t observationNumber = Platform::system->read8();
+    Platform::system->read8(); // reserved
+    uint32_t observations[NUM_REQUESTS * 2];
+    Platform::system->read(reinterpret_cast<uint8_t*>(observations),
+        NUM_REQUESTS * 2 * sizeof(uint32_t));
+    sendResponse(source, observationNumber, observations);
+    break;
+  }
 
-    default: {
-      error("Received unknown clock sync subpacket type %d", subPacketType);
-      break;
-    }
+  default: {
+    error("Received unknown clock sync subpacket type %d", subPacketType);
+    break;
+  }
   }
 }
 
-}  // namespace ProtocolClockSync
+} // namespace ProtocolClockSync
 
-}  // namespace rvl
+} // namespace rvl

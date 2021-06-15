@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "./rvl/state.hpp"
+#include "rvl/platform.hpp"
 #include <string.h>
-#include "./rvl/state.h"
-#include "./rvl/platform.h"
 
 namespace rvl {
 
@@ -133,4 +133,4 @@ bool isNetworkConnected() {
   return Platform::system->isConnected();
 }
 
-}  // namespace rvl
+} // namespace rvl

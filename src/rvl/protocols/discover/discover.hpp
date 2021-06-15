@@ -17,38 +17,24 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_PROTOCOL_H_
-#define RVL_PROTOCOLS_PROTOCOL_H_
+#ifndef RVL_PROTOCOLS_DISCOVER_DISCOVER_H_
+#define RVL_PROTOCOLS_DISCOVER_DISCOVER_H_
 
+#include "./rvl.hpp"
 #include <stdint.h>
-#include "./rvl/platform.h"
-#include "./rvl/config.h"
 
 namespace rvl {
 
-namespace Protocol {
-
-// Note: we use the old style of enums here because we regularly switch between uint8_t values and these enum values
-namespace RVLPacketType {
-  enum RVLPacketType {
-    Palette = 1,
-    Wave = 2
-  };
-}
+namespace ProtocolDiscover {
 
 void init();
 void loop();
 
-void parsePacket();
+void sync();
+void parsePacket(uint8_t source);
 
-uint8_t getMulticastAddress();
+} // namespace ProtocolDiscover
 
-void sendHeader(uint8_t packetType, uint8_t destination);
-void sendBroadcastHeader(uint8_t packetType);
-void sendMulticastHeader(uint8_t packetType);
+} // namespace rvl
 
-}  // namespace Protocol
-
-}  // namespace rvl
-
-#endif  // RVL_PROTOCOLS_PROTOCOL_H_
+#endif // RVL_PROTOCOLS_DISCOVER_DISCOVER_H_

@@ -17,17 +17,17 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdint.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
+#include "./rvl.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
+#include "./rvl/protocols/protocol.hpp"
+#include "./rvl/protocols/system/system.hpp"
+#include "./rvl/protocols/wave/wave.hpp"
 #include <list>
-#include "./rvl.h"
-#include "./rvl/config.h"
-#include "./rvl/platform.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/wave/wave.h"
-#include "./rvl/protocols/system/system.h"
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 namespace rvl {
 
@@ -68,4 +68,4 @@ bool System::isConnected() {
   return rvlConnectedState;
 }
 
-}  // namespace rvl
+} // namespace rvl

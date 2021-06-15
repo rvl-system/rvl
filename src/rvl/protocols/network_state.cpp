@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string.h>
+#include "./rvl/protocols/network_state.hpp"
+#include "./rvl/config.hpp"
+#include "./rvl/platform.hpp"
 #include <algorithm>
-#include "./rvl/protocols/network_state.h"
-#include "./rvl/platform.h"
-#include "./rvl/config.h"
+#include <string.h>
 
 namespace rvl {
 
@@ -43,9 +43,9 @@ void init() {
 }
 
 void loop() {
-  int32_t expirationTime =
-    std::max(0, static_cast<int32_t>(Platform::system->localClock()) -
-    CONTROLLER_NODE_EXPIRATION_DURATION);
+  int32_t expirationTime = std::max(0,
+      static_cast<int32_t>(Platform::system->localClock()) -
+          CONTROLLER_NODE_EXPIRATION_DURATION);
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       info("Node %d expired from the network map", i);
@@ -113,10 +113,9 @@ bool isControllerNode(uint8_t node) {
     // Check if the old controller hasn't broadcast in a while, meaning it's
     // likely offline or no longer in controller mode and can be replaced with
     // this new controller
-    if (
-      currentTime - controllerNodeLastRefreshed >
-      CONTROLLER_NODE_EXPIRATION_DURATION
-    ) {
+    if (currentTime - controllerNodeLastRefreshed >
+        CONTROLLER_NODE_EXPIRATION_DURATION)
+    {
       controllerNode = node;
       controllerNodeLastRefreshed = currentTime;
     }
@@ -127,8 +126,9 @@ bool isControllerNode(uint8_t node) {
 }
 
 bool isControllerActive() {
-  return (controllerNodeLastRefreshed > 0) && (Platform::system->localClock() -
-    controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+  return (controllerNodeLastRefreshed > 0) &&
+      (Platform::system->localClock() - controllerNodeLastRefreshed <
+          CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 uint8_t getNextClockNode() {
@@ -136,13 +136,10 @@ uint8_t getNextClockNode() {
   uint32_t oldestClock = UINT32_MAX;
   uint8_t oldestNode = 255;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
-    if (
-      nodeTimestamps[i] > 0 &&
-      nodeClockTimestamps[i] < oldestClock && (
-        nodeClockTimestamps[i] == 0 || now -
-        nodeClockTimestamps[i] > CLOCK_SYNC_MIN_INTERVAL
-      )
-    ) {
+    if (nodeTimestamps[i] > 0 && nodeClockTimestamps[i] < oldestClock &&
+        (nodeClockTimestamps[i] == 0 ||
+            now - nodeClockTimestamps[i] > CLOCK_SYNC_MIN_INTERVAL))
+    {
       oldestNode = i;
       oldestClock = nodeClockTimestamps[i];
     }
@@ -155,11 +152,11 @@ void refreshLocalClockSynchronization() {
 }
 
 bool isClockSynchronizationActive() {
-  return (localClockLastRefreshed > 0) && (
-    Platform::system->localClock() - localClockLastRefreshed <
-    CONTROLLER_NODE_EXPIRATION_DURATION);
+  return (localClockLastRefreshed > 0) &&
+      (Platform::system->localClock() - localClockLastRefreshed <
+          CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
-}  // namespace NetworkState
+} // namespace NetworkState
 
-}  // namespace rvl
+} // namespace rvl

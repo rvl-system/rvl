@@ -17,13 +17,13 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string.h>
+#include "./rvl/logging.hpp"
+#include "./rvl.hpp"
+#include "./rvl/platform.hpp"
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdarg.h>
-#include "./rvl.h"
-#include "./rvl/logging.h"
-#include "./rvl/platform.h"
+#include <string.h>
 
 namespace rvl {
 
@@ -33,11 +33,11 @@ void setLogLevel(LogLevel newLevel) {
   logLevel = newLevel;
 }
 
-void log(const char *s) {
+void log(const char* s) {
   Platform::system->print(s);
 }
 
-void log(const char *s, va_list argptr) {
+void log(const char* s, va_list argptr) {
   int bufferLength = strlen(s) * 3;
   char* str = new char[bufferLength];
   vsnprintf(str, bufferLength, s, argptr);
@@ -45,7 +45,7 @@ void log(const char *s, va_list argptr) {
   delete[] str;
 }
 
-void error(const char *s, ...) {
+void error(const char* s, ...) {
   if (logLevel >= LogLevel::Error) {
     Platform::system->print("[error]: ");
     va_list argptr;
@@ -55,7 +55,7 @@ void error(const char *s, ...) {
   }
 }
 
-void info(const char *s, ...) {
+void info(const char* s, ...) {
   if (logLevel >= LogLevel::Info) {
     Platform::system->print("[info ]: ");
     va_list argptr;
@@ -65,7 +65,7 @@ void info(const char *s, ...) {
   }
 }
 
-void debug(const char *s, ...) {
+void debug(const char* s, ...) {
   if (logLevel >= LogLevel::Debug) {
     Platform::system->print("[debug]: ");
     va_list argptr;
@@ -75,4 +75,4 @@ void debug(const char *s, ...) {
   }
 }
 
-}  // namespace rvl
+} // namespace rvl

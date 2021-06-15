@@ -20,14 +20,14 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_EVENT_H_
 #define RVL_EVENT_H_
 
+#include "./rvl/event.hpp"
 #include <stdint.h>
-#include "./rvl/event.h"
 
 namespace rvl {
 
 void on(uint8_t eventType, void (*listener)());
 void emit(uint8_t eventType);
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_EVENT_H_
+#endif // RVL_EVENT_H_
