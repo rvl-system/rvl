@@ -38,7 +38,7 @@ namespace ProtocolClockSync {
 #define SYNC_ITERATION_MODULO 500
 #define SYNC_ITERATION_MODULO_MAX 1400
 
-#define SYNC_TIMEOUT SYNC_ITERATION_MODULO_MAX - SYNC_ITERATION_MODULO
+#define SYNC_TIMEOUT (SYNC_ITERATION_MODULO_MAX - SYNC_ITERATION_MODULO)
 
 uint32_t syncTimeout = 0;
 
@@ -99,7 +99,7 @@ void sendResponse(
 
       // Step 4.1
       int32_t periods[(NUM_REQUESTS - 1) * 2];
-      for (uint8_t i = 0; i < NUM_REQUESTS * 2 - 3; i++) {
+      for (int i = 0; i < NUM_REQUESTS * 2 - 3; i++) {
         periods[i] = static_cast<int32_t>(observations[i + 2]) -
             static_cast<int32_t>(observations[i]);
       }
