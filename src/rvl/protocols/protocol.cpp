@@ -83,7 +83,6 @@ void parsePacket() {
 
   // Ignore our own packets
   if (source == deviceId) {
-    Platform::system->endRead();
     return;
   }
 
@@ -94,13 +93,11 @@ void parsePacket() {
   if (destination >= CHANNEL_OFFSET && destination < 255 &&
       getChannel() != channel)
   {
-    Platform::system->endRead();
     return;
   }
 
   // Ignore unicast packets meant for a different destination
   if (destination < CHANNEL_OFFSET && destination != deviceId) {
-    Platform::system->endRead();
     return;
   }
 
@@ -121,7 +118,6 @@ void parsePacket() {
     error("Received unknown subpacket type %d", packetType);
     break;
   }
-  Platform::system->endRead();
 }
 
 void sendHeader(uint8_t packetType, uint8_t destination) {
