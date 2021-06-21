@@ -77,7 +77,7 @@ void sync() {
     return;
   }
   debug("Syncing preset");
-  auto waveSettings = getWaveSettings();
+  auto* waveSettings = getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);

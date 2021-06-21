@@ -70,7 +70,7 @@ void sync() {
   debug("Syncing system parameters");
   Platform::system->beginWrite(Protocol::getMulticastAddress());
   Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
-  Platform::system->write8(getPowerState());
+  Platform::system->write8(getPowerState() ? 1 : 0);
   Platform::system->write8(getBrightness());
   Platform::system->write16(0);
   Platform::system->endWrite();
@@ -86,7 +86,7 @@ void parsePacket(uint8_t source) {
   uint8_t brightness = Platform::system->read8(); // brightness
   Platform::system->read16(); // reserved
 
-  setPowerState(power);
+  setPowerState(power); // NOLINT
 
   if (getRemoteBrightnessState()) {
     setBrightness(brightness);
