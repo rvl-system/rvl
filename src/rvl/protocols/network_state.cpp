@@ -66,7 +66,7 @@ void loop() {
 
 void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
-    info("Adding node %d to the network map", node);
+    debug("Adding node %d to the network map", node);
   }
   nodeTimestamps[node] = Platform::system->localClock();
 }
