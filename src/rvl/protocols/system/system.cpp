@@ -68,8 +68,7 @@ void sync() {
     return;
   }
   debug("Syncing system parameters");
-  Platform::system->beginWrite(Protocol::getMulticastAddress());
-  Protocol::sendMulticastHeader(PACKET_TYPE_SYSTEM);
+  Protocol::beginMulticastWrite(PACKET_TYPE_SYSTEM);
   Platform::system->write8(getPowerState() ? 1 : 0);
   Platform::system->write8(getBrightness());
   Platform::system->write16(0);

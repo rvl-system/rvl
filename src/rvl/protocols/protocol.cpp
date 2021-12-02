@@ -134,12 +134,19 @@ void sendHeader(uint8_t packetType, uint8_t destination) {
   Platform::system->write8(0);
 }
 
-void sendBroadcastHeader(uint8_t packetType) {
+void beginBroadcastWrite(uint8_t packetType) {
+  Platform::system->beginWrite(255);
   sendHeader(packetType, 255);
 }
 
-void sendMulticastHeader(uint8_t packetType) {
+void beginMulticastWrite(uint8_t packetType) {
+  Platform::system->beginWrite(getMulticastAddress());
   sendHeader(packetType, getMulticastAddress());
+}
+
+void beginUnicastWrite(uint8_t packetType, uint8_t address) {
+  Platform::system->beginWrite(address);
+  sendHeader(packetType, address);
 }
 
 } // namespace Protocol

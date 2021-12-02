@@ -122,8 +122,7 @@ void sendResponse(
   }
   debug("Sending clock sync observation #%d to source %d", observationNumber,
       node);
-  Platform::system->beginWrite(node);
-  Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, node);
+  Protocol::beginUnicastWrite(PACKET_TYPE_CLOCK_SYNC, node);
   Platform::system->write8(CLOCK_SYNC_TYPE_P2P);
   Platform::system->write8(0); // reserved
   Platform::system->write8(observationNumber);

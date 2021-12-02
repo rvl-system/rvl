@@ -39,11 +39,9 @@ void loop();
 
 void parsePacket();
 
-uint8_t getMulticastAddress();
-
-void sendHeader(uint8_t packetType, uint8_t destination);
-void sendBroadcastHeader(uint8_t packetType);
-void sendMulticastHeader(uint8_t packetType);
+void beginBroadcastWrite(uint8_t packetType);
+void beginMulticastWrite(uint8_t packetType);
+void beginUnicastWrite(uint8_t packetType, uint8_t address);
 
 } // namespace Protocol
 

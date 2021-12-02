@@ -74,8 +74,7 @@ void sync() {
     return;
   }
   debug("Multicasting discover packet");
-  Platform::system->beginWrite(Protocol::getMulticastAddress());
-  Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
+  Protocol::beginMulticastWrite(PACKET_TYPE_DISCOVER);
   Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PING);
   Platform::system->write8(0); // reserved
   Platform::system->endWrite();
@@ -90,8 +89,7 @@ void parsePacket(uint8_t source) {
 
   switch (subPacketType) {
   case DISCOVER_SUBPACKET_TYPE_PING: {
-    Platform::system->beginWrite(source);
-    Protocol::sendHeader(PACKET_TYPE_DISCOVER, source);
+    Protocol::beginUnicastWrite(PACKET_TYPE_DISCOVER, source);
     Platform::system->write8(DISCOVER_SUBPACKET_TYPE_PONG);
     Platform::system->write8(0); // reserved
     Platform::system->endWrite();
