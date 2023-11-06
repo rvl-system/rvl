@@ -53,28 +53,28 @@ Reserved: 1 byte
 c1 (Controller Observation 1): 4 bytes = The first clock of the controller node
 r1 (Receiver Observation 1): 4 bytes = The first clock of the receiver node
 ...
-cN (Controller Observation NUM_REQUESTS): 4 bytes = The fourth clock of the
-controller node rN (Receiver Observation NUM_REQUESTS): 4 bytes = The fourth
-clock of the receiver node
+cN (Controller Observation NUM_REQUESTS): 4 bytes = The fourth clock of the controller node
+rN (Receiver Observation NUM_REQUESTS): 4 bytes = The fourth clock of the receiver node
 */
 
 /* Algorithm Type 1
 1. The controller initializes a packet with the observation number set to 0 and
-all clock observations set to 0
+  all clock observations set to 0
 2. The controller processes the received/initialized packet
   2.1 The controller increments the observation number
   2.2 The controller sets the appropriate observation slot in the packet based
-on the observation number 2.3 The controller sends the packet to the receiver
+    on the observation number
+  2.3 The controller sends the packet to the receiver
 3. The receiver process the received packet
   3.1 The receiver sets the appropriate observation slot in the packet based on
-the observation number 3.2 If the observation number equals NUM_REQUESTS, then
-we skip to step 4 3.3 Otherwise, send the packet to the server and skip to step
-2
+    the observation number
+  3.2 If the observation number equals NUM_REQUESTS, then we skip to step 4
+  3.3 Otherwise, send the packet to the server and skip to step 2
 4. The receiver processes the observations
   4.1. Calculate the periods between c1 and c2, c2 and c3, c3 and c4, r1 and r2,
-r2 and r3, r3 and r4, and take the median / 2 as P 4.2. Calculate offsets
-On=rn-(cn+P) and find the median O 4.3. Update the animation clock by adding O
-to the current animation clock
+    r2 and r3, r3 and r4, and take the median / 2 as P
+  4.2. Calculate offsets On=rn-(cn+P) and find the median O
+  4.3. Update the animation clock by adding O to the current animation clock
 */
 
 void init() {
