@@ -80,6 +80,9 @@ rN (Receiver Observation NUM_REQUESTS): 4 bytes = The fourth clock of the receiv
 void init() {
 }
 
+// TODO: if two controllers are on the same network, then they both think they
+// started the synchronization, which just isn't true. I should switch this so
+// that we don't use `getDeviceMode()` to determine what to do in this function.
 void sendResponse(
     uint8_t node, uint8_t observationNumber, uint32_t* observations) {
   if (getDeviceMode() == DeviceMode::Controller) {
