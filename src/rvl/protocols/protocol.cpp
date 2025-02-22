@@ -1,20 +1,20 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of RVL Arduino.
+This file is part of RVL.
 
-RVL Arduino is free software: you can redistribute it and/or modify
+RVL is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-RVL Arduino is distributed in the hope that it will be useful,
+RVL is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "./rvl/protocols/protocol.hpp"
@@ -67,7 +67,7 @@ uint8_t getMulticastAddress() {
 void parsePacket() {
   uint8_t version = Platform::system->read8();
   if (version != PROTOCOL_VERSION) {
-    error("Received unsupported Raver Lights protocol packet version %d, "
+    error("Received unsupported RVL Firmware protocol packet version %d, "
           "ignoring",
         version);
     return;

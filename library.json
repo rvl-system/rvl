@@ -1,6 +1,6 @@
 {
   "name": "RVLMessaging",
-  "description": "A standalone, dependecy-less library that implements the Raver Lights messaging stack for use with Arduino, PlatformIO, and WASM",
+  "description": "A standalone, dependecy-less library that implements the RVL messaging stack for use with Arduino, PlatformIO, and WASM",
   "keywords": "led synchronization, clock synchronization, messaging",
   "authors": {
     "name": "Bryan Hughes",
