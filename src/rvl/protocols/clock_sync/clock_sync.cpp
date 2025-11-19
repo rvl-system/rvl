@@ -46,7 +46,7 @@ bool hasSentObservationThisWindow = false;
 uint16_t id = 0;
 
 /*
-Reference Broadcast Time Synchronization, an implementation of the algorith
+Reference Broadcast Synchronization, an implementation of the algorith
 described in "Fine-Grained Network Time Synchronization using Reference
 Broadcasts" by Jeremy Elson, Lewis Girod and Deborah Estrin
 
@@ -186,8 +186,6 @@ void parsePacket(uint8_t source) {
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
     observations[observationStep][source] = clock;
     numObservations++;
-    debug("numObservations=%d numNode=%d", numObservations,
-        NetworkState::getNumNodes());
     if (numObservations ==
         NUM_OBSERVATIONS_IN_SET * (NetworkState::getNumNodes() - 1))
     {

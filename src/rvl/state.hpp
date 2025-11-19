@@ -41,6 +41,8 @@ void setChannel(uint8_t channel);
 DeviceMode getDeviceMode();
 void setDeviceMode(DeviceMode newDeviceMode);
 
+void lockState();
+void freeState();
 RVLWaveSettings* getWaveSettings();
 void setWaveSettings(RVLWaveSettings* newWaveSettings);
 
