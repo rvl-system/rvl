@@ -40,9 +40,8 @@ namespace ProtocolClockSync {
 #define SYNC_ITERATION_MODULO_MAX 1400
 
 uint32_t observations[NUM_OBSERVATIONS_IN_SET][NUM_NODES];
-uint32_t processTime = UINT32_MAX;
+uint16_t observationIds[NUM_OBSERVATIONS_IN_SET];
 uint16_t numObservations = 0;
-bool hasSentObservationThisWindow = false;
 uint16_t id = 0;
 
 /*
@@ -66,6 +65,18 @@ Observation packet:
 clock: 4 bytes = the observed time of the reference
 */
 
+// Each observation row holds data for a single reference broadcast id. If a
+// row still holds data from an older broadcast (a set that never completed),
+// clear it before reuse so observations of different broadcasts never mix
+// within one row
+void prepareObservationRow(uint16_t broadcastId) {
+  uint8_t row = broadcastId % NUM_OBSERVATIONS_IN_SET;
+  if (observationIds[row] != broadcastId) {
+    memset(observations[row], 0, sizeof(observations[row]));
+    observationIds[row] = broadcastId;
+  }
+}
+
 void processObservations() {
   int32_t averageOffset = 0;
   uint8_t localNode = Platform::system->getDeviceId();
@@ -74,6 +85,15 @@ void processObservations() {
       observation++)
   {
     uint32_t localObservedTime = observations[observation][localNode];
+
+    // If we never observed this reference broadcast ourselves (it was lost),
+    // we have nothing to compare the other nodes' observations against, so
+    // discard this row. Without this check, localObservedTime would be 0 and
+    // the computed offset would jump the clock by the entire median value
+    if (localObservedTime == 0) {
+      memset(observations[observation], 0, sizeof(observations[observation]));
+      continue;
+    }
 
     // Sort the array so we can get the median time
     std::sort(observations[observation], observations[observation] + NUM_NODES);
@@ -117,6 +137,7 @@ void processObservations() {
 
 void init() {
   memset(observations, 0, sizeof(observations));
+  memset(observationIds, 0, sizeof(observationIds));
 }
 
 void loop() {
@@ -168,12 +189,18 @@ void parsePacket(uint8_t source) {
     bool isStartOfSet = Platform::system->read8();
     Platform::system->read8(); // reserved
     if (isStartOfSet == 1) {
+      // If the previous set never completed because packets were lost, salvage
+      // whatever observations we did collect instead of letting them go stale
+      if (numObservations > 0) {
+        processObservations();
+      }
       numObservations = 0;
     }
 
     // Store this node in the observation list so that all nodes have the same
     // observation table. This would normally be missing, since we wouldn't
     // receive the message that was just sent
+    prepareObservationRow(id);
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
     observations[observationStep][Platform::system->getDeviceId()] =
         observedTime;
@@ -183,13 +210,17 @@ void parsePacket(uint8_t source) {
   case CLOCK_SYNC_PACKET_TYPE_OBSERVATION: {
     uint32_t clock = Platform::system->read32();
     debug("Received observation from %d with clock %d", source, clock);
+    prepareObservationRow(id);
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
     observations[observationStep][source] = clock;
     numObservations++;
-    if (numObservations ==
+    // On a lossy network the count can step over the expected total (duplicate
+    // packets, nodes joining mid-set), so this must not require exact equality
+    if (numObservations >=
         NUM_OBSERVATIONS_IN_SET * (NetworkState::getNumNodes() - 1))
     {
       processObservations();
+      numObservations = 0;
     }
     break;
   }
