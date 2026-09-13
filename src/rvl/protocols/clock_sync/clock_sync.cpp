@@ -135,7 +135,7 @@ void loop() {
     return;
   }
 
-  // TODO: if we were to implement broadcast here, it would look iike:
+  // TODO: if we were to implement broadcast here, it would look like:
   /*
   Protocol::beginBroadcastWrite(PACKET_TYPE_CLOCK_SYNC);
   Platform::system->write8(CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST);
