@@ -21,6 +21,10 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "rvl/platform.hpp"
 #include <string.h>
 
+#ifdef ESP32
+#include "freertos/FreeRTOS.h"
+#endif
+
 namespace rvl {
 
 int32_t clockOffset = 0;
@@ -32,13 +36,22 @@ uint8_t brightness = 0;
 bool remoteBrightness = false;
 bool synchronized = false;
 
-uint8_t locked = 0;
+#ifdef ESP32
+portMUX_TYPE stateMux = portMUX_INITIALIZER_UNLOCKED;
+#endif
+
+// Single-threaded platforms have no other task to exclude, so these are no-ops
+// there
 void lockState() {
-  locked++;
+#ifdef ESP32
+  portENTER_CRITICAL(&stateMux);
+#endif
 }
 
 void freeState() {
-  locked--;
+#ifdef ESP32
+  portEXIT_CRITICAL(&stateMux);
+#endif
 }
 
 // Computed live rather than cached per loop tick: the render loop runs on a
@@ -57,9 +70,6 @@ uint8_t getDeviceId() {
 }
 
 void setAnimationClock(uint32_t newClock) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   clockOffset = newClock - Platform::system->localClock();
   emit(EVENT_ANIMATION_CLOCK_UPDATED);
 }
@@ -69,9 +79,6 @@ uint8_t getChannel() {
 }
 
 void setChannel(uint8_t newChannel) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   if (channel != newChannel) {
     channel = newChannel;
     emit(EVENT_CHANNEL_UPDATED);
@@ -83,9 +90,6 @@ DeviceMode getDeviceMode() {
 }
 
 void setDeviceMode(DeviceMode newDeviceMode) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   if (deviceMode != newDeviceMode) {
     deviceMode = newDeviceMode;
     emit(EVENT_DEVICE_MODE_UPDATED);
@@ -97,10 +101,9 @@ RVLWaveSettings* getWaveSettings() {
 }
 
 void setWaveSettings(RVLWaveSettings* newWaveSettings) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
+  lockState();
   memcpy(&waveSettings, newWaveSettings, sizeof(RVLWaveSettings));
+  freeState();
   emit(EVENT_WAVE_SETTINGS_UPDATED);
 }
 
@@ -109,9 +112,6 @@ bool getPowerState() {
 }
 
 void setPowerState(bool newPowerState) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   if (powerState != newPowerState) {
     powerState = newPowerState;
     emit(EVENT_POWER_STATE_UPDATED);
@@ -123,9 +123,6 @@ uint8_t getBrightness() {
 }
 
 void setBrightness(uint8_t newBrightness) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   if (brightness != newBrightness) {
     brightness = newBrightness;
     emit(EVENT_BRIGHTNESS_UPDATED);
@@ -137,9 +134,6 @@ bool getRemoteBrightnessState() {
 }
 
 void setRemoteBrightnessState(bool newRemoteBrightness) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   if (remoteBrightness != newRemoteBrightness) {
     remoteBrightness = newRemoteBrightness;
     emit(EVENT_REMOTE_BRIGHTNESS_UPDATED);
@@ -154,9 +148,6 @@ bool getSynchronizationState() {
 }
 
 void setSynchronizationState(bool newSynchronized) {
-  while (locked) {
-    // Wait for wave settings to be unlocked
-  }
   if (synchronized != newSynchronized) {
     synchronized = newSynchronized;
     emit(EVENT_SYNCHRONIZATION_STATE_UPDATED);

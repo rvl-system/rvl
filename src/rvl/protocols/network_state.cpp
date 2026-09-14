@@ -53,14 +53,11 @@ void loop() {
       nodeClockTimestamps[i] = 0;
     }
   }
-  bool synchronized = false;
-  if (getDeviceMode() == DeviceMode::Controller) {
-    synchronized = isClockSynchronizationActive();
-  } else {
-    synchronized = isClockSynchronizationActive() && isControllerActive();
-  }
-  if (synchronized != getSynchronizationState()) {
-    setSynchronizationState(synchronized);
+  if (getDeviceMode() == DeviceMode::Receiver) {
+    bool synchronized = isClockSynchronizationActive() && isControllerActive();
+    if (synchronized != getSynchronizationState()) {
+      setSynchronizationState(synchronized);
+    }
   }
 }
 
