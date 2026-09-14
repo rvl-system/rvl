@@ -33,10 +33,6 @@ void setLogLevel(LogLevel newLevel) {
   logLevel = newLevel;
 }
 
-void log(const char* s) {
-  Platform::system->print(s);
-}
-
 void log(const char* s, va_list argptr) {
   int bufferLength = strlen(s) * 3;
   char* str = new char[bufferLength];

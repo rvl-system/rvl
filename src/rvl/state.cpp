@@ -71,7 +71,6 @@ uint8_t getDeviceId() {
 
 void setAnimationClock(uint32_t newClock) {
   clockOffset = newClock - Platform::system->localClock();
-  emit(EVENT_ANIMATION_CLOCK_UPDATED);
 }
 
 uint8_t getChannel() {
@@ -148,10 +147,7 @@ bool getSynchronizationState() {
 }
 
 void setSynchronizationState(bool newSynchronized) {
-  if (synchronized != newSynchronized) {
-    synchronized = newSynchronized;
-    emit(EVENT_SYNCHRONIZATION_STATE_UPDATED);
-  }
+  synchronized = newSynchronized;
 }
 
 bool isNetworkConnected() {
