@@ -28,10 +28,9 @@ namespace rvl {
 
 enum class DeviceMode { Controller, Receiver };
 
-void stateLoop();
-
 uint32_t getAnimationClock();
 void setAnimationClock(uint32_t newClock);
+uint32_t toAnimationClock(uint32_t localTime);
 
 uint8_t getDeviceId();
 

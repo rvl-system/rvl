@@ -31,6 +31,8 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
+#define MAX_PACKETS_PER_LOOP 32
+
 void init(System* newSystem) {
   Platform::init(newSystem);
   Protocol::init();
@@ -38,17 +40,23 @@ void init(System* newSystem) {
 
 void loop() {
   Platform::system->loop();
-  stateLoop();
   if (!Platform::system->isConnected()) {
     return;
   }
 
-  int packetSize = Platform::system->parsePacket();
-  if (packetSize != 0) {
+  // Drain all pending packets, bounded so a packet storm can't starve the
+  // rest of the loop
+  for (uint8_t i = 0; i < MAX_PACKETS_PER_LOOP; i++) {
+    int packetSize = Platform::system->parsePacket();
+    if (packetSize == 0) {
+      break;
+    }
     uint8_t receivedSignature[4];
     Platform::system->read(receivedSignature, 4);
     if (memcmp(receivedSignature, rvl::signature, 4) == 0) {
       Protocol::parsePacket();
+    } else {
+      Platform::system->endRead();
     }
   }
 

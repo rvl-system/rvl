@@ -23,7 +23,6 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-uint32_t animationClock;
 int32_t clockOffset = 0;
 uint8_t channel = 0;
 DeviceMode deviceMode = DeviceMode::Receiver;
@@ -42,12 +41,15 @@ void freeState() {
   locked--;
 }
 
-void stateLoop() {
-  animationClock = Platform::system->localClock() + clockOffset;
+// Computed live rather than cached per loop tick: the render loop runs on a
+// different task than the network loop, so a cached value would be stale by an
+// arbitrary, drifting fraction of a tick on each node
+uint32_t getAnimationClock() {
+  return toAnimationClock(Platform::system->localClock());
 }
 
-uint32_t getAnimationClock() {
-  return animationClock;
+uint32_t toAnimationClock(uint32_t localTime) {
+  return localTime + clockOffset;
 }
 
 uint8_t getDeviceId() {

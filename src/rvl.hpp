@@ -61,6 +61,12 @@ public:
   virtual void read(uint8_t* buffer, uint16_t length) = 0;
   virtual void endRead() = 0;
 
+  // Arrival time of the packet most recently returned by parsePacket(), in
+  // localClock() terms. Returns UINT32_MAX (-1) if no packet is currently
+  // being read (i.e. before the first parsePacket() success, or after
+  // endRead()) — soft-failure semantics matching the read calls, no asserts
+  virtual uint32_t packetArrivalTime() = 0;
+
   virtual uint16_t getDeviceId() = 0;
 
   virtual uint32_t localClock() = 0;

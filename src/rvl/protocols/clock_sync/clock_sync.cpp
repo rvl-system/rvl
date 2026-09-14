@@ -172,20 +172,12 @@ void parsePacket(uint8_t source) {
 
   switch (packetType) {
   case CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST: {
-    uint32_t observedTime = getAnimationClock();
-
-    // Send the observed time out to everyone
-    debug("Received reference broadcast with id %d at observed time %d", id,
-        observedTime);
-    Protocol::beginBroadcastWrite(PACKET_TYPE_CLOCK_SYNC);
-    Platform::system->write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
-    Platform::system->write16(id);
-    Platform::system->write8(0); // Reserved
-    Platform::system->write32(observedTime);
-    Platform::system->endWrite();
-
     // Check if this the start of a set, and we need to reset our observation
-    // counter
+    // counter. This must happen before the observed time is computed below:
+    // salvaging can change the clock offset, and an observed time computed
+    // with the old offset would be stored as a stale entry in the new set,
+    // producing a correction of (offset change / NUM_OBSERVATIONS_IN_SET) on
+    // the next processing pass
     bool isStartOfSet = Platform::system->read8();
     Platform::system->read8(); // reserved
     if (isStartOfSet == 1) {
@@ -196,6 +188,22 @@ void parsePacket(uint8_t source) {
       }
       numObservations = 0;
     }
+
+    // Convert the packet's arrival time, not the animation clock cached at the
+    // top of the loop: the cached value is stale by however long ago the loop
+    // tick started, and that error varies per node
+    uint32_t observedTime =
+        toAnimationClock(Platform::system->packetArrivalTime());
+
+    // Send the observed time out to everyone
+    debug("Received reference broadcast with id %d at observed time %d", id,
+        observedTime);
+    Protocol::beginBroadcastWrite(PACKET_TYPE_CLOCK_SYNC);
+    Platform::system->write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
+    Platform::system->write16(id);
+    Platform::system->write8(0); // Reserved
+    Platform::system->write32(observedTime);
+    Platform::system->endWrite();
 
     // Store this node in the observation list so that all nodes have the same
     // observation table. This would normally be missing, since we wouldn't

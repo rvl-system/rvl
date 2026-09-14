@@ -70,6 +70,7 @@ void parsePacket() {
     error("Received unsupported RVL Firmware protocol packet version %d, "
           "ignoring",
         version);
+    Platform::system->endRead();
     return;
   }
 
