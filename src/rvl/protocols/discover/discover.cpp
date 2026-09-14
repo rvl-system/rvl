@@ -104,7 +104,8 @@ void parsePacket(uint8_t source) {
   }
 
   default: {
-    error("Received unknown discover subpacket type %d", subPacketType);
+    error("Received unknown discover subpacket type %d from %d", subPacketType,
+        source);
     break;
   }
   }
