@@ -36,13 +36,8 @@ namespace ProtocolClockSync {
 #define NUM_OBSERVATIONS_IN_SET 3
 #define NUM_NODES 240
 
-#define SYNC_ITERATION_MODULO 500
-#define SYNC_ITERATION_MODULO_MAX 1400
-
 uint32_t observations[NUM_OBSERVATIONS_IN_SET][NUM_NODES];
 uint16_t observationIds[NUM_OBSERVATIONS_IN_SET];
-uint16_t numObservations = 0;
-uint16_t id = 0;
 
 /*
 Reference Broadcast Synchronization, an implementation of the algorith
@@ -78,9 +73,10 @@ void prepareObservationRow(uint16_t broadcastId) {
 }
 
 void processObservations() {
-  int32_t averageOffset = 0;
+  int64_t offsetSum = 0;
   uint8_t localNode = Platform::system->getDeviceId();
   uint8_t numObservationsProcessed = 0;
+  uint8_t numNodesObserved = 0;
   for (uint8_t observation = 0; observation < NUM_OBSERVATIONS_IN_SET;
       observation++)
   {
@@ -113,11 +109,19 @@ void processObservations() {
       continue;
     }
 
-    // Calculate the offset for this observation
+    // Every node that observed this reference contributed one entry, so the
+    // widest row is the number of nodes that heard the same broadcast
+    if (NUM_NODES - head > numNodesObserved) {
+      numNodesObserved = NUM_NODES - head;
+    }
+
+    // Calculate the offset for this observation. The subtraction is unsigned so
+    // that it wraps to the correct signed delta however far apart the clocks
+    // are, and the sum is 64-bit so a cold start's near-2^31 deltas can't
+    // overflow it
     uint32_t medianObservedTime =
         observations[observation][head + (NUM_NODES - head) / 2];
-    averageOffset += static_cast<int32_t>(medianObservedTime) -
-        static_cast<int32_t>(localObservedTime);
+    offsetSum += static_cast<int32_t>(medianObservedTime - localObservedTime);
     numObservationsProcessed++;
 
     // Reset the observation array for reuse next time
@@ -128,9 +132,12 @@ void processObservations() {
 
   // Calculate the average offset for all observations
   if (numObservationsProcessed > 0) {
-    averageOffset /= numObservationsProcessed;
-    debug("Updating animation clock with offset: %d", averageOffset);
-    setAnimationClock(getAnimationClock() + averageOffset);
+    int32_t averageOffset =
+        static_cast<int32_t>(offsetSum / numObservationsProcessed);
+    debug("Updating animation clock with offset: %d from %d nodes across %d "
+          "references",
+        averageOffset, numNodesObserved, numObservationsProcessed);
+    adjustAnimationClock(averageOffset);
     NetworkState::refreshLocalClockSynchronization();
   }
 }
@@ -140,31 +147,6 @@ void init() {
   memset(observationIds, 0, sizeof(observationIds));
 }
 
-void loop() {
-  if (getDeviceMode() != DeviceMode::Controller ||
-      !Platform::system->isConnected())
-  {
-    return;
-  }
-
-  // Check if we're in our alloted time window
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL <
-          SYNC_ITERATION_MODULO ||
-      Platform::system->localClock() % CLIENT_SYNC_INTERVAL >
-          SYNC_ITERATION_MODULO_MAX)
-  {
-    return;
-  }
-
-  // TODO: if we were to implement broadcast here, it would look like:
-  /*
-  Protocol::beginBroadcastWrite(PACKET_TYPE_CLOCK_SYNC);
-  Platform::system->write8(CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST);
-  Platform::system->write16(id++);
-  Platform::system->write8(0); // Reserved
-  */
-}
-
 void parsePacket(uint8_t source) {
   uint8_t packetType = Platform::system->read8();
   uint16_t id = Platform::system->read16();
@@ -172,21 +154,13 @@ void parsePacket(uint8_t source) {
 
   switch (packetType) {
   case CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST: {
-    // Check if this the start of a set, and we need to reset our observation
-    // counter. This must happen before the observed time is computed below:
-    // salvaging can change the clock offset, and an observed time computed
-    // with the old offset would be stored as a stale entry in the new set,
-    // producing a correction of (offset change / NUM_OBSERVATIONS_IN_SET) on
-    // the next processing pass
-    bool isStartOfSet = Platform::system->read8();
+    // Must run before the observed time is computed below: processing changes
+    // the clock offset, and a time computed with the old one would be stored as
+    // a stale entry in the new set
+    uint8_t isStartOfSet = Platform::system->read8();
     Platform::system->read8(); // reserved
     if (isStartOfSet == 1) {
-      // If the previous set never completed because packets were lost, salvage
-      // whatever observations we did collect instead of letting them go stale
-      if (numObservations > 0) {
-        processObservations();
-      }
-      numObservations = 0;
+      processObservations();
     }
 
     // Convert the packet's arrival time, not the animation clock cached at the
@@ -217,19 +191,9 @@ void parsePacket(uint8_t source) {
 
   case CLOCK_SYNC_PACKET_TYPE_OBSERVATION: {
     uint32_t clock = Platform::system->read32();
-    debug("Received observation from %d with clock %d", source, clock);
     prepareObservationRow(id);
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
     observations[observationStep][source] = clock;
-    numObservations++;
-    // On a lossy network the count can step over the expected total (duplicate
-    // packets, nodes joining mid-set), so this must not require exact equality
-    if (numObservations >=
-        NUM_OBSERVATIONS_IN_SET * (NetworkState::getNumNodes() - 1))
-    {
-      processObservations();
-      numObservations = 0;
-    }
     break;
   }
 

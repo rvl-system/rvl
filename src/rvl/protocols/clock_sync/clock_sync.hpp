@@ -27,7 +27,6 @@ namespace rvl {
 namespace ProtocolClockSync {
 
 void init();
-void loop();
 
 void parsePacket(uint8_t source);
 

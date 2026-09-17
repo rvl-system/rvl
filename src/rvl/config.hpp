@@ -24,14 +24,11 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-#define NUM_NODES 240
-
 #define CLIENT_SYNC_INTERVAL 2000
 #define CHANNEL_OFFSET 240
 
-// Packet type: 1 byte = 1: System, 2: Discover, 3: Clock Sync, 4: Wave Animation
+// Packet type: 1 byte = 1: System, 3: Clock Sync, 4: Wave Animation
 #define PACKET_TYPE_SYSTEM 1
-#define PACKET_TYPE_DISCOVER 2
 #define PACKET_TYPE_CLOCK_SYNC 3
 #define PACKET_TYPE_WAVE_ANIMATION 4
 

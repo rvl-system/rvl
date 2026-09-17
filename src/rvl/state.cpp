@@ -27,7 +27,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-int32_t clockOffset = 0;
+uint32_t clockOffset = 0;
 uint8_t channel = 0;
 DeviceMode deviceMode = DeviceMode::Receiver;
 RVLWaveSettings waveSettings;
@@ -69,8 +69,12 @@ uint8_t getDeviceId() {
   return Platform::system->getDeviceId();
 }
 
-void setAnimationClock(uint32_t newClock) {
-  clockOffset = newClock - Platform::system->localClock();
+// The offset is modular, not a magnitude, so it's unsigned: corrections that
+// accumulate past INT32_MAX wrap instead of overflowing. Adjusted directly
+// rather than recomputed from localClock(), which would lose any millisecond
+// that ticks between the two reads, always in the same direction
+void adjustAnimationClock(int32_t delta) {
+  clockOffset += delta;
 }
 
 uint8_t getChannel() {

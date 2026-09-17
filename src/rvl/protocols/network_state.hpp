@@ -26,19 +26,10 @@ namespace rvl {
 
 namespace NetworkState {
 
-void init();
 void loop();
-
-void refreshNode(uint8_t node);
-void refreshNodeClockSyncTime(uint8_t node);
-
-bool isNodeActive(uint8_t node);
-uint8_t getNumNodes();
 
 bool isControllerNode(uint8_t node);
 bool isControllerActive();
-
-uint8_t getNextClockNode();
 
 void refreshLocalClockSynchronization();
 bool isClockSynchronizationActive();
