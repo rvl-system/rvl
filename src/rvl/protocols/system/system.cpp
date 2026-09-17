@@ -57,8 +57,9 @@ void loop() {
 }
 
 /*
-Power: 1 byte = the power state of the system. 0 = LEDs off, 1 = LEDs on, > 1
-reserved Brightness: 1 byte = the brightness of the system Reserved: 2 bytes
+Power: 1 byte = 0 = LEDs off, 1 = LEDs on, > 1 reserved
+Brightness: 1 byte = the brightness of the system
+Reserved: 2 bytes
 */
 
 void sync() {
