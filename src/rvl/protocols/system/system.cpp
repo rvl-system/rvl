@@ -36,7 +36,6 @@ bool hasSyncedThisLoop = false;
 
 void init() {
   on(EVENT_POWER_STATE_UPDATED, sync);
-  on(EVENT_BRIGHTNESS_UPDATED, sync);
 }
 
 void loop() {
@@ -58,8 +57,7 @@ void loop() {
 
 /*
 Power: 1 byte = 0 = LEDs off, 1 = LEDs on, > 1 reserved
-Brightness: 1 byte = the brightness of the system
-Reserved: 2 bytes
+Reserved: 1 byte
 */
 
 void sync() {
@@ -71,8 +69,7 @@ void sync() {
   debug("Syncing system parameters");
   Protocol::beginMulticastWrite(PACKET_TYPE_SYSTEM);
   Platform::system->write8(getPowerState() ? 1 : 0);
-  Platform::system->write8(getBrightness());
-  Platform::system->write16(0);
+  Platform::system->write8(0);
   Platform::system->endWrite();
 }
 
@@ -83,14 +80,9 @@ void parsePacket(uint8_t source) {
   debug("Parsing System packet");
 
   uint8_t power = Platform::system->read8(); // power
-  uint8_t brightness = Platform::system->read8(); // brightness
-  Platform::system->read16(); // reserved
+  Platform::system->read8(); // reserved
 
   setPowerState(power); // NOLINT
-
-  if (getRemoteBrightnessState()) {
-    setBrightness(brightness);
-  }
 }
 
 } // namespace ProtocolSystem

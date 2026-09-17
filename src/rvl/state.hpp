@@ -51,9 +51,6 @@ void setPowerState(bool newPowerState);
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);
 
-bool getRemoteBrightnessState();
-void setRemoteBrightnessState(bool newRemoteBrightness);
-
 bool getSynchronizationState();
 void setSynchronizationState(bool synchronized);
 

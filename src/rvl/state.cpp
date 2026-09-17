@@ -33,7 +33,6 @@ DeviceMode deviceMode = DeviceMode::Receiver;
 RVLWaveSettings waveSettings;
 bool powerState = false;
 uint8_t brightness = 0;
-bool remoteBrightness = false;
 bool synchronized = false;
 
 #ifdef ESP32
@@ -129,17 +128,6 @@ void setBrightness(uint8_t newBrightness) {
   if (brightness != newBrightness) {
     brightness = newBrightness;
     emit(EVENT_BRIGHTNESS_UPDATED);
-  }
-}
-
-bool getRemoteBrightnessState() {
-  return remoteBrightness;
-}
-
-void setRemoteBrightnessState(bool newRemoteBrightness) {
-  if (remoteBrightness != newRemoteBrightness) {
-    remoteBrightness = newRemoteBrightness;
-    emit(EVENT_REMOTE_BRIGHTNESS_UPDATED);
   }
 }
 

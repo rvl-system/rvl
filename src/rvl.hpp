@@ -32,7 +32,6 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENT_POWER_STATE_UPDATED 5
 #define EVENT_BRIGHTNESS_UPDATED 6
 #define EVENT_CONNECTION_STATE_CHANGED 8
-#define EVENT_REMOTE_BRIGHTNESS_UPDATED 9
 
 namespace rvl {
 
