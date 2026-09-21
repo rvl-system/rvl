@@ -41,6 +41,7 @@ protected:
 
 public:
   bool isConnected();
+  virtual bool isLinkUp() = 0;
 
   virtual void loop() = 0;
 

@@ -20,6 +20,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.hpp"
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
+#include "./rvl/protocols/network_state.hpp"
 #include "./rvl/protocols/protocol.hpp"
 #include "./rvl/protocols/system/system.hpp"
 #include "./rvl/protocols/wave/wave.hpp"
@@ -40,6 +41,11 @@ void init(System* newSystem) {
 
 void loop() {
   Platform::system->loop();
+  // Run before isConnected to handle the case where we were connected, but then
+  // got disconnected. When this happens, we have to make sure that timeouts are
+  // still processed so they're not in an incorrect state when we reconnect.
+  NetworkState::loop();
+
   if (!Platform::system->isConnected()) {
     return;
   }
@@ -63,17 +69,12 @@ void loop() {
   Protocol::loop();
 }
 
-bool rvlConnectedState = false;
-
 void System::setConnectedState(bool connected) {
-  if (rvlConnectedState != connected) {
-    rvlConnectedState = connected;
-    emit(EVENT_CONNECTION_STATE_CHANGED);
-  }
+  setLinkUpState(connected);
 }
 
 bool System::isConnected() {
-  return rvlConnectedState;
+  return rvl::isConnected();
 }
 
 } // namespace rvl

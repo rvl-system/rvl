@@ -51,10 +51,21 @@ void setPowerState(bool newPowerState);
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);
 
-bool getSynchronizationState();
-void setSynchronizationState(bool synchronized);
+// Setters for state input
+void setLinkUpState(bool linkUp);
+void setHasDeviceIdState(bool hasDeviceId);
+void setClockSyncedState(bool clockSynced);
+void setControllerActiveState(bool controllerActive);
 
-bool isNetworkConnected();
+// Indicates whether or not we can communicate with other nodes
+bool isConnected();
+
+// Indicates whether or not we're safe to render LEDs
+bool isReadyToRender();
+
+// Indicates whether or not the transport mechanism is available, e.g. whether
+// or not we're connected to the WiFi AP
+bool isLinkUp();
 
 } // namespace rvl
 

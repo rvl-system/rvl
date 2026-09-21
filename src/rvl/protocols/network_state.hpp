@@ -26,6 +26,7 @@ namespace rvl {
 
 namespace NetworkState {
 
+void init();
 void loop();
 
 bool isControllerNode(uint8_t node);

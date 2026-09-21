@@ -44,13 +44,13 @@ future use
 */
 
 void init() {
+  NetworkState::init();
   ProtocolSystem::init();
   ProtocolClockSync::init();
   ProtocolWave::init();
 }
 
 void loop() {
-  NetworkState::loop();
   ProtocolSystem::loop();
   ProtocolWave::loop();
 }
@@ -132,6 +132,11 @@ void beginBroadcastWrite(uint8_t packetType) {
 void beginMulticastWrite(uint8_t packetType) {
   Platform::system->beginWrite(getMulticastAddress());
   sendHeader(packetType, getMulticastAddress());
+}
+
+void beginUnicastWrite(uint8_t packetType, uint8_t address) {
+  Platform::system->beginWrite(address);
+  sendHeader(packetType, address);
 }
 
 } // namespace Protocol

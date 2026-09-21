@@ -33,7 +33,12 @@ DeviceMode deviceMode = DeviceMode::Receiver;
 RVLWaveSettings waveSettings;
 bool powerState = false;
 uint8_t brightness = 0;
-bool synchronized = false;
+
+// State inputs used to compute current state
+bool linkUp = false;
+bool hasDeviceId = true;
+bool clockSynced = false;
+bool controllerActive = false;
 
 #ifdef ESP32
 portMUX_TYPE stateMux = portMUX_INITIALIZER_UNLOCKED;
@@ -131,19 +136,41 @@ void setBrightness(uint8_t newBrightness) {
   }
 }
 
-bool getSynchronizationState() {
+void setLinkUpState(bool newLinkUp) {
+  if (linkUp != newLinkUp) {
+    linkUp = newLinkUp;
+    emit(EVENT_CONNECTION_STATE_CHANGED);
+  }
+}
+
+void setHasDeviceIdState(bool newHasDeviceId) {
+  hasDeviceId = newHasDeviceId;
+}
+
+void setClockSyncedState(bool newClockSynced) {
+  clockSynced = newClockSynced;
+}
+
+void setControllerActiveState(bool newControllerActive) {
+  controllerActive = newControllerActive;
+}
+
+bool isConnected() {
+  return linkUp && hasDeviceId;
+}
+
+bool isReadyToRender() {
+  // A controller sources its own animation and runs on its own clock, so it has
+  // nothing to wait for. It doesn't need a clock reference to render sensibly;
+  // sync only matters for matching other nodes
   if (getDeviceMode() == DeviceMode::Controller) {
     return true;
   }
-  return synchronized;
+  return isConnected() && clockSynced && controllerActive;
 }
 
-void setSynchronizationState(bool newSynchronized) {
-  synchronized = newSynchronized;
-}
-
-bool isNetworkConnected() {
-  return Platform::system->isConnected();
+bool isLinkUp() {
+  return Platform::system->isLinkUp();
 }
 
 } // namespace rvl

@@ -26,17 +26,31 @@ namespace NetworkState {
 
 #define CONTROLLER_NODE_EXPIRATION_DURATION 10000
 
+// Configured to ensure a free-running clock derived from a mediocre crystal
+// won't drift more than the accuracy of the clock sync algorithm. A
+// 20ppm crystal drift accumulates ~1.2ms of error in 60s.
+#define CLOCK_SYNC_EXPIRATION_DURATION 60000
+
+// Stores the ID of the controller. 255 indicates we haven't communicated with a
+// controller node yet, since 255 is never a valid ID.
 uint8_t controllerNode = 255;
 uint32_t controllerNodeLastRefreshed = 0;
 uint32_t localClockLastRefreshed = 0;
 
+void onChannelUpdated() {
+  // If we previously connected to a controller on the old channel, we need to
+  // reset it since by definition controllers are scoped to a single channel
+  controllerNode = 255;
+  controllerNodeLastRefreshed = 0;
+}
+
+void init() {
+  on(EVENT_CHANNEL_UPDATED, onChannelUpdated);
+}
+
 void loop() {
-  if (getDeviceMode() == DeviceMode::Receiver) {
-    bool synchronized = isClockSynchronizationActive() && isControllerActive();
-    if (synchronized != getSynchronizationState()) {
-      setSynchronizationState(synchronized);
-    }
-  }
+  setClockSyncedState(isClockSynchronizationActive());
+  setControllerActiveState(isControllerActive());
 }
 
 bool isControllerNode(uint8_t node) {
@@ -87,7 +101,7 @@ void refreshLocalClockSynchronization() {
 bool isClockSynchronizationActive() {
   return (localClockLastRefreshed > 0) &&
       (Platform::system->localClock() - localClockLastRefreshed <
-          CONTROLLER_NODE_EXPIRATION_DURATION);
+          CLOCK_SYNC_EXPIRATION_DURATION);
 }
 
 } // namespace NetworkState

@@ -41,6 +41,7 @@ void parsePacket();
 
 void beginBroadcastWrite(uint8_t packetType);
 void beginMulticastWrite(uint8_t packetType);
+void beginUnicastWrite(uint8_t packetType, uint8_t address);
 
 } // namespace Protocol
 
