@@ -57,7 +57,7 @@ bool isControllerNode(uint8_t node) {
   // First, we check if we're in controller mode, in which case we always ignore
   // remote control
   if (getDeviceMode() == DeviceMode::Controller) {
-    return node == Platform::system->getDeviceId();
+    return node == getDeviceId();
   }
 
   uint32_t currentTime = Platform::system->localClock();

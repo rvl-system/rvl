@@ -21,8 +21,8 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.hpp"
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
+#include "./rvl/protocols/animation.hpp"
 #include "./rvl/protocols/network_state.hpp"
-#include "./rvl/protocols/protocol.hpp"
 #include "./rvl/state.hpp"
 #include <limits.h>
 #include <stdint.h>
@@ -61,16 +61,15 @@ Reserved: 1 byte
 */
 
 void sync() {
-  if (getDeviceMode() != DeviceMode::Controller ||
-      !Platform::system->isConnected())
-  {
+  if (getDeviceMode() != DeviceMode::Controller || !isConnected()) {
     return;
   }
   debug("Syncing system parameters");
-  Protocol::beginMulticastWrite(PACKET_TYPE_SYSTEM);
-  Platform::system->write8(getPowerState() ? 1 : 0);
-  Platform::system->write8(0);
-  Platform::system->endWrite();
+  auto& animation = Platform::system->animation();
+  ProtocolAnimation::beginChannelWrite(PACKET_TYPE_SYSTEM);
+  animation.write8(getPowerState() ? 1 : 0);
+  animation.write8(0);
+  animation.endWrite();
 }
 
 void parsePacket(uint8_t source) {
@@ -79,8 +78,9 @@ void parsePacket(uint8_t source) {
   }
   debug("Parsing System packet");
 
-  uint8_t power = Platform::system->read8(); // power
-  Platform::system->read8(); // reserved
+  auto& animation = Platform::system->animation();
+  uint8_t power = animation.read8(); // power
+  animation.read8(); // reserved
 
   setPowerState(power); // NOLINT
 }

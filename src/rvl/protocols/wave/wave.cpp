@@ -21,8 +21,8 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.hpp"
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
+#include "./rvl/protocols/animation.hpp"
 #include "./rvl/protocols/network_state.hpp"
-#include "./rvl/protocols/protocol.hpp"
 #include "./rvl/protocols/wave/wave.hpp"
 #include <limits.h>
 #include <stdint.h>
@@ -71,20 +71,18 @@ void loop() {
 }
 
 void sync() {
-  if (getDeviceMode() != DeviceMode::Controller ||
-      !Platform::system->isConnected())
-  {
+  if (getDeviceMode() != DeviceMode::Controller || !isConnected()) {
     return;
   }
   debug("Syncing preset");
+  auto& animation = Platform::system->animation();
   auto* waveSettings = getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
-  Protocol::beginMulticastWrite(PACKET_TYPE_WAVE_ANIMATION);
-  Platform::system->write8(waveSettings->timePeriod);
-  Platform::system->write8(waveSettings->distancePeriod);
-  Platform::system->write(
-      reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
-  Platform::system->endWrite();
+  ProtocolAnimation::beginChannelWrite(PACKET_TYPE_WAVE_ANIMATION);
+  animation.write8(waveSettings->timePeriod);
+  animation.write8(waveSettings->distancePeriod);
+  animation.write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
+  animation.endWrite();
 }
 
 void parsePacket(uint8_t source) {
@@ -92,10 +90,11 @@ void parsePacket(uint8_t source) {
     return;
   }
   debug("Parsing Wave packet");
+  auto& animation = Platform::system->animation();
   RVLWaveSettings newWaveSettings;
-  newWaveSettings.timePeriod = Platform::system->read8();
-  newWaveSettings.distancePeriod = Platform::system->read8();
-  Platform::system->read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves),
+  newWaveSettings.timePeriod = animation.read8();
+  newWaveSettings.distancePeriod = animation.read8();
+  animation.read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves),
       sizeof(RVLWave) * NUM_WAVES);
   setWaveSettings(&newWaveSettings);
 }

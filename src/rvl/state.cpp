@@ -18,6 +18,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "./rvl/state.hpp"
+#include "rvl/config.hpp"
 #include "rvl/platform.hpp"
 #include <string.h>
 
@@ -36,7 +37,7 @@ uint8_t brightness = 0;
 
 // State inputs used to compute current state
 bool linkUp = false;
-bool hasDeviceId = true;
+uint8_t deviceId = UNASSIGNED_DEVICE_ID;
 bool clockSynced = false;
 bool controllerActive = false;
 
@@ -70,7 +71,7 @@ uint32_t toAnimationClock(uint32_t localTime) {
 }
 
 uint8_t getDeviceId() {
-  return Platform::system->getDeviceId();
+  return deviceId;
 }
 
 // The offset is modular, not a magnitude, so it's unsigned: corrections that
@@ -143,8 +144,8 @@ void setLinkUpState(bool newLinkUp) {
   }
 }
 
-void setHasDeviceIdState(bool newHasDeviceId) {
-  hasDeviceId = newHasDeviceId;
+void setDeviceId(uint8_t newDeviceId) {
+  deviceId = newDeviceId;
 }
 
 void setClockSyncedState(bool newClockSynced) {
@@ -156,7 +157,7 @@ void setControllerActiveState(bool newControllerActive) {
 }
 
 bool isConnected() {
-  return linkUp && hasDeviceId;
+  return linkUp && deviceId != UNASSIGNED_DEVICE_ID;
 }
 
 bool isReadyToRender() {

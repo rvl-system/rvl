@@ -17,22 +17,14 @@ You should have received a copy of the GNU General Public License
 along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_PROTOCOL_H_
-#define RVL_PROTOCOLS_PROTOCOL_H_
+#ifndef RVL_PROTOCOLS_ANIMATION_H_
+#define RVL_PROTOCOLS_ANIMATION_H_
 
-#include "./rvl/config.hpp"
-#include "./rvl/platform.hpp"
 #include <stdint.h>
 
 namespace rvl {
 
-namespace Protocol {
-
-// Note: we use the old style of enums here because we regularly switch between
-// uint8_t values and these enum values
-namespace RVLPacketType {
-enum RVLPacketType { Palette = 1, Wave = 2 };
-} // namespace RVLPacketType
+namespace ProtocolAnimation {
 
 void init();
 void loop();
@@ -40,11 +32,10 @@ void loop();
 void parsePacket();
 
 void beginBroadcastWrite(uint8_t packetType);
-void beginMulticastWrite(uint8_t packetType);
-void beginUnicastWrite(uint8_t packetType, uint8_t address);
+void beginChannelWrite(uint8_t packetType);
 
-} // namespace Protocol
+} // namespace ProtocolAnimation
 
 } // namespace rvl
 
-#endif // RVL_PROTOCOLS_PROTOCOL_H_
+#endif // RVL_PROTOCOLS_ANIMATION_H_

@@ -36,38 +36,63 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 namespace rvl {
 
 class System {
-protected:
-  void setConnectedState(bool connected);
-
 public:
-  bool isConnected();
+  // The two protocols' packet streams. Their read halves match, but each has
+  // only the sends its protocol needs
+  class Animation {
+  public:
+    // Reaches every node on the sender's channel
+    virtual void beginChannelWrite() = 0;
+    virtual void write8(uint8_t data) = 0;
+    virtual void write16(uint16_t data) = 0;
+    virtual void write32(uint32_t data) = 0;
+    virtual void write(uint8_t* data, uint16_t length) = 0;
+    virtual void endWrite() = 0;
+
+    virtual uint16_t parsePacket() = 0;
+    virtual uint8_t read8() = 0;
+    virtual uint16_t read16() = 0;
+    virtual uint32_t read32() = 0;
+    virtual void read(uint8_t* buffer, uint16_t length) = 0;
+    virtual void endRead() = 0;
+
+    // Arrival time of the packet most recently returned by parsePacket(), in
+    // localClock() terms. Returns UINT32_MAX (-1) if no packet is currently
+    // being read (i.e. before the first parsePacket() success, or after
+    // endRead()) — soft-failure semantics matching the read calls, no asserts
+    virtual uint32_t packetArrivalTime() = 0;
+  };
+
+  class Infrastructure {
+  public:
+    // Reaches every node
+    virtual void beginBroadcastWrite() = 0;
+    // Reaches the transport coordinator, by role rather than by address
+    virtual void beginCoordinatorWrite() = 0;
+    virtual void write8(uint8_t data) = 0;
+    virtual void write16(uint16_t data) = 0;
+    virtual void write32(uint32_t data) = 0;
+    virtual void write(uint8_t* data, uint16_t length) = 0;
+    virtual void endWrite() = 0;
+
+    virtual uint16_t parsePacket() = 0;
+    virtual uint8_t read8() = 0;
+    virtual uint16_t read16() = 0;
+    virtual uint32_t read32() = 0;
+    virtual void read(uint8_t* buffer, uint16_t length) = 0;
+    virtual void endRead() = 0;
+
+    // As Animation::packetArrivalTime()
+    virtual uint32_t packetArrivalTime() = 0;
+  };
+
+  virtual Animation& animation() = 0;
+  virtual Infrastructure& infrastructure() = 0;
+
   virtual bool isLinkUp() = 0;
-
   virtual void loop() = 0;
-
-  virtual void beginWrite(uint8_t destination) = 0;
-  virtual void write8(uint8_t data) = 0;
-  virtual void write16(uint16_t data) = 0;
-  virtual void write32(uint32_t data) = 0;
-  virtual void write(uint8_t* data, uint16_t length) = 0;
-  virtual void endWrite() = 0;
-
-  virtual uint16_t parsePacket() = 0;
-  virtual uint8_t read8() = 0;
-  virtual uint16_t read16() = 0;
-  virtual uint32_t read32() = 0;
-  virtual void read(uint8_t* buffer, uint16_t length) = 0;
-  virtual void endRead() = 0;
-
-  // Arrival time of the packet most recently returned by parsePacket(), in
-  // localClock() terms. Returns UINT32_MAX (-1) if no packet is currently
-  // being read (i.e. before the first parsePacket() success, or after
-  // endRead()) — soft-failure semantics matching the read calls, no asserts
-  virtual uint32_t packetArrivalTime() = 0;
-
-  virtual uint16_t getDeviceId() = 0;
-
   virtual uint32_t localClock() = 0;
+  virtual uint32_t random() = 0;
   virtual void print(const char* str) = 0;
   virtual void println(const char* str) = 0;
 };

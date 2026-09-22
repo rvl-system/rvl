@@ -17,11 +17,19 @@ You should have received a copy of the GNU General Public License
 along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "rvl/config.hpp"
+#ifndef RVL_PROTOCOLS_INFRASTRUCTURE_H_
+#define RVL_PROTOCOLS_INFRASTRUCTURE_H_
+
+#include <stdint.h>
 
 namespace rvl {
 
-uint8_t rvlaSignature[4] = {'R', 'V', 'L', 'A'};
-uint8_t rvliSignature[4] = {'R', 'V', 'L', 'I'};
+namespace ProtocolInfrastructure {
+
+void parsePacket();
+
+} // namespace ProtocolInfrastructure
 
 } // namespace rvl
+
+#endif // RVL_PROTOCOLS_INFRASTRUCTURE_H_

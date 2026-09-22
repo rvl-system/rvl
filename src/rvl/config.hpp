@@ -27,9 +27,34 @@ namespace rvl {
 #define CLIENT_SYNC_INTERVAL 2000
 #define CHANNEL_OFFSET 240
 
+// Shared by both protocols. Fleets are flashed all at once, so this exists to
+// make a mismatched flash visible, not to let two formats coexist
 #define PROTOCOL_VERSION 1
 
-// Packet type: 1 byte = 1: System, 3: Clock Sync, 4: Wave Animation
+// Device IDs are 0..NUM_DEVICE_IDS-1, and every ID-indexed table is this wide.
+// It must stay below 256: IDs are uint8_t, and loops over the observation table
+// use uint8_t counters
+#define NUM_DEVICE_IDS 240
+
+// Never a valid device ID, so it doubles as "unassigned"
+#define UNASSIGNED_DEVICE_ID 255
+
+// Ports are a WiFi concept, so they live here rather than on rvl::System
+#define RVLA_PORT 4978
+#define RVLI_PORT 4979
+
+/*
+RVLA: what a node displays. Channel scoped, sent by a controller
+
+Signature: 4 bytes = "RVLA"
+Version: 1 byte = PROTOCOL_VERSION
+Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255:
+  broadcast
+Source: 1 byte = the device ID of the sender
+Packet type: 1 byte = 1: System, 3: Clock Sync, 4: Wave Animation
+Channel: 1 byte = the channel this packet belongs to
+Reserved: 1 byte
+*/
 #define PACKET_TYPE_SYSTEM 1
 #define PACKET_TYPE_CLOCK_SYNC 3
 #define PACKET_TYPE_WAVE_ANIMATION 4
@@ -39,39 +64,25 @@ namespace rvl {
 #define NUM_OBSERVATIONS_IN_SET 3
 
 /*
-RVLI: the protocol nodes speak to the transport coordinator, as distinct from
-RVLX above, which nodes speak to each other. The split is not cosmetic — every
-RVLX packet carries a real source, and RVLI exists precisely to establish the
-identity that source byte holds, so it cannot presuppose one. Its own port keeps
-the two from draining each other's traffic, and its own version lets the two
-evolve without forcing lockstep flashing.
-
-Like RVLX it is a container: the header identifies a packet type, and each type
-defines its own payload. Device ID assignment is the first; node enumeration and
-configuration routing are the expected next ones.
+RVLI: what a node needs in order to participate at all, such as its identity.
+Channel independent, and mostly originated by the transport coordinator
 
 Signature: 4 bytes = "RVLI"
-Version: 1 byte = RVLI_VERSION
-Packet type: 1 byte = 1: ID Assignment
+Version: 1 byte = PROTOCOL_VERSION
 Source: 1 byte = sender's device ID, or 255 when it has none yet
+Packet type: 1 byte = 1: ID Assignment
 Reserved: 1 byte
 
 ID Assignment payload:
 Type: 1 byte = 1: request, 2: reply
 Device ID: 1 byte = the assigned ID, reply only
 */
-#define RVLI_PORT 4979
-#define RVLI_VERSION 1
-
 #define RVLI_PACKET_TYPE_ID_ASSIGNMENT 1
 
 #define ID_REQUEST_TYPE 1
 #define ID_REPLY_TYPE 2
 
-// Never a valid device ID (the space is 0..239), so it doubles as "unassigned"
-#define UNASSIGNED_DEVICE_ID 255
-
-extern uint8_t rvlxSignature[4];
+extern uint8_t rvlaSignature[4];
 extern uint8_t rvliSignature[4];
 
 }  // namespace rvl

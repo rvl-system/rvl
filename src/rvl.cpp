@@ -18,17 +18,11 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "./rvl.hpp"
-#include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
+#include "./rvl/protocols/animation.hpp"
+#include "./rvl/protocols/infrastructure.hpp"
 #include "./rvl/protocols/network_state.hpp"
-#include "./rvl/protocols/protocol.hpp"
-#include "./rvl/protocols/system/system.hpp"
-#include "./rvl/protocols/wave/wave.hpp"
-#include <list>
-#include <stdarg.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
 namespace rvl {
 
@@ -36,45 +30,34 @@ namespace rvl {
 
 void init(System* newSystem) {
   Platform::init(newSystem);
-  Protocol::init();
+  NetworkState::init();
+  ProtocolAnimation::init();
+}
+
+// Bounded, so a packet storm can't starve the rest of the loop. A template
+// because the two protocols' endpoints share no base class
+template <class Endpoint> void drain(Endpoint& endpoint, void (*dispatch)()) {
+  for (uint8_t i = 0; i < MAX_PACKETS_PER_LOOP; i++) {
+    if (endpoint.parsePacket() == 0) {
+      return;
+    }
+    dispatch();
+  }
 }
 
 void loop() {
   Platform::system->loop();
-  // Run before isConnected to handle the case where we were connected, but then
-  // got disconnected. When this happens, we have to make sure that timeouts are
-  // still processed so they're not in an incorrect state when we reconnect.
+  // Run before anything that can bail on the connection state, so timeouts keep
+  // decaying while we're disconnected and are correct when we reconnect
   NetworkState::loop();
 
-  if (!Platform::system->isConnected()) {
-    return;
-  }
+  // Both protocols drain every iteration, connected or not, so nothing queues
+  // up stale while we wait. Each dispatcher decides what it can accept
+  drain(Platform::system->infrastructure(),
+      ProtocolInfrastructure::parsePacket);
+  drain(Platform::system->animation(), ProtocolAnimation::parsePacket);
 
-  // Drain all pending packets, bounded so a packet storm can't starve the
-  // rest of the loop
-  for (uint8_t i = 0; i < MAX_PACKETS_PER_LOOP; i++) {
-    int packetSize = Platform::system->parsePacket();
-    if (packetSize == 0) {
-      break;
-    }
-    uint8_t receivedSignature[4];
-    Platform::system->read(receivedSignature, 4);
-    if (memcmp(receivedSignature, rvl::rvlxSignature, 4) == 0) {
-      Protocol::parsePacket();
-    } else {
-      Platform::system->endRead();
-    }
-  }
-
-  Protocol::loop();
-}
-
-void System::setConnectedState(bool connected) {
-  setLinkUpState(connected);
-}
-
-bool System::isConnected() {
-  return rvl::isConnected();
+  ProtocolAnimation::loop();
 }
 
 } // namespace rvl
