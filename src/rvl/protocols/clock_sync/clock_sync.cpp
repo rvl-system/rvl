@@ -33,7 +33,8 @@ namespace ProtocolClockSync {
 
 #define CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST 1
 #define CLOCK_SYNC_PACKET_TYPE_OBSERVATION 2
-#define NUM_OBSERVATIONS_IN_SET 3
+
+// Device IDs are 0..239, so a uint8_t index can never overflow this
 #define NUM_NODES 240
 
 uint32_t observations[NUM_OBSERVATIONS_IN_SET][NUM_NODES];

@@ -30,8 +30,6 @@ namespace rvl {
 
 namespace Protocol {
 
-#define PROTOCOL_VERSION 1
-
 /*
 Signature: 4 bytes = "RVLX"
 Version: 1 byte = PROTOCOL_VERSION
@@ -115,7 +113,7 @@ void parsePacket() {
 }
 
 void sendHeader(uint8_t packetType, uint8_t destination) {
-  Platform::system->write(signature, 4);
+  Platform::system->write(rvlxSignature, 4);
   Platform::system->write8(PROTOCOL_VERSION);
   Platform::system->write8(destination);
   Platform::system->write8(Platform::system->getDeviceId());

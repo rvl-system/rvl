@@ -21,6 +21,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-uint8_t signature[4] = {'R', 'V', 'L', 'X'};
+uint8_t rvlxSignature[4] = {'R', 'V', 'L', 'X'};
+uint8_t rvliSignature[4] = {'R', 'V', 'L', 'I'};
 
 } // namespace rvl

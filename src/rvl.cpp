@@ -59,7 +59,7 @@ void loop() {
     }
     uint8_t receivedSignature[4];
     Platform::system->read(receivedSignature, 4);
-    if (memcmp(receivedSignature, rvl::signature, 4) == 0) {
+    if (memcmp(receivedSignature, rvl::rvlxSignature, 4) == 0) {
       Protocol::parsePacket();
     } else {
       Platform::system->endRead();
