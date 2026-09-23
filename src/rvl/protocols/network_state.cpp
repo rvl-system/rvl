@@ -37,20 +37,34 @@ uint8_t controllerNode = 255;
 uint32_t controllerNodeLastRefreshed = 0;
 uint32_t localClockLastRefreshed = 0;
 
-void onChannelUpdated() {
-  // If we previously connected to a controller on the old channel, we need to
-  // reset it since by definition controllers are scoped to a single channel
+// Controllers are scoped to a channel, and a board switching modes may have
+// heard one long before it became a receiver, so either change starts over
+void forgetController() {
   controllerNode = 255;
   controllerNodeLastRefreshed = 0;
 }
 
 void init() {
-  on(EVENT_CHANNEL_UPDATED, onChannelUpdated);
+  on(EVENT_CHANNEL_UPDATED, forgetController);
+  on(EVENT_DEVICE_MODE_UPDATED, forgetController);
 }
+
+RenderState lastRenderState = RenderState::Unknown;
 
 void loop() {
   setClockSyncedState(isClockSynchronizationActive());
   setControllerActiveState(isControllerActive());
+  // The timestamps outlive those windows: nonzero means the clock has synced
+  // since boot, and a controller has been heard since the last reset
+  setClockEverSyncedState(localClockLastRefreshed > 0);
+  setControllerHeardState(controllerNodeLastRefreshed > 0);
+
+  RenderState renderState = getRenderState();
+  if (renderState != lastRenderState) {
+    lastRenderState = renderState;
+    const char* names[] = {"unknown", "current", "stale"};
+    info("Render state is now %s", names[static_cast<uint8_t>(renderState)]);
+  }
 }
 
 bool isControllerNode(uint8_t node) {

@@ -39,7 +39,9 @@ uint8_t brightness = 0;
 bool linkUp = false;
 uint8_t deviceId = UNASSIGNED_DEVICE_ID;
 bool clockSynced = false;
+bool clockEverSynced = false;
 bool controllerActive = false;
+bool controllerHeard = false;
 
 #ifdef ESP32
 portMUX_TYPE stateMux = portMUX_INITIALIZER_UNLOCKED;
@@ -159,22 +161,34 @@ void setClockSyncedState(bool newClockSynced) {
   clockSynced = newClockSynced;
 }
 
+void setClockEverSyncedState(bool newClockEverSynced) {
+  clockEverSynced = newClockEverSynced;
+}
+
 void setControllerActiveState(bool newControllerActive) {
   controllerActive = newControllerActive;
+}
+
+void setControllerHeardState(bool newControllerHeard) {
+  controllerHeard = newControllerHeard;
 }
 
 bool isConnected() {
   return linkUp && deviceId != UNASSIGNED_DEVICE_ID;
 }
 
-bool isReadyToRender() {
-  // A controller sources its own animation and runs on its own clock, so it has
-  // nothing to wait for. It doesn't need a clock reference to render sensibly;
-  // sync only matters for matching other nodes
+RenderState getRenderState() {
+  // A controller sources its own animation on its own clock, so it never waits
   if (getDeviceMode() == DeviceMode::Controller) {
-    return true;
+    return RenderState::Current;
   }
-  return isConnected() && clockSynced && controllerActive;
+  if (isConnected() && clockSynced && controllerActive) {
+    return RenderState::Current;
+  }
+  if (clockEverSynced && controllerHeard) {
+    return RenderState::Stale;
+  }
+  return RenderState::Unknown;
 }
 
 bool isLinkUp() {

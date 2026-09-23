@@ -30,6 +30,10 @@ enum class DeviceMode { Controller, Receiver };
 
 enum class AnimationType { Off, Wave };
 
+// Unknown: nothing to render yet. Current: rendering what the fleet is showing.
+// Stale: what was current has lapsed, so keep rendering it
+enum class RenderState { Unknown, Current, Stale };
+
 uint32_t getAnimationClock();
 void adjustAnimationClock(int32_t delta);
 uint32_t toAnimationClock(uint32_t localTime);
@@ -59,13 +63,14 @@ void setLinkUpState(bool linkUp);
 void setDeviceId(uint8_t deviceId);
 bool getClockSyncedState();
 void setClockSyncedState(bool clockSynced);
+void setClockEverSyncedState(bool clockEverSynced);
 void setControllerActiveState(bool controllerActive);
+void setControllerHeardState(bool controllerHeard);
 
 // Indicates whether or not we can communicate with other nodes
 bool isConnected();
 
-// Indicates whether or not we're safe to render LEDs
-bool isReadyToRender();
+RenderState getRenderState();
 
 // Indicates whether or not the transport mechanism is available, e.g. whether
 // or not we're connected to the WiFi AP
