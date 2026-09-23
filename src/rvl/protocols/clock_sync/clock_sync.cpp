@@ -21,7 +21,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.hpp"
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
-#include "./rvl/protocols/animation.hpp"
+#include "./rvl/protocols/infrastructure.hpp"
 #include "./rvl/protocols/network_state.hpp"
 #include <algorithm>
 #include <stdint.h>
@@ -150,18 +150,18 @@ void init() {
 }
 
 void parsePacket(uint8_t source) {
-  auto& animation = Platform::system->animation();
-  uint8_t packetType = animation.read8();
-  uint16_t id = animation.read16();
-  animation.read8(); // Reserved
+  auto& infrastructure = Platform::system->infrastructure();
+  uint8_t packetType = infrastructure.read8();
+  uint16_t id = infrastructure.read16();
+  infrastructure.read8(); // Reserved
 
   switch (packetType) {
   case CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST: {
     // Must run before the observed time is computed below: processing changes
     // the clock offset, and a time computed with the old one would be stored as
     // a stale entry in the new set
-    uint8_t isStartOfSet = animation.read8();
-    animation.read8(); // reserved
+    uint8_t isStartOfSet = infrastructure.read8();
+    infrastructure.read8(); // reserved
     if (isStartOfSet == 1) {
       processObservations();
     }
@@ -169,17 +169,18 @@ void parsePacket(uint8_t source) {
     // Convert the packet's arrival time, not the animation clock cached at the
     // top of the loop: the cached value is stale by however long ago the loop
     // tick started, and that error varies per node
-    uint32_t observedTime = toAnimationClock(animation.packetArrivalTime());
+    uint32_t observedTime =
+        toAnimationClock(infrastructure.packetArrivalTime());
 
     // Send the observed time out to everyone
     debug("Received reference broadcast with id %d at observed time %d", id,
         observedTime);
-    ProtocolAnimation::beginBroadcastWrite(PACKET_TYPE_CLOCK_SYNC);
-    animation.write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
-    animation.write16(id);
-    animation.write8(0); // Reserved
-    animation.write32(observedTime);
-    animation.endWrite();
+    ProtocolInfrastructure::beginBroadcastWrite(RVLI_PACKET_TYPE_CLOCK_SYNC);
+    infrastructure.write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
+    infrastructure.write16(id);
+    infrastructure.write8(0); // Reserved
+    infrastructure.write32(observedTime);
+    infrastructure.endWrite();
 
     // Store this node in the observation list so that all nodes have the same
     // observation table. This would normally be missing, since we wouldn't
@@ -195,7 +196,7 @@ void parsePacket(uint8_t source) {
   }
 
   case CLOCK_SYNC_PACKET_TYPE_OBSERVATION: {
-    uint32_t clock = animation.read32();
+    uint32_t clock = infrastructure.read32();
     prepareObservationRow(id);
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
     observations[observationStep][source] = clock;

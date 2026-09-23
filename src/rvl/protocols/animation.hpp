@@ -31,7 +31,6 @@ void loop();
 
 void parsePacket();
 
-void beginBroadcastWrite(uint8_t packetType);
 void beginChannelWrite(uint8_t packetType);
 
 } // namespace ProtocolAnimation

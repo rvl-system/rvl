@@ -37,8 +37,8 @@ namespace rvl {
 
 class System {
 public:
-  // The two protocols' packet streams. Their read halves match, but each has
-  // only the sends its protocol needs
+  // The two protocols' packet streams. They share the read and write
+  // primitives, and each adds only what its protocol needs
   class Animation {
   public:
     // Reaches every node on the sender's channel
@@ -55,12 +55,6 @@ public:
     virtual uint32_t read32() = 0;
     virtual void read(uint8_t* buffer, uint16_t length) = 0;
     virtual void endRead() = 0;
-
-    // Arrival time of the packet most recently returned by parsePacket(), in
-    // localClock() terms. Returns UINT32_MAX (-1) if no packet is currently
-    // being read (i.e. before the first parsePacket() success, or after
-    // endRead()) — soft-failure semantics matching the read calls, no asserts
-    virtual uint32_t packetArrivalTime() = 0;
   };
 
   class Infrastructure {
@@ -82,7 +76,10 @@ public:
     virtual void read(uint8_t* buffer, uint16_t length) = 0;
     virtual void endRead() = 0;
 
-    // As Animation::packetArrivalTime()
+    // Arrival time of the packet most recently returned by parsePacket(), in
+    // localClock() terms. Returns UINT32_MAX (-1) if no packet is currently
+    // being read (i.e. before the first parsePacket() success, or after
+    // endRead()) — soft-failure semantics matching the read calls, no asserts
     virtual uint32_t packetArrivalTime() = 0;
   };
 
