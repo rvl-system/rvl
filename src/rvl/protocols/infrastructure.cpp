@@ -21,12 +21,21 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl.hpp"
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
+#include "./rvl/protocols/identity/identity.hpp"
 #include <stdint.h>
 #include <string.h>
 
 namespace rvl {
 
 namespace ProtocolInfrastructure {
+
+void init() {
+  ProtocolIdentity::init();
+}
+
+void loop() {
+  ProtocolIdentity::loop();
+}
 
 void parsePacket() {
   auto& infrastructure = Platform::system->infrastructure();
@@ -64,11 +73,24 @@ void parsePacket() {
   }
 
   switch (packetType) {
+  case RVLI_PACKET_TYPE_ID_ASSIGNMENT:
+    ProtocolIdentity::parsePacket();
+    break;
   default:
     error("Received unknown RVLI packet type %d", packetType);
     break;
   }
   infrastructure.endRead();
+}
+
+void beginCoordinatorWrite(uint8_t packetType) {
+  auto& infrastructure = Platform::system->infrastructure();
+  infrastructure.beginCoordinatorWrite();
+  infrastructure.write(rvliSignature, 4);
+  infrastructure.write8(PROTOCOL_VERSION);
+  infrastructure.write8(getDeviceId());
+  infrastructure.write8(packetType);
+  infrastructure.write8(0);
 }
 
 } // namespace ProtocolInfrastructure

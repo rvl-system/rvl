@@ -51,9 +51,11 @@ void setPowerState(bool newPowerState);
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);
 
-// Setters for state input
+// State inputs
+bool getLinkUpState();
 void setLinkUpState(bool linkUp);
 void setDeviceId(uint8_t deviceId);
+bool getClockSyncedState();
 void setClockSyncedState(bool clockSynced);
 void setControllerActiveState(bool controllerActive);
 

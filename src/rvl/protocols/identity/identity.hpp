@@ -17,24 +17,22 @@ You should have received a copy of the GNU General Public License
 along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_INFRASTRUCTURE_H_
-#define RVL_PROTOCOLS_INFRASTRUCTURE_H_
+#ifndef RVL_PROTOCOLS_IDENTITY_IDENTITY_H_
+#define RVL_PROTOCOLS_IDENTITY_IDENTITY_H_
 
 #include <stdint.h>
 
 namespace rvl {
 
-namespace ProtocolInfrastructure {
+namespace ProtocolIdentity {
 
 void init();
 void loop();
 
 void parsePacket();
 
-void beginCoordinatorWrite(uint8_t packetType);
-
-} // namespace ProtocolInfrastructure
+} // namespace ProtocolIdentity
 
 } // namespace rvl
 
-#endif // RVL_PROTOCOLS_INFRASTRUCTURE_H_
+#endif // RVL_PROTOCOLS_IDENTITY_IDENTITY_H_

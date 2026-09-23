@@ -137,6 +137,10 @@ void setBrightness(uint8_t newBrightness) {
   }
 }
 
+bool getLinkUpState() {
+  return linkUp;
+}
+
 void setLinkUpState(bool newLinkUp) {
   if (linkUp != newLinkUp) {
     linkUp = newLinkUp;
@@ -146,6 +150,10 @@ void setLinkUpState(bool newLinkUp) {
 
 void setDeviceId(uint8_t newDeviceId) {
   deviceId = newDeviceId;
+}
+
+bool getClockSyncedState() {
+  return clockSynced;
 }
 
 void setClockSyncedState(bool newClockSynced) {

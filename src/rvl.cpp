@@ -31,6 +31,7 @@ namespace rvl {
 void init(System* newSystem) {
   Platform::init(newSystem);
   NetworkState::init();
+  ProtocolInfrastructure::init();
   ProtocolAnimation::init();
 }
 
@@ -55,8 +56,9 @@ void loop() {
   // up stale while we wait. Each dispatcher decides what it can accept
   drain(Platform::system->infrastructure(),
       ProtocolInfrastructure::parsePacket);
-  drain(Platform::system->animation(), ProtocolAnimation::parsePacket);
+  ProtocolInfrastructure::loop();
 
+  drain(Platform::system->animation(), ProtocolAnimation::parsePacket);
   ProtocolAnimation::loop();
 }
 
