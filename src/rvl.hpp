@@ -26,10 +26,9 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/logging.hpp"
 #include "./rvl/state.hpp"
 
-#define EVENT_WAVE_SETTINGS_UPDATED 1
+#define EVENT_ANIMATION_UPDATED 1
 #define EVENT_DEVICE_MODE_UPDATED 2
 #define EVENT_CHANNEL_UPDATED 4
-#define EVENT_POWER_STATE_UPDATED 5
 #define EVENT_BRIGHTNESS_UPDATED 6
 #define EVENT_CONNECTION_STATE_CHANGED 8
 

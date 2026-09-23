@@ -48,11 +48,13 @@ RVLA: what a node displays. Channel scoped, sent by a controller
 Signature: 4 bytes = "RVLA"
 Version: 1 byte = PROTOCOL_VERSION
 Source: 1 byte = the device ID of the sender
-Packet type: 1 byte = 1: System, 4: Wave Animation
+Packet type: 1 byte = 1: Off, 4: Wave Animation
 Channel: 1 byte = the channel this packet belongs to
 Reserved: 1 byte
+
+Off has no payload: the packet type is the whole message
 */
-#define PACKET_TYPE_SYSTEM 1
+#define PACKET_TYPE_OFF 1
 #define PACKET_TYPE_WAVE_ANIMATION 4
 
 /*

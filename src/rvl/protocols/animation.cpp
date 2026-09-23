@@ -22,7 +22,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
 #include "./rvl/protocols/header.hpp"
-#include "./rvl/protocols/system/system.hpp"
+#include "./rvl/protocols/network_state.hpp"
 #include "./rvl/protocols/wave/wave.hpp"
 #include <stdint.h>
 
@@ -30,14 +30,39 @@ namespace rvl {
 
 namespace ProtocolAnimation {
 
-void init() {
-  ProtocolSystem::init();
-  ProtocolWave::init();
+uint32_t nextSyncTime;
+
+// One sender for every type, so two types can never race on the same channel
+void sync() {
+  if (getDeviceMode() != DeviceMode::Controller || !isConnected()) {
+    return;
+  }
+  switch (getAnimationType()) {
+  case AnimationType::Off:
+    beginChannelWrite(PACKET_TYPE_OFF);
+    break;
+  case AnimationType::Wave:
+    beginChannelWrite(PACKET_TYPE_WAVE_ANIMATION);
+    ProtocolWave::write();
+    break;
+  }
+  Platform::system->animation().endWrite();
 }
 
+void init() {
+  nextSyncTime = Platform::system->localClock();
+  on(EVENT_ANIMATION_UPDATED, sync);
+}
+
+// The timer advances whether or not this node sends, so it never falls 2^31 ms
+// behind the clock and reads as the future
 void loop() {
-  ProtocolSystem::loop();
-  ProtocolWave::loop();
+  uint32_t now = Platform::system->localClock();
+  if (static_cast<int32_t>(now - nextSyncTime) < 0) {
+    return;
+  }
+  nextSyncTime = now + CLIENT_SYNC_INTERVAL;
+  sync();
 }
 
 void parsePacket() {
@@ -63,8 +88,10 @@ void parsePacket() {
   }
 
   switch (packetType) {
-  case PACKET_TYPE_SYSTEM:
-    ProtocolSystem::parsePacket(source);
+  case PACKET_TYPE_OFF:
+    if (NetworkState::isControllerNode(source)) {
+      setOff();
+    }
     break;
   case PACKET_TYPE_WAVE_ANIMATION:
     ProtocolWave::parsePacket(source);

@@ -28,6 +28,8 @@ namespace rvl {
 
 enum class DeviceMode { Controller, Receiver };
 
+enum class AnimationType { Off, Wave };
+
 uint32_t getAnimationClock();
 void adjustAnimationClock(int32_t delta);
 uint32_t toAnimationClock(uint32_t localTime);
@@ -42,11 +44,11 @@ void setDeviceMode(DeviceMode newDeviceMode);
 
 void lockState();
 void freeState();
+
+AnimationType getAnimationType();
+void setOff();
 RVLWaveSettings* getWaveSettings();
 void setWaveSettings(RVLWaveSettings* newWaveSettings);
-
-bool getPowerState();
-void setPowerState(bool newPowerState);
 
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);

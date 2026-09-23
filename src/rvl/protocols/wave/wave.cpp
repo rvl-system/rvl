@@ -19,12 +19,9 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "./wave.hpp"
 #include "./rvl.hpp"
-#include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
-#include "./rvl/protocols/animation.hpp"
 #include "./rvl/protocols/network_state.hpp"
 #include "./rvl/protocols/wave/wave.hpp"
-#include <limits.h>
 #include <stdint.h>
 
 namespace rvl {
@@ -46,43 +43,13 @@ v: a b w_t w_x phi
 a: a b w_t w_x phi
 */
 
-#define SYNC_ITERATION_MODULO 1750
-bool hasSyncedThisLoop = false;
-
-void init() {
-  on(EVENT_WAVE_SETTINGS_UPDATED, sync);
-}
-
-void loop() {
-  if (getDeviceMode() != DeviceMode::Controller) {
-    return;
-  }
-  if (Platform::system->localClock() % CLIENT_SYNC_INTERVAL <
-      SYNC_ITERATION_MODULO)
-  {
-    hasSyncedThisLoop = false;
-    return;
-  }
-  if (hasSyncedThisLoop) {
-    return;
-  }
-  hasSyncedThisLoop = true;
-  sync();
-}
-
-void sync() {
-  if (getDeviceMode() != DeviceMode::Controller || !isConnected()) {
-    return;
-  }
-  debug("Syncing preset");
+void write() {
   auto& animation = Platform::system->animation();
   auto* waveSettings = getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
-  ProtocolAnimation::beginChannelWrite(PACKET_TYPE_WAVE_ANIMATION);
   animation.write8(waveSettings->timePeriod);
   animation.write8(waveSettings->distancePeriod);
   animation.write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
-  animation.endWrite();
 }
 
 void parsePacket(uint8_t source) {

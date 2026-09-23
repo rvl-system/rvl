@@ -26,10 +26,7 @@ namespace rvl {
 
 namespace ProtocolWave {
 
-void init();
-void loop();
-
-void sync();
+void write();
 void parsePacket(uint8_t source);
 
 }  // namespace ProtocolWave
