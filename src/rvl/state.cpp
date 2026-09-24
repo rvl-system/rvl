@@ -31,8 +31,8 @@ namespace rvl {
 uint32_t clockOffset = 0;
 uint8_t channel = 0;
 DeviceMode deviceMode = DeviceMode::Receiver;
-AnimationType animationType = AnimationType::Wave;
-RVLWaveSettings waveSettings;
+AnimationType animationType = AnimationType::Parametric;
+RVLParametricSettings parametricSettings;
 uint8_t brightness = 0;
 
 // State inputs used to compute current state
@@ -115,14 +115,14 @@ void setOff() {
   emit(EVENT_ANIMATION_UPDATED);
 }
 
-RVLWaveSettings* getWaveSettings() {
-  return &waveSettings;
+RVLParametricSettings* getParametricSettings() {
+  return &parametricSettings;
 }
 
-void setWaveSettings(RVLWaveSettings* newWaveSettings) {
+void setParametricSettings(RVLParametricSettings* newSettings) {
   lockState();
-  memcpy(&waveSettings, newWaveSettings, sizeof(RVLWaveSettings));
-  animationType = AnimationType::Wave;
+  memcpy(&parametricSettings, newSettings, sizeof(RVLParametricSettings));
+  animationType = AnimationType::Parametric;
   freeState();
   emit(EVENT_ANIMATION_UPDATED);
 }

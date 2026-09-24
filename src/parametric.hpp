@@ -17,20 +17,32 @@ You should have received a copy of the GNU General Public License
 along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_PROTOCOLS_WAVE_WAVE_H_
-#define RVL_PROTOCOLS_WAVE_WAVE_H_
+#ifndef PARAMETRIC_H_
+#define PARAMETRIC_H_
 
 #include <stdint.h>
 
-namespace rvl {
+#define NUM_LAYERS 4
 
-namespace ProtocolWave {
+struct RVLColorComponent {
+  uint8_t a = 0;
+  uint8_t b = 0;
+  int8_t w_t = 0;
+  int8_t w_x = 0;
+  int8_t phi = 0;
+};
 
-void write();
-void parsePacket(uint8_t source);
+struct RVLLayer {
+  RVLColorComponent h;
+  RVLColorComponent s;
+  RVLColorComponent v;
+  RVLColorComponent a;
+};
 
-}  // namespace ProtocolWave
+struct RVLParametricSettings {
+  uint8_t timePeriod = 255;
+  uint8_t distancePeriod = 32;
+  RVLLayer layers[NUM_LAYERS];
+};
 
-}  // namespace rvl
-
-#endif  // RVL_PROTOCOLS_WAVE_WAVE_H_
+#endif // PARAMETRIC_H_

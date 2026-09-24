@@ -17,32 +17,20 @@ You should have received a copy of the GNU General Public License
 along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef WAVE_H_
-#define WAVE_H_
+#ifndef RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_
+#define RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_
 
 #include <stdint.h>
 
-#define NUM_WAVES 4
+namespace rvl {
 
-struct RVLWaveChannel {
-  uint8_t a = 0;
-  uint8_t b = 0;
-  int8_t w_t = 0;
-  int8_t w_x = 0;
-  int8_t phi = 0;
-};
+namespace ProtocolParametric {
 
-struct RVLWave {
-  RVLWaveChannel h;
-  RVLWaveChannel s;
-  RVLWaveChannel v;
-  RVLWaveChannel a;
-};
+void write();
+void parsePacket(uint8_t source);
 
-struct RVLWaveSettings {
-  uint8_t timePeriod = 255;
-  uint8_t distancePeriod = 32;
-  RVLWave waves[NUM_WAVES];
-};
+}  // namespace ProtocolParametric
 
-#endif // WAVE_H_
+}  // namespace rvl
+
+#endif  // RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_

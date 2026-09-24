@@ -23,7 +23,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/platform.hpp"
 #include "./rvl/protocols/header.hpp"
 #include "./rvl/protocols/network_state.hpp"
-#include "./rvl/protocols/wave/wave.hpp"
+#include "./rvl/protocols/parametric/parametric.hpp"
 #include <stdint.h>
 
 namespace rvl {
@@ -41,9 +41,9 @@ void sync() {
   case AnimationType::Off:
     beginChannelWrite(PACKET_TYPE_OFF);
     break;
-  case AnimationType::Wave:
-    beginChannelWrite(PACKET_TYPE_WAVE_ANIMATION);
-    ProtocolWave::write();
+  case AnimationType::Parametric:
+    beginChannelWrite(PACKET_TYPE_PARAMETRIC_ANIMATION);
+    ProtocolParametric::write();
     break;
   }
   Platform::system->animation().endWrite();
@@ -93,8 +93,8 @@ void parsePacket() {
       setOff();
     }
     break;
-  case PACKET_TYPE_WAVE_ANIMATION:
-    ProtocolWave::parsePacket(source);
+  case PACKET_TYPE_PARAMETRIC_ANIMATION:
+    ProtocolParametric::parsePacket(source);
     break;
   default:
     error("Received unknown RVLA packet type %d", packetType);
