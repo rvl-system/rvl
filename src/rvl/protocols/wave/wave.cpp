@@ -63,6 +63,11 @@ void parsePacket(uint8_t source) {
   newWaveSettings.distancePeriod = animation.read8();
   animation.read(reinterpret_cast<uint8_t*>(&newWaveSettings.waves),
       sizeof(RVLWave) * NUM_WAVES);
+  // The renderer divides by both periods
+  if (newWaveSettings.timePeriod == 0 || newWaveSettings.distancePeriod == 0) {
+    error("Received a wave packet with a zero period, ignoring");
+    return;
+  }
   setWaveSettings(&newWaveSettings);
 }
 
