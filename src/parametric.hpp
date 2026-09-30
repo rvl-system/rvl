@@ -21,6 +21,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #define PARAMETRIC_H_
 
 #include <stdint.h>
+#include <string.h>
 
 #define NUM_LAYERS 4
 
@@ -44,5 +45,14 @@ struct RVLParametricSettings {
   uint8_t distancePeriod = 32;
   RVLLayer layers[NUM_LAYERS];
 };
+
+// Every field is one byte, so there's no padding for memcmp to trip on. The
+// wire writer relies on the same layout
+static_assert(sizeof(RVLParametricSettings) == 82);
+
+inline bool operator==(
+    const RVLParametricSettings& a, const RVLParametricSettings& b) {
+  return memcmp(&a, &b, sizeof(RVLParametricSettings)) == 0;
+}
 
 #endif // PARAMETRIC_H_

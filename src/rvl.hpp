@@ -24,6 +24,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "./rvl/event.hpp"
 #include "./rvl/logging.hpp"
+#include "./rvl/scenes.hpp"
 #include "./rvl/state.hpp"
 
 #define EVENT_ANIMATION_UPDATED 1

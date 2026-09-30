@@ -22,6 +22,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/animation.hpp"
 #include "./rvl/protocols/infrastructure.hpp"
 #include "./rvl/protocols/network_state.hpp"
+#include "./rvl/scenes.hpp"
 #include <stdint.h>
 
 namespace rvl {
@@ -33,6 +34,7 @@ void init(System* newSystem) {
   NetworkState::init();
   ProtocolInfrastructure::init();
   ProtocolAnimation::init();
+  Scenes::init();
 }
 
 // Bounded, so a packet storm can't starve the rest of the loop. A template
@@ -60,6 +62,7 @@ void loop() {
 
   drain(Platform::system->animation(), ProtocolAnimation::parsePacket);
   ProtocolAnimation::loop();
+  Scenes::loop();
 }
 
 } // namespace rvl

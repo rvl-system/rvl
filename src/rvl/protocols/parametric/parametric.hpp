@@ -20,13 +20,14 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_
 #define RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_
 
+#include "./rvl.hpp"
 #include <stdint.h>
 
 namespace rvl {
 
 namespace ProtocolParametric {
 
-void write();
+void write(RVLParametricSettings settings);
 void parsePacket(uint8_t source);
 
 }  // namespace ProtocolParametric

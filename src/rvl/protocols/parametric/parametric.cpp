@@ -43,13 +43,12 @@ v: a b w_t w_x phi
 a: a b w_t w_x phi
 */
 
-void write() {
+void write(RVLParametricSettings settings) {
   auto& animation = Platform::system->animation();
-  auto* settings = getParametricSettings();
   uint16_t length = sizeof(RVLLayer) * NUM_LAYERS;
-  animation.write8(settings->timePeriod);
-  animation.write8(settings->distancePeriod);
-  animation.write(reinterpret_cast<uint8_t*>(&(settings->layers)), length);
+  animation.write8(settings.timePeriod);
+  animation.write8(settings.distancePeriod);
+  animation.write(reinterpret_cast<uint8_t*>(&(settings.layers)), length);
 }
 
 void parsePacket(uint8_t source) {

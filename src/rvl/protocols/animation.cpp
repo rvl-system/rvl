@@ -25,6 +25,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/network_state.hpp"
 #include "./rvl/protocols/parametric/parametric.hpp"
 #include <stdint.h>
+#include <variant>
 
 namespace rvl {
 
@@ -32,19 +33,19 @@ namespace ProtocolAnimation {
 
 uint32_t nextSyncTime;
 
-// One sender for every type, so two types can never race on the same channel
+// One sender for every type, so two types can never race on the same channel.
+// Until the wire carries start frames, the newest scheduled scene is the one to
+// send: a change is announced while it is still pending
 void sync() {
   if (getDeviceMode() != DeviceMode::Controller || !isConnected()) {
     return;
   }
-  switch (getAnimationType()) {
-  case AnimationType::Off:
-    beginChannelWrite(PACKET_TYPE_OFF);
-    break;
-  case AnimationType::Parametric:
+  RVLScene scene = getPendingScene().value_or(getCurrentScene());
+  if (auto* settings = std::get_if<RVLParametricSettings>(&scene.content)) {
     beginChannelWrite(PACKET_TYPE_PARAMETRIC_ANIMATION);
-    ProtocolParametric::write();
-    break;
+    ProtocolParametric::write(*settings);
+  } else {
+    beginChannelWrite(PACKET_TYPE_OFF);
   }
   Platform::system->animation().endWrite();
 }

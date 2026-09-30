@@ -26,6 +26,24 @@ namespace rvl {
 
 #define CLIENT_SYNC_INTERVAL 2000
 
+// One render step, in animation clock ms. Frame numbers are animationClock /
+// FRAME_PERIOD, so this must divide 2^32 for them to wrap with the clock
+#define FRAME_PERIOD 32
+
+// The shortest fade any node runs, whether asked for or catching up late
+#define MIN_FADE_FRAMES 16
+
+// A controller board's own changes
+#define DEFAULT_FADE_FRAMES 16
+
+// The lead: how far ahead of now a new scene starts, so its packet reaches
+// every receiver before the start
+#define SCENE_LEAD_FRAMES 5
+
+// A day. A start 2^26 frames back reads as the future, so senders re-key their
+// current scene well before that
+#define SCENE_MAX_AGE_FRAMES 2700000
+
 // Shared by both protocols. Fleets are flashed all at once, so this exists to
 // make a mismatched flash visible, not to let two formats coexist
 #define PROTOCOL_VERSION 1

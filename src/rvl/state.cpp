@@ -20,7 +20,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/state.hpp"
 #include "rvl/config.hpp"
 #include "rvl/platform.hpp"
-#include <string.h>
+#include "rvl/scenes.hpp"
 
 #ifdef ESP32
 #include "freertos/FreeRTOS.h"
@@ -31,8 +31,6 @@ namespace rvl {
 uint32_t clockOffset = 0;
 uint8_t channel = 0;
 DeviceMode deviceMode = DeviceMode::Receiver;
-AnimationType animationType = AnimationType::Parametric;
-RVLParametricSettings parametricSettings;
 uint8_t brightness = 0;
 
 // State inputs used to compute current state
@@ -72,6 +70,18 @@ uint32_t toAnimationClock(uint32_t localTime) {
   return localTime + clockOffset;
 }
 
+uint32_t getAnimationFrame() {
+  return getAnimationClock() / FRAME_PERIOD;
+}
+
+// Frame numbers wrap at 2^32 / FRAME_PERIOD, so the difference is scaled back
+// up to 32 bits before the signed cast, or a frame just past the wrap would
+// read as 49 days old
+static_assert((1ull << 32) % FRAME_PERIOD == 0);
+int32_t subtractFrames(uint32_t a, uint32_t b) {
+  return static_cast<int32_t>((a - b) * FRAME_PERIOD) / FRAME_PERIOD;
+}
+
 uint8_t getDeviceId() {
   return deviceId;
 }
@@ -79,9 +89,26 @@ uint8_t getDeviceId() {
 // The offset is modular, not a magnitude, so it's unsigned: corrections that
 // accumulate past INT32_MAX wrap instead of overflowing. Adjusted directly
 // rather than recomputed from localClock(), which would lose any millisecond
-// that ticks between the two reads, always in the same direction
+// that ticks between the two reads, always in the same direction.
+//
+// Below a frame this node is converging on the fleet, whose frames its scene
+// bookkeeping is already in
 void adjustAnimationClock(int32_t delta) {
+  // The render reads the frame and the fade window together on the other core,
+  // so the step and the re-base it causes must land together too
+  lockState();
+  uint32_t local = Platform::system->localClock();
+  uint32_t before = toAnimationClock(local) / FRAME_PERIOD;
   clockOffset += delta;
+  bool scheduled = false;
+  if (delta >= FRAME_PERIOD || delta <= -FRAME_PERIOD) {
+    uint32_t after = toAnimationClock(local) / FRAME_PERIOD;
+    scheduled = Scenes::onClockStep(subtractFrames(after, before), after);
+  }
+  freeState();
+  if (scheduled) {
+    emit(EVENT_ANIMATION_UPDATED);
+  }
 }
 
 uint8_t getChannel() {
@@ -104,27 +131,6 @@ void setDeviceMode(DeviceMode newDeviceMode) {
     deviceMode = newDeviceMode;
     emit(EVENT_DEVICE_MODE_UPDATED);
   }
-}
-
-AnimationType getAnimationType() {
-  return animationType;
-}
-
-void setOff() {
-  animationType = AnimationType::Off;
-  emit(EVENT_ANIMATION_UPDATED);
-}
-
-RVLParametricSettings* getParametricSettings() {
-  return &parametricSettings;
-}
-
-void setParametricSettings(RVLParametricSettings* newSettings) {
-  lockState();
-  memcpy(&parametricSettings, newSettings, sizeof(RVLParametricSettings));
-  animationType = AnimationType::Parametric;
-  freeState();
-  emit(EVENT_ANIMATION_UPDATED);
 }
 
 uint8_t getBrightness() {

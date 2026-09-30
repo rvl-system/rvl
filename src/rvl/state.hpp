@@ -21,14 +21,11 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_STATE_H_
 
 #include "./rvl.hpp"
-#include "./parametric.hpp"
 #include <stdint.h>
 
 namespace rvl {
 
 enum class DeviceMode { Controller, Receiver };
-
-enum class AnimationType { Off, Parametric };
 
 // Unknown: nothing to render yet. Current: rendering what the fleet is showing.
 // Stale: what was current has lapsed, so keep rendering it
@@ -37,6 +34,8 @@ enum class RenderState { Unknown, Current, Stale };
 uint32_t getAnimationClock();
 void adjustAnimationClock(int32_t delta);
 uint32_t toAnimationClock(uint32_t localTime);
+uint32_t getAnimationFrame();
+int32_t subtractFrames(uint32_t a, uint32_t b);
 
 uint8_t getDeviceId();
 
@@ -48,11 +47,6 @@ void setDeviceMode(DeviceMode newDeviceMode);
 
 void lockState();
 void freeState();
-
-AnimationType getAnimationType();
-void setOff();
-RVLParametricSettings* getParametricSettings();
-void setParametricSettings(RVLParametricSettings* newSettings);
 
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);
