@@ -35,8 +35,8 @@ bool isControllerActive();
 void refreshLocalClockSynchronization();
 bool isClockSynchronizationActive();
 
-}  // namespace NetworkState
+} // namespace NetworkState
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_PROTOCOLS_NETWORK_STATE_H_
+#endif // RVL_PROTOCOLS_NETWORK_STATE_H_

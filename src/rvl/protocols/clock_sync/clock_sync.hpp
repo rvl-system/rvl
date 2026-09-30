@@ -30,8 +30,8 @@ void init();
 
 void parsePacket(uint8_t source);
 
-}  // namespace ProtocolClockSync
+} // namespace ProtocolClockSync
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_
+#endif // RVL_PROTOCOLS_CLOCK_SYNC_CLOCK_SYNC_H_

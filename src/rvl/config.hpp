@@ -103,6 +103,6 @@ Device ID: 1 byte = the assigned ID, reply only
 extern uint8_t rvlaSignature[4];
 extern uint8_t rvliSignature[4];
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_CONFIG_H_
+#endif // RVL_CONFIG_H_

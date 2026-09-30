@@ -272,8 +272,7 @@ void loop() {
     fadeStart = fadeEnd;
     freeState();
   }
-  if (pending && isStartDue(*pending, currentFrame) &&
-      !isFading(currentFrame))
+  if (pending && isStartDue(*pending, currentFrame) && !isFading(currentFrame))
   {
     RVLScene scene = *pending;
     pending.reset();

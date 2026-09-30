@@ -24,22 +24,19 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in code
-enum class LogLevel {
-  Error = 1,
-  Info = 2,
-  Debug = 3
-};
+// These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in
+// code
+enum class LogLevel { Error = 1, Info = 2, Debug = 3 };
 
 void setLogLevel(LogLevel level);
 
-void error(const char *s, ...);
-void info(const char *s, ...);
-void debug(const char *s, ...);
+void error(const char* s, ...);
+void info(const char* s, ...);
+void debug(const char* s, ...);
 
 void on(uint8_t eventType, void (*listener)());
 void emit(uint8_t eventType);
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_LOGGING_H_
+#endif // RVL_LOGGING_H_

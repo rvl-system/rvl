@@ -30,8 +30,8 @@ namespace ProtocolParametric {
 void write(RVLParametricSettings settings);
 void parsePacket(uint8_t source);
 
-}  // namespace ProtocolParametric
+} // namespace ProtocolParametric
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_
+#endif // RVL_PROTOCOLS_PARAMETRIC_PARAMETRIC_H_

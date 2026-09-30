@@ -56,8 +56,8 @@ void loop() {
 
   // Both protocols drain every iteration, connected or not, so nothing queues
   // up stale while we wait. Each dispatcher decides what it can accept
-  drain(Platform::system->infrastructure(),
-      ProtocolInfrastructure::parsePacket);
+  drain(
+      Platform::system->infrastructure(), ProtocolInfrastructure::parsePacket);
   ProtocolInfrastructure::loop();
 
   drain(Platform::system->animation(), ProtocolAnimation::parsePacket);

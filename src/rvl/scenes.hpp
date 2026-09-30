@@ -37,7 +37,7 @@ using RVLSceneContent = std::variant<RVLOff, RVLParametricSettings>;
 // whatever was showing. Never changed once scheduled
 struct RVLScene {
   uint32_t start; // frame number
-  uint8_t fade;   // frames
+  uint8_t fade; // frames
   RVLSceneContent content;
 };
 
@@ -86,8 +86,8 @@ bool onClockStep(int32_t shift, uint32_t currentFrame);
 // Back to the boot scene, for tests
 void reset();
 
-}  // namespace Scenes
+} // namespace Scenes
 
-}  // namespace rvl
+} // namespace rvl
 
-#endif  // RVL_SCENES_H_
+#endif // RVL_SCENES_H_
