@@ -27,7 +27,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 struct RVLOff {};
 
-inline bool operator==(const RVLOff&, const RVLOff&) {
+inline bool operator==(const RVLOff& /*a*/, const RVLOff& /*b*/) {
   return true;
 }
 
@@ -47,7 +47,7 @@ inline bool operator==(const RVLScene& a, const RVLScene& b) {
 
 namespace rvl {
 
-enum class AnimationType { Off, Parametric };
+enum class AnimationType : uint8_t { Off, Parametric };
 
 // Previous dissolving into current, amount out of 255, while fading
 struct RenderPlan {

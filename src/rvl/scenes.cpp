@@ -249,7 +249,7 @@ AnimationType getAnimationType() {
 
 RVLParametricSettings* getParametricSettings() {
   auto* settings = std::get_if<RVLParametricSettings>(&current.content);
-  return settings ? settings : &black;
+  return settings != nullptr ? settings : &black;
 }
 
 namespace Scenes {

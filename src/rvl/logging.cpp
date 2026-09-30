@@ -23,7 +23,9 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
+
+// Longer lines are cut short
+#define MAX_LOG_LINE_LENGTH 256
 
 namespace rvl {
 
@@ -34,11 +36,9 @@ void setLogLevel(LogLevel newLevel) {
 }
 
 void log(const char* s, va_list argptr) {
-  int bufferLength = strlen(s) * 3;
-  char* str = new char[bufferLength];
-  vsnprintf(str, bufferLength, s, argptr);
-  Platform::system->print(str);
-  delete[] str;
+  char line[MAX_LOG_LINE_LENGTH];
+  vsnprintf(line, sizeof(line), s, argptr);
+  Platform::system->print(line);
 }
 
 void error(const char* s, ...) {
@@ -47,6 +47,7 @@ void error(const char* s, ...) {
     va_list argptr;
     va_start(argptr, s);
     log(s, argptr);
+    va_end(argptr);
     Platform::system->println("");
   }
 }
@@ -57,6 +58,7 @@ void info(const char* s, ...) {
     va_list argptr;
     va_start(argptr, s);
     log(s, argptr);
+    va_end(argptr);
     Platform::system->println("");
   }
 }
@@ -67,6 +69,7 @@ void debug(const char* s, ...) {
     va_list argptr;
     va_start(argptr, s);
     log(s, argptr);
+    va_end(argptr);
     Platform::system->println("");
   }
 }

@@ -77,7 +77,7 @@ uint32_t getAnimationFrame() {
 // Frame numbers wrap at 2^32 / FRAME_PERIOD, so the difference is scaled back
 // up to 32 bits before the signed cast, or a frame just past the wrap would
 // read as 49 days old
-static_assert((1ull << 32) % FRAME_PERIOD == 0);
+static_assert((1ULL << 32) % FRAME_PERIOD == 0);
 int32_t subtractFrames(uint32_t a, uint32_t b) {
   return static_cast<int32_t>((a - b) * FRAME_PERIOD) / FRAME_PERIOD;
 }

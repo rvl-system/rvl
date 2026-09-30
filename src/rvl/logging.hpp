@@ -26,7 +26,7 @@ namespace rvl {
 
 // These are defined such that we can do if(logLevel >= RVLogLevel.Warning) in
 // code
-enum class LogLevel { Error = 1, Info = 2, Debug = 3 };
+enum class LogLevel : uint8_t { Error = 1, Info = 2, Debug = 3 };
 
 void setLogLevel(LogLevel level);
 

@@ -96,12 +96,8 @@ void processObservations() {
     std::sort(
         observations[observation], observations[observation] + NUM_DEVICE_IDS);
     uint8_t head = 0;
-    while (head < NUM_DEVICE_IDS) {
-      if (observations[observation][head] > 0) {
-        break;
-      } else {
-        head++;
-      }
+    while (head < NUM_DEVICE_IDS && observations[observation][head] == 0) {
+      head++;
     }
 
     // On rare occasions, we end up with an empty observation set. This is a bug
@@ -113,9 +109,8 @@ void processObservations() {
 
     // Every node that observed this reference contributed one entry, so the
     // widest row is the number of nodes that heard the same broadcast
-    if (NUM_DEVICE_IDS - head > numNodesObserved) {
-      numNodesObserved = NUM_DEVICE_IDS - head;
-    }
+    numNodesObserved =
+        std::max<uint8_t>(numNodesObserved, NUM_DEVICE_IDS - head);
 
     // Calculate the offset for this observation. The subtraction is unsigned so
     // that it wraps to the correct signed delta however far apart the clocks

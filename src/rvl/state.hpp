@@ -25,11 +25,11 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace rvl {
 
-enum class DeviceMode { Controller, Receiver };
+enum class DeviceMode : uint8_t { Controller, Receiver };
 
 // Unknown: nothing to render yet. Current: rendering what the fleet is showing.
 // Stale: what was current has lapsed, so keep rendering it
-enum class RenderState { Unknown, Current, Stale };
+enum class RenderState : uint8_t { Unknown, Current, Stale };
 
 uint32_t getAnimationClock();
 void adjustAnimationClock(int32_t delta);
