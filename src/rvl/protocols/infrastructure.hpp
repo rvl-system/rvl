@@ -29,7 +29,7 @@ namespace ProtocolInfrastructure {
 void init();
 void loop();
 
-void parsePacket();
+void parsePacket(uint16_t length);
 
 void beginBroadcastWrite(uint8_t packetType);
 void beginCoordinatorWrite(uint8_t packetType);

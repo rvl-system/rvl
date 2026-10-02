@@ -20,7 +20,6 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./parametric.hpp"
 #include "./rvl.hpp"
 #include "./rvl/platform.hpp"
-#include "./rvl/protocols/network_state.hpp"
 #include "./rvl/protocols/parametric/parametric.hpp"
 #include <stdint.h>
 
@@ -29,6 +28,8 @@ namespace rvl {
 namespace ProtocolParametric {
 
 /*
+The settings, after the scene prefix:
+
 Time Period: 1 byte = The time period for each layer
 Distance Period: 1 byte = The distance period for each layer
 Layer1: 20 bytes = See Layer Layout below
@@ -51,23 +52,20 @@ void write(RVLParametricSettings settings) {
   animation.write(reinterpret_cast<uint8_t*>(&(settings.layers)), length);
 }
 
-void parsePacket(uint8_t source) {
-  if (!NetworkState::isControllerNode(source)) {
-    return;
-  }
+// Returns whether the settings are usable
+bool read(RVLParametricSettings& settings) {
   debug("Parsing Parametric packet");
   auto& animation = Platform::system->animation();
-  RVLParametricSettings newSettings;
-  newSettings.timePeriod = animation.read8();
-  newSettings.distancePeriod = animation.read8();
-  animation.read(reinterpret_cast<uint8_t*>(&newSettings.layers),
+  settings.timePeriod = animation.read8();
+  settings.distancePeriod = animation.read8();
+  animation.read(reinterpret_cast<uint8_t*>(&settings.layers),
       sizeof(RVLLayer) * NUM_LAYERS);
   // The renderer divides by both periods
-  if (newSettings.timePeriod == 0 || newSettings.distancePeriod == 0) {
+  if (settings.timePeriod == 0 || settings.distancePeriod == 0) {
     error("Received a parametric packet with a zero period, ignoring");
-    return;
+    return false;
   }
-  setParametricSettings(&newSettings);
+  return true;
 }
 
 } // namespace ProtocolParametric

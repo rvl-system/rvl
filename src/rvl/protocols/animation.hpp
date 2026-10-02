@@ -29,7 +29,7 @@ namespace ProtocolAnimation {
 void init();
 void loop();
 
-void parsePacket();
+void parsePacket(uint16_t length);
 
 void beginChannelWrite(uint8_t packetType);
 

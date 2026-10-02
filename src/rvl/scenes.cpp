@@ -117,19 +117,25 @@ bool activateOrPendScene(const RVLScene& scene, uint32_t currentFrame) {
 static_assert(SCENE_LEAD_FRAMES > 0);
 
 // Starts the lead after currentFrame, or when a running fade ends if that's
-// later. Returns whether the scene was accepted
+// later. The fade is floored, as the parser floors one off the wire: the hook
+// and the re-key copy current's, which is 0 on the boot scene, and the sender
+// relies on no other scene having none. Returns whether the scene was accepted
 bool scheduleNextScene(
     uint32_t currentFrame, uint8_t fade, const RVLSceneContent& content) {
   uint32_t start = currentFrame + SCENE_LEAD_FRAMES;
   if (isFading(currentFrame) && subtractFrames(fadeEnd, start) > 0) {
     start = fadeEnd;
   }
-  return activateOrPendScene({start, fade, content}, currentFrame);
+  return activateOrPendScene(
+      {start, std::max<uint8_t>(fade, MIN_FADE_FRAMES), content}, currentFrame);
 }
 
-// The gate. Content already scheduled is dropped. Returns whether it scheduled
-// a scene
+// The gate. A receiver never originates a scene, and content already scheduled
+// is dropped. Returns whether it scheduled a scene
 bool scheduleOrHoldContent(const RVLSceneContent& content) {
+  if (getDeviceMode() != DeviceMode::Controller) {
+    return false;
+  }
   uint32_t currentFrame = getAnimationFrame();
   const RVLSceneContent& target = pending ? pending->content : current.content;
   if (content == target) {

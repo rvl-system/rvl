@@ -28,7 +28,7 @@ namespace rvl {
 namespace ProtocolParametric {
 
 void write(RVLParametricSettings settings);
-void parsePacket(uint8_t source);
+bool read(RVLParametricSettings& settings);
 
 } // namespace ProtocolParametric
 

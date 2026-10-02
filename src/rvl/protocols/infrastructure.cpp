@@ -39,12 +39,14 @@ void loop() {
   ProtocolIdentity::loop();
 }
 
-void parsePacket() {
+void parsePacket(uint16_t /*length*/) {
   auto& infrastructure = Platform::system->infrastructure();
 
   uint8_t source;
   uint8_t packetType;
-  if (!readHeader(infrastructure, rvliSignature, source, packetType)) {
+  if (!readHeader(
+          infrastructure, rvliSignature, RVLI_VERSION, source, packetType))
+  {
     return;
   }
   infrastructure.read8(); // reserved
@@ -69,7 +71,7 @@ void parsePacket() {
 void writeHeader(uint8_t packetType) {
   auto& infrastructure = Platform::system->infrastructure();
   infrastructure.write(rvliSignature, 4);
-  infrastructure.write8(PROTOCOL_VERSION);
+  infrastructure.write8(RVLI_VERSION);
   infrastructure.write8(getDeviceId());
   infrastructure.write8(packetType);
   infrastructure.write8(0);

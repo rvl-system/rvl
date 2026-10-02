@@ -57,6 +57,7 @@ void setLinkUpState(bool linkUp);
 void setDeviceId(uint8_t deviceId);
 bool getClockSyncedState();
 void setClockSyncedState(bool clockSynced);
+bool getClockEverSyncedState();
 void setClockEverSyncedState(bool clockEverSynced);
 void setControllerActiveState(bool controllerActive);
 void setControllerHeardState(bool controllerHeard);

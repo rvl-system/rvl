@@ -54,9 +54,8 @@ RenderState lastRenderState = RenderState::Unknown;
 void loop() {
   setClockSyncedState(isClockSynchronizationActive());
   setControllerActiveState(isControllerActive());
-  // The timestamps outlive those windows: nonzero means the clock has synced
-  // since boot, and a controller has been heard since the last reset
-  setClockEverSyncedState(localClockLastRefreshed > 0);
+  // The timestamp outlives that window: nonzero means a controller has been
+  // heard since the last reset
   setControllerHeardState(controllerNodeLastRefreshed > 0);
 
   RenderState renderState = getRenderState();
@@ -110,6 +109,9 @@ bool isControllerActive() {
 
 void refreshLocalClockSynchronization() {
   localClockLastRefreshed = Platform::system->localClock();
+  // Set here rather than copied per iteration, so the first sync opens the
+  // sender's gate before the clock-step hook emits
+  setClockEverSyncedState(true);
 }
 
 bool isClockSynchronizationActive() {

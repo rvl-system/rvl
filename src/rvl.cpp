@@ -39,12 +39,14 @@ void init(System* newSystem) {
 
 // Bounded, so a packet storm can't starve the rest of the loop. A template
 // because the two protocols' endpoints share no base class
-template <class Endpoint> void drain(Endpoint& endpoint, void (*dispatch)()) {
+template <class Endpoint>
+void drain(Endpoint& endpoint, void (*dispatch)(uint16_t length)) {
   for (uint8_t i = 0; i < MAX_PACKETS_PER_LOOP; i++) {
-    if (endpoint.parsePacket() == 0) {
+    uint16_t length = endpoint.parsePacket();
+    if (length == 0) {
       return;
     }
-    dispatch();
+    dispatch(length);
   }
 }
 

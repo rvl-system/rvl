@@ -32,8 +32,8 @@ namespace rvl {
 // dispatcher must not see. A template because the two protocols' endpoints
 // share no base class
 template <class Endpoint>
-bool readHeader(Endpoint& endpoint, const uint8_t* signature, uint8_t& source,
-    uint8_t& packetType) {
+bool readHeader(Endpoint& endpoint, const uint8_t* signature,
+    uint8_t expectedVersion, uint8_t& source, uint8_t& packetType) {
   uint8_t packetSignature[4];
   endpoint.read(packetSignature, 4);
   if (memcmp(packetSignature, signature, 4) != 0) {
@@ -42,7 +42,7 @@ bool readHeader(Endpoint& endpoint, const uint8_t* signature, uint8_t& source,
   }
 
   uint8_t version = endpoint.read8();
-  if (version != PROTOCOL_VERSION) {
+  if (version != expectedVersion) {
     error("Received unsupported %.4s protocol version %d, ignoring",
         reinterpret_cast<const char*>(signature), version);
     endpoint.endRead();

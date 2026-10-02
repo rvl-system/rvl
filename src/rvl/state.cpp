@@ -167,6 +167,10 @@ void setClockSyncedState(bool newClockSynced) {
   clockSynced = newClockSynced;
 }
 
+bool getClockEverSyncedState() {
+  return clockEverSynced;
+}
+
 void setClockEverSyncedState(bool newClockEverSynced) {
   clockEverSynced = newClockEverSynced;
 }

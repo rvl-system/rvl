@@ -134,8 +134,10 @@ void processObservations() {
     debug("Updating animation clock with offset: %d from %d nodes across %d "
           "references",
         averageOffset, numNodesObserved, numObservationsProcessed);
-    adjustAnimationClock(averageOffset);
+    // Refreshed first: the correction's hook can send, and the sender is gated
+    // on the first sync
     NetworkState::refreshLocalClockSynchronization();
+    adjustAnimationClock(averageOffset);
   }
 }
 

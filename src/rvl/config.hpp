@@ -33,20 +33,29 @@ namespace rvl {
 // The shortest fade any node runs, whether asked for or catching up late
 #define MIN_FADE_FRAMES 16
 
-// A controller board's own changes
+// A controller board's own changes. Activation and the parser both floor a
+// smaller default silently
 #define DEFAULT_FADE_FRAMES 16
+static_assert(DEFAULT_FADE_FRAMES >= MIN_FADE_FRAMES);
 
 // The lead: how far ahead of now a new scene starts, so its packet reaches
 // every receiver before the start
 #define SCENE_LEAD_FRAMES 5
 
+// How long after a newly scheduled scene's first send its repeat goes out: more
+// than a beacon interval, so the two copies ride different DTIM bursts, and
+// before the scene starts
+#define REPEAT_SEND_FRAMES 4
+static_assert(REPEAT_SEND_FRAMES < SCENE_LEAD_FRAMES);
+
 // A day. A start 2^26 frames back reads as the future, so senders re-key their
 // current scene well before that
 #define SCENE_MAX_AGE_FRAMES 2700000
 
-// Shared by both protocols. Fleets are flashed all at once, so this exists to
-// make a mismatched flash visible, not to let two formats coexist
-#define PROTOCOL_VERSION 1
+// One per protocol. Fleets are flashed all at once, so these exist to make a
+// mismatched flash visible, not to let two formats coexist
+#define RVLA_VERSION 2
+#define RVLI_VERSION 1
 
 // Device IDs are 0..NUM_DEVICE_IDS-1, and every ID-indexed table is this wide.
 // It must stay below 256: IDs are uint8_t, and loops over the observation table
@@ -64,13 +73,18 @@ namespace rvl {
 RVLA: what a node displays. Channel scoped, sent by a controller
 
 Signature: 4 bytes = "RVLA"
-Version: 1 byte = PROTOCOL_VERSION
+Version: 1 byte = RVLA_VERSION
 Source: 1 byte = the device ID of the sender
 Packet type: 1 byte = 1: Off, 4: Parametric Animation
 Channel: 1 byte = the channel this packet belongs to
 Reserved: 1 byte
 
-Off has no payload: the packet type is the whole message
+Every packet type carries one scene, and its payload starts with the timing:
+Start: 4 bytes = the frame number the scene starts at
+Reserved: 1 byte = 0, so the fade can widen to 16 bits as a big-endian no-op
+Fade: 1 byte = frames to dissolve from what is showing into this scene
+
+Off has nothing more; Parametric Animation follows with its settings
 */
 #define PACKET_TYPE_OFF 1
 #define PACKET_TYPE_PARAMETRIC_ANIMATION 4
@@ -81,7 +95,7 @@ and clock. Channel independent, and mostly originated by the transport
 coordinator
 
 Signature: 4 bytes = "RVLI"
-Version: 1 byte = PROTOCOL_VERSION
+Version: 1 byte = RVLI_VERSION
 Source: 1 byte = sender's device ID, or 255 when it has none yet
 Packet type: 1 byte = 1: ID Assignment, 2: Clock Sync
 Reserved: 1 byte
