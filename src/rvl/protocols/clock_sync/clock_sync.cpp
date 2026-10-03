@@ -170,8 +170,6 @@ void parsePacket(uint8_t source) {
         toAnimationClock(infrastructure.packetArrivalTime());
 
     // Send the observed time out to everyone
-    debug("Received reference broadcast with id %d at observed time %d", id,
-        observedTime);
     ProtocolInfrastructure::beginBroadcastWrite(RVLI_PACKET_TYPE_CLOCK_SYNC);
     infrastructure.write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
     infrastructure.write16(id);

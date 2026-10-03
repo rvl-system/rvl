@@ -54,7 +54,6 @@ void write(RVLParametricSettings settings) {
 
 // Returns whether the settings are usable
 bool read(RVLParametricSettings& settings) {
-  debug("Parsing Parametric packet");
   auto& animation = Platform::system->animation();
   settings.timePeriod = animation.read8();
   settings.distancePeriod = animation.read8();

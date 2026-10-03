@@ -48,8 +48,6 @@ uint32_t lateActivations = 0;
 int32_t largestLateness = 0;
 uint32_t nextLateReportTime = 0;
 
-RVLParametricSettings black;
-
 bool isFading(uint32_t currentFrame) {
   return subtractFrames(currentFrame, fadeStart) >= 0 &&
       subtractFrames(currentFrame, fadeEnd) < 0;
@@ -243,19 +241,6 @@ void setParametricSettings(RVLParametricSettings* newSettings) {
 
 void setOff() {
   announceIfScheduled(scheduleOrHoldContent(RVLOff{}));
-}
-
-AnimationType getAnimationType() {
-  // The render calls this on the other core
-  lockState();
-  bool off = std::holds_alternative<RVLOff>(current.content);
-  freeState();
-  return off ? AnimationType::Off : AnimationType::Parametric;
-}
-
-RVLParametricSettings* getParametricSettings() {
-  auto* settings = std::get_if<RVLParametricSettings>(&current.content);
-  return settings != nullptr ? settings : &black;
 }
 
 namespace Scenes {

@@ -47,8 +47,6 @@ inline bool operator==(const RVLScene& a, const RVLScene& b) {
 
 namespace rvl {
 
-enum class AnimationType : uint8_t { Off, Parametric };
-
 // Previous dissolving into current, amount out of 255, while fading
 struct RenderPlan {
   RVLScene current;
@@ -68,10 +66,6 @@ RenderPlan getRenderPlan();
 // the last one has finished fading, and until then the latest is held
 void setParametricSettings(RVLParametricSettings* newSettings);
 void setOff();
-
-// The current scene. Read the settings under the lock; off reads as black
-AnimationType getAnimationType();
-RVLParametricSettings* getParametricSettings();
 
 namespace Scenes {
 
