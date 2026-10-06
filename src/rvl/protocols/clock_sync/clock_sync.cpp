@@ -70,12 +70,27 @@ void prepareObservationRow(uint16_t broadcastId) {
   }
 }
 
+bool hasOtherNodeObservation(uint8_t localNode) {
+  for (uint8_t observation = 0; observation < NUM_OBSERVATIONS_IN_SET;
+      observation++)
+  {
+    for (uint8_t node = 0; node < NUM_DEVICE_IDS; node++) {
+      if (node != localNode && observations[observation][node] != 0) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void processObservations() {
   int64_t offsetSum = 0;
   uint8_t localNode = getDeviceId();
   if (localNode >= NUM_DEVICE_IDS) {
     return;
   }
+  // Checked before the rows are sorted, which loses whose observation is whose
+  bool isFleetObserved = hasOtherNodeObservation(localNode);
   uint8_t numObservationsProcessed = 0;
   uint8_t numNodesObserved = 0;
   for (uint8_t observation = 0; observation < NUM_OBSERVATIONS_IN_SET;
@@ -104,6 +119,14 @@ void processObservations() {
     // that should be fixed, but let's also act defensively so we don't get a
     // divide by 0 segfault and take the entire system down
     if (head == NUM_DEVICE_IDS) {
+      continue;
+    }
+
+    // A row only this node observed says nothing about the fleet, and would
+    // pull the average toward this node's own clock. Only a node that hears no
+    // one else at all counts it, as a zero correction that syncs it to itself
+    if (isFleetObserved && head == NUM_DEVICE_IDS - 1) {
+      memset(observations[observation], 0, sizeof(observations[observation]));
       continue;
     }
 
