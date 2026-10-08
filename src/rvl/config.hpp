@@ -33,9 +33,9 @@ namespace rvl {
 // The shortest fade any node runs, whether asked for or catching up late
 #define MIN_FADE_FRAMES 16
 
-// A controller board's own changes. Activation and the parser both floor a
-// smaller default silently
-#define DEFAULT_FADE_FRAMES 16
+// A controller board's own changes, a second. Activation and the parser both
+// floor a smaller default silently
+#define DEFAULT_FADE_FRAMES 32
 static_assert(DEFAULT_FADE_FRAMES >= MIN_FADE_FRAMES);
 
 // The lead: how far ahead of now a new scene starts, so its packet reaches
