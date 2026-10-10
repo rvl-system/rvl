@@ -58,16 +58,23 @@ Observation packet:
 clock: 4 bytes = the observed time of the reference
 */
 
-// Each observation row holds data for a single reference broadcast id. If a
-// row still holds data from an older broadcast (a set that never completed),
-// clear it before reuse so observations of different broadcasts never mix
-// within one row
-void prepareObservationRow(uint16_t broadcastId) {
+// Each observation row holds data for a single reference broadcast id. Only a
+// reference claims a row, clearing whatever an older broadcast left in it
+void claimObservationRow(uint16_t broadcastId) {
   uint8_t row = broadcastId % NUM_OBSERVATIONS_IN_SET;
   if (observationIds[row] != broadcastId) {
     memset(observations[row], 0, sizeof(observations[row]));
     observationIds[row] = broadcastId;
   }
+}
+
+// A row still holding this node's observation of another broadcast was never
+// processed, so the reference that starts this set was lost
+bool holdsUnprocessedReference(uint16_t broadcastId) {
+  uint8_t row = broadcastId % NUM_OBSERVATIONS_IN_SET;
+  uint8_t localNode = getDeviceId();
+  return localNode < NUM_DEVICE_IDS && observationIds[row] != broadcastId &&
+      observations[row][localNode] != 0;
 }
 
 bool hasOtherNodeObservation(uint8_t localNode) {
@@ -179,10 +186,11 @@ void parsePacket(uint8_t source) {
   case CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST: {
     // Must run before the observed time is computed below: processing changes
     // the clock offset, and a time computed with the old one would be stored as
-    // a stale entry in the new set
+    // a stale entry in the new set. A lost start of set is processed a
+    // reference late
     uint8_t isStartOfSet = infrastructure.read8();
     infrastructure.read8(); // reserved
-    if (isStartOfSet == 1) {
+    if (isStartOfSet == 1 || holdsUnprocessedReference(id)) {
       processObservations();
     }
 
@@ -207,7 +215,7 @@ void parsePacket(uint8_t source) {
     if (localNode >= NUM_DEVICE_IDS) {
       break;
     }
-    prepareObservationRow(id);
+    claimObservationRow(id);
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
     observations[observationStep][localNode] = observedTime;
     break;
@@ -215,9 +223,13 @@ void parsePacket(uint8_t source) {
 
   case CLOCK_SYNC_PACKET_TYPE_OBSERVATION: {
     uint32_t clock = infrastructure.read32();
-    prepareObservationRow(id);
+    // An observation of a reference this node missed has nothing to be
+    // compared with, and one straggling from the last set must not take the
+    // row from its successor
     uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
-    observations[observationStep][source] = clock;
+    if (observationIds[observationStep] == id) {
+      observations[observationStep][source] = clock;
+    }
     break;
   }
 
