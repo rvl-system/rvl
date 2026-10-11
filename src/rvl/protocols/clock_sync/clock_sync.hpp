@@ -28,7 +28,7 @@ namespace ProtocolClockSync {
 
 void init();
 
-void parsePacket(uint8_t source);
+void parsePacket(uint8_t source, uint16_t length);
 
 } // namespace ProtocolClockSync
 

@@ -39,7 +39,7 @@ void loop() {
   ProtocolIdentity::loop();
 }
 
-void parsePacket(uint16_t /*length*/) {
+void parsePacket(uint16_t length) {
   auto& infrastructure = Platform::system->infrastructure();
 
   uint8_t source;
@@ -53,12 +53,12 @@ void parsePacket(uint16_t /*length*/) {
 
   switch (packetType) {
   case RVLI_PACKET_TYPE_ID_ASSIGNMENT:
-    ProtocolIdentity::parsePacket();
+    ProtocolIdentity::parsePacket(length);
     break;
   case RVLI_PACKET_TYPE_CLOCK_SYNC:
     // Clock sync stores this node's observations under its own ID
     if (isConnected()) {
-      ProtocolClockSync::parsePacket(source);
+      ProtocolClockSync::parsePacket(source, length);
     }
     break;
   default:

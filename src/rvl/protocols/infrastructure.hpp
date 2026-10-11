@@ -26,6 +26,9 @@ namespace rvl {
 
 namespace ProtocolInfrastructure {
 
+// Signature, version, source, packet type and the reserved byte
+const uint16_t HEADER_LENGTH = 8;
+
 void init();
 void loop();
 

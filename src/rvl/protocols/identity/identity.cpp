@@ -31,6 +31,10 @@ namespace ProtocolIdentity {
 #define ID_RETRY_INTERVAL 1000
 #define ID_RETRY_JITTER 250
 
+// The type and the assigned ID
+const uint16_t ID_REPLY_PACKET_LENGTH =
+    ProtocolInfrastructure::HEADER_LENGTH + 2;
+
 uint32_t nextRequestTime;
 bool requested = false;
 
@@ -72,10 +76,17 @@ void loop() {
       now + ID_RETRY_INTERVAL + Platform::system->random() % ID_RETRY_JITTER;
 }
 
-void parsePacket() {
+void parsePacket(uint16_t length) {
   auto& infrastructure = Platform::system->infrastructure();
   // A request has no ID byte, so check the type before reading one
   if (infrastructure.read8() != ID_REPLY_TYPE) {
+    return;
+  }
+  // Every sender is this fleet's own, so a wrong length is a bug. Checked
+  // before the ID is read, which would run past the end of a short packet
+  if (length != ID_REPLY_PACKET_LENGTH) {
+    error("Received ID reply of %d bytes, expected %d, ignoring", length,
+        ID_REPLY_PACKET_LENGTH);
     return;
   }
   uint8_t id = infrastructure.read8();

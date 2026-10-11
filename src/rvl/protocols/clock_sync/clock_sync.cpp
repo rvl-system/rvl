@@ -34,6 +34,11 @@ namespace ProtocolClockSync {
 #define CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST 1
 #define CLOCK_SYNC_PACKET_TYPE_OBSERVATION 2
 
+// The parent packet below, which every type carries
+const uint16_t PARENT_PACKET_LENGTH = ProtocolInfrastructure::HEADER_LENGTH + 4;
+const uint16_t REFERENCE_PACKET_LENGTH = PARENT_PACKET_LENGTH + 2;
+const uint16_t OBSERVATION_PACKET_LENGTH = PARENT_PACKET_LENGTH + 4;
+
 uint32_t observations[NUM_OBSERVATIONS_IN_SET][NUM_DEVICE_IDS];
 uint16_t observationIds[NUM_OBSERVATIONS_IN_SET];
 
@@ -176,67 +181,90 @@ void init() {
   memset(observationIds, 0, sizeof(observationIds));
 }
 
-void parsePacket(uint8_t source) {
+// 0 for a type this node doesn't know
+uint16_t packetLength(uint8_t packetType) {
+  switch (packetType) {
+  case CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST:
+    return REFERENCE_PACKET_LENGTH;
+  case CLOCK_SYNC_PACKET_TYPE_OBSERVATION:
+    return OBSERVATION_PACKET_LENGTH;
+  default:
+    return 0;
+  }
+}
+
+void parseReference(uint16_t id) {
+  auto& infrastructure = Platform::system->infrastructure();
+  // Must run before the observed time is computed below: processing changes
+  // the clock offset, and a time computed with the old one would be stored as
+  // a stale entry in the new set. A lost start of set is processed a
+  // reference late
+  uint8_t isStartOfSet = infrastructure.read8();
+  infrastructure.read8(); // reserved
+  if (isStartOfSet == 1 || holdsUnprocessedReference(id)) {
+    processObservations();
+  }
+
+  // Convert the packet's arrival time, not the animation clock cached at the
+  // top of the loop: the cached value is stale by however long ago the loop
+  // tick started, and that error varies per node
+  uint32_t observedTime = toAnimationClock(infrastructure.packetArrivalTime());
+
+  // Send the observed time out to everyone
+  ProtocolInfrastructure::beginBroadcastWrite(RVLI_PACKET_TYPE_CLOCK_SYNC);
+  infrastructure.write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
+  infrastructure.write16(id);
+  infrastructure.write8(0); // Reserved
+  infrastructure.write32(observedTime);
+  infrastructure.endWrite();
+
+  // Store this node in the observation list so that all nodes have the same
+  // observation table. This would normally be missing, since we wouldn't
+  // receive the message that was just sent
+  uint8_t localNode = getDeviceId();
+  if (localNode >= NUM_DEVICE_IDS) {
+    return;
+  }
+  claimObservationRow(id);
+  uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
+  observations[observationStep][localNode] = observedTime;
+}
+
+// An observation of a reference this node missed has nothing to be compared
+// with, and one straggling from the last set must not take the row from its
+// successor
+void parseObservation(uint8_t source, uint16_t id) {
+  uint32_t clock = Platform::system->infrastructure().read32();
+  uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
+  if (observationIds[observationStep] == id) {
+    observations[observationStep][source] = clock;
+  }
+}
+
+void parsePacket(uint8_t source, uint16_t length) {
   auto& infrastructure = Platform::system->infrastructure();
   uint8_t packetType = infrastructure.read8();
+
+  uint16_t expectedLength = packetLength(packetType);
+  if (expectedLength == 0) {
+    error("Received unknown clock sync packet type %d", packetType);
+    return;
+  }
+  // Every sender is this fleet's own, so a wrong length is a bug. Checked
+  // before the rest is read, which would run past the end of a short packet
+  if (length != expectedLength) {
+    error("Received clock sync packet type %d of %d bytes, expected %d, "
+          "ignoring",
+        packetType, length, expectedLength);
+    return;
+  }
+
   uint16_t id = infrastructure.read16();
   infrastructure.read8(); // Reserved
-
-  switch (packetType) {
-  case CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST: {
-    // Must run before the observed time is computed below: processing changes
-    // the clock offset, and a time computed with the old one would be stored as
-    // a stale entry in the new set. A lost start of set is processed a
-    // reference late
-    uint8_t isStartOfSet = infrastructure.read8();
-    infrastructure.read8(); // reserved
-    if (isStartOfSet == 1 || holdsUnprocessedReference(id)) {
-      processObservations();
-    }
-
-    // Convert the packet's arrival time, not the animation clock cached at the
-    // top of the loop: the cached value is stale by however long ago the loop
-    // tick started, and that error varies per node
-    uint32_t observedTime =
-        toAnimationClock(infrastructure.packetArrivalTime());
-
-    // Send the observed time out to everyone
-    ProtocolInfrastructure::beginBroadcastWrite(RVLI_PACKET_TYPE_CLOCK_SYNC);
-    infrastructure.write8(CLOCK_SYNC_PACKET_TYPE_OBSERVATION);
-    infrastructure.write16(id);
-    infrastructure.write8(0); // Reserved
-    infrastructure.write32(observedTime);
-    infrastructure.endWrite();
-
-    // Store this node in the observation list so that all nodes have the same
-    // observation table. This would normally be missing, since we wouldn't
-    // receive the message that was just sent
-    uint8_t localNode = getDeviceId();
-    if (localNode >= NUM_DEVICE_IDS) {
-      break;
-    }
-    claimObservationRow(id);
-    uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
-    observations[observationStep][localNode] = observedTime;
-    break;
-  }
-
-  case CLOCK_SYNC_PACKET_TYPE_OBSERVATION: {
-    uint32_t clock = infrastructure.read32();
-    // An observation of a reference this node missed has nothing to be
-    // compared with, and one straggling from the last set must not take the
-    // row from its successor
-    uint8_t observationStep = id % NUM_OBSERVATIONS_IN_SET;
-    if (observationIds[observationStep] == id) {
-      observations[observationStep][source] = clock;
-    }
-    break;
-  }
-
-  default: {
-    debug("Received unknown clock sync subpacket type %d", packetType);
-    break;
-  }
+  if (packetType == CLOCK_SYNC_PACKET_TYPE_REFERENCE_BROADCAST) {
+    parseReference(id);
+  } else {
+    parseObservation(source, id);
   }
 }
 
