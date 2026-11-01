@@ -31,6 +31,26 @@ enum class DeviceMode : uint8_t { Controller, Receiver };
 // Stale: what was current has lapsed, so keep rendering it
 enum class RenderState : uint8_t { Unknown, Current, Stale };
 
+// The order a strip reads its three bytes in. The values are the wire's
+enum class ColorOrder : uint8_t { RGB, RBG, GRB, GBR, BRG, BGR };
+
+// The properties a node can be configured with over the wire, numbered as the
+// wire numbers them
+enum class Property : uint8_t {
+  Channel,
+  Brightness,
+  PixelCount,
+  ColorOrder,
+  StatusLedBrightness,
+  Nickname
+};
+#define NUM_PROPERTIES 6
+
+// The property's bit in a capabilities byte
+constexpr uint8_t capabilityBit(Property property) {
+  return 1 << static_cast<uint8_t>(property);
+}
+
 uint32_t getAnimationClock();
 void adjustAnimationClock(int32_t delta);
 uint32_t toAnimationClock(uint32_t localTime);
@@ -51,7 +71,34 @@ void freeState();
 uint8_t getBrightness();
 void setBrightness(uint8_t newBrightness);
 
+// Clamped to the maximum the app set
+uint16_t getPixelCount();
+void setPixelCount(uint16_t newPixelCount);
+
+ColorOrder getColorOrder();
+void setColorOrder(ColorOrder newColorOrder);
+
+uint8_t getStatusLedBrightness();
+void setStatusLedBrightness(uint8_t newStatusLedBrightness);
+
+// At most NICKNAME_LENGTH characters, always terminated
+const char* getNickname();
+void setNickname(const char* newNickname);
+
+// Set by an Identify, for IDENTIFY_DURATION of the local clock. The render
+// loops read it from the other task, so only the background task writes the
+// end time: expireIdentifying() pins it to now once over, every loop
+void beginIdentifying();
+void expireIdentifying();
+bool isIdentifying();
+
 // State inputs
+// The properties this node honors over the wire, as capability bits, and the
+// most pixels its buffers hold, both set by the app before anything else
+void setCapabilities(uint8_t newCapabilities);
+uint8_t getCapabilities();
+void setMaxPixelCount(uint16_t newMaxPixelCount);
+uint16_t getMaxPixelCount();
 bool getLinkUpState();
 void setLinkUpState(bool linkUp);
 void setDeviceId(uint8_t deviceId);

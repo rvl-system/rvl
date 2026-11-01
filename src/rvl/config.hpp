@@ -65,6 +65,11 @@ static_assert(REPEAT_SEND_FRAMES < SCENE_LEAD_FRAMES);
 // Never a valid device ID, so it doubles as "unassigned"
 #define UNASSIGNED_DEVICE_ID 255
 
+// As an RVLI destination: every node
+#define EVERY_DEVICE_ID 255
+
+#define NUM_CHANNELS 8
+
 // Ports are a WiFi concept, so they live here rather than on rvl::System
 #define RVLA_PORT 4978
 #define RVLI_PORT 4979
@@ -97,18 +102,52 @@ coordinator
 Signature: 4 bytes = "RVLI"
 Version: 1 byte = RVLI_VERSION
 Source: 1 byte = sender's device ID, or 255 when it has none yet
-Packet type: 1 byte = 1: ID Assignment, 2: Clock Sync
-Reserved: 1 byte
+Packet type: 1 byte = 1: ID Assignment, 2: Clock Sync, 3: Query,
+  4: Configure, 5: Identify, 6: Status
+Destination: 1 byte = the device ID this packet is for, or 255 for every
+  node. Every packet is a broadcast on the wire; a node drops one for
+  another node before reading its payload
 
 ID Assignment payload:
 Type: 1 byte = 1: request, 2: reply
 Device ID: 1 byte = the assigned ID, reply only
+
+Query, to one node or to every node: no payload. Answered with a Status
+
+Configure payload, to one node, answered with a Status:
+Property: 1 byte = 0: channel, 1: brightness, 2: pixel count, 3: color
+  order, 4: status LED brightness, 5: nickname
+Value: the property's size: channel 1 byte; brightness 1 byte; pixel count
+  2 bytes; color order 1 byte = 0 RGB, 1 RBG, 2 GRB, 3 GBR, 4 BRG, 5 BGR;
+  status LED brightness 1 byte; nickname 16 bytes, ASCII, zero padded
+
+Identify, to one node: no payload. Answered with a Status
+
+Status payload, to the node that asked:
+Capabilities: 1 byte = the properties this node honors, bit 1 << property;
+  the top two bits are reserved and zero
+Mode: 1 byte = 0: controller, 1: receiver
+Channel: 1 byte
+Brightness: 1 byte
+Pixel count: 2 bytes
+Color order: 1 byte
+Status LED brightness: 1 byte
+Nickname: 16 bytes, ASCII, zero padded
 */
 #define RVLI_PACKET_TYPE_ID_ASSIGNMENT 1
 #define RVLI_PACKET_TYPE_CLOCK_SYNC 2
+#define RVLI_PACKET_TYPE_QUERY 3
+#define RVLI_PACKET_TYPE_CONFIGURE 4
+#define RVLI_PACKET_TYPE_IDENTIFY 5
+#define RVLI_PACKET_TYPE_STATUS 6
 
 #define ID_REQUEST_TYPE 1
 #define ID_REPLY_TYPE 2
+
+#define NICKNAME_LENGTH 16
+
+// How long a node flashes after an Identify, in local ms
+#define IDENTIFY_DURATION 5000
 
 // Broadcasts per clock sync set. Receivers map each broadcast to a slot with
 // id % NUM_OBSERVATIONS_IN_SET, so senders and receivers must agree on it

@@ -22,6 +22,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/config.hpp"
 #include "./rvl/platform.hpp"
 #include "./rvl/protocols/clock_sync/clock_sync.hpp"
+#include "./rvl/protocols/configuration/configuration.hpp"
 #include "./rvl/protocols/header.hpp"
 #include "./rvl/protocols/identity/identity.hpp"
 #include <stdint.h>
@@ -49,7 +50,12 @@ void parsePacket(uint16_t length) {
   {
     return;
   }
-  infrastructure.read8(); // reserved
+  // Before any parser: a packet for another node is nobody's business here
+  uint8_t destination = infrastructure.read8();
+  if (destination != EVERY_DEVICE_ID && destination != getDeviceId()) {
+    infrastructure.endRead();
+    return;
+  }
 
   switch (packetType) {
   case RVLI_PACKET_TYPE_ID_ASSIGNMENT:
@@ -61,6 +67,25 @@ void parsePacket(uint16_t length) {
       ProtocolClockSync::parsePacket(source, length);
     }
     break;
+  // The reply to each of these carries this node's ID
+  case RVLI_PACKET_TYPE_QUERY:
+    if (isConnected()) {
+      ProtocolConfiguration::parseQuery(source, length);
+    }
+    break;
+  case RVLI_PACKET_TYPE_CONFIGURE:
+    if (isConnected()) {
+      ProtocolConfiguration::parseConfigure(source, length);
+    }
+    break;
+  case RVLI_PACKET_TYPE_IDENTIFY:
+    if (isConnected()) {
+      ProtocolConfiguration::parseIdentify(source, length);
+    }
+    break;
+  case RVLI_PACKET_TYPE_STATUS:
+    // Another node's reply to whoever asked it; a node never asks
+    break;
   default:
     error("Received unknown RVLI packet type %d", packetType);
     break;
@@ -68,23 +93,23 @@ void parsePacket(uint16_t length) {
   infrastructure.endRead();
 }
 
-void writeHeader(uint8_t packetType) {
+void writeHeader(uint8_t packetType, uint8_t destination) {
   auto& infrastructure = Platform::system->infrastructure();
   infrastructure.write(rvliSignature, 4);
   infrastructure.write8(RVLI_VERSION);
   infrastructure.write8(getDeviceId());
   infrastructure.write8(packetType);
-  infrastructure.write8(0);
+  infrastructure.write8(destination);
 }
 
-void beginBroadcastWrite(uint8_t packetType) {
+void beginBroadcastWrite(uint8_t packetType, uint8_t destination) {
   Platform::system->infrastructure().beginBroadcastWrite();
-  writeHeader(packetType);
+  writeHeader(packetType, destination);
 }
 
 void beginCoordinatorWrite(uint8_t packetType) {
   Platform::system->infrastructure().beginCoordinatorWrite();
-  writeHeader(packetType);
+  writeHeader(packetType, EVERY_DEVICE_ID);
 }
 
 } // namespace ProtocolInfrastructure

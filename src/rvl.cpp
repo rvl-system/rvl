@@ -55,6 +55,7 @@ void loop() {
   // Run before anything that can bail on the connection state, so timeouts keep
   // decaying while we're disconnected and are correct when we reconnect
   NetworkState::loop();
+  expireIdentifying();
 
   // Both protocols drain every iteration, connected or not, so nothing queues
   // up stale while we wait. Each dispatcher decides what it can accept

@@ -32,6 +32,10 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENT_CHANNEL_UPDATED 4
 #define EVENT_BRIGHTNESS_UPDATED 6
 #define EVENT_CONNECTION_STATE_CHANGED 8
+#define EVENT_PIXEL_COUNT_UPDATED 10
+#define EVENT_COLOR_ORDER_UPDATED 12
+#define EVENT_STATUS_LED_BRIGHTNESS_UPDATED 14
+#define EVENT_NICKNAME_UPDATED 16
 
 namespace rvl {
 

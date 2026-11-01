@@ -20,13 +20,14 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_PROTOCOLS_INFRASTRUCTURE_H_
 #define RVL_PROTOCOLS_INFRASTRUCTURE_H_
 
+#include "./rvl/config.hpp"
 #include <stdint.h>
 
 namespace rvl {
 
 namespace ProtocolInfrastructure {
 
-// Signature, version, source, packet type and the reserved byte
+// Signature, version, source, packet type and destination
 const uint16_t HEADER_LENGTH = 8;
 
 void init();
@@ -34,7 +35,9 @@ void loop();
 
 void parsePacket(uint16_t length);
 
-void beginBroadcastWrite(uint8_t packetType);
+// A broadcast on the wire either way; the destination is who reads it
+void beginBroadcastWrite(
+    uint8_t packetType, uint8_t destination = EVERY_DEVICE_ID);
 void beginCoordinatorWrite(uint8_t packetType);
 
 } // namespace ProtocolInfrastructure

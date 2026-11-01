@@ -21,6 +21,8 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #include "rvl/config.hpp"
 #include "rvl/platform.hpp"
 #include "rvl/scenes.hpp"
+#include <algorithm>
+#include <string.h>
 
 #ifdef ESP32
 #include "freertos/FreeRTOS.h"
@@ -32,6 +34,11 @@ uint32_t clockOffset = 0;
 uint8_t channel = 0;
 DeviceMode deviceMode = DeviceMode::Receiver;
 uint8_t brightness = 0;
+uint16_t pixelCount = 0;
+ColorOrder colorOrder = ColorOrder::RGB;
+uint8_t statusLedBrightness = 0;
+char nickname[NICKNAME_LENGTH + 1] = "";
+uint32_t identifyUntil = 0;
 
 // State inputs used to compute current state
 bool linkUp = false;
@@ -40,6 +47,8 @@ bool clockSynced = false;
 bool clockEverSynced = false;
 bool controllerActive = false;
 bool controllerHeard = false;
+uint8_t capabilities = 0;
+uint16_t maxPixelCount = 0;
 
 #ifdef ESP32
 portMUX_TYPE stateMux = portMUX_INITIALIZER_UNLOCKED;
@@ -142,6 +151,86 @@ void setBrightness(uint8_t newBrightness) {
     brightness = newBrightness;
     emit(EVENT_BRIGHTNESS_UPDATED);
   }
+}
+
+uint16_t getPixelCount() {
+  return pixelCount;
+}
+
+void setPixelCount(uint16_t newPixelCount) {
+  newPixelCount = std::min(newPixelCount, maxPixelCount);
+  if (pixelCount != newPixelCount) {
+    pixelCount = newPixelCount;
+    emit(EVENT_PIXEL_COUNT_UPDATED);
+  }
+}
+
+ColorOrder getColorOrder() {
+  return colorOrder;
+}
+
+void setColorOrder(ColorOrder newColorOrder) {
+  if (colorOrder != newColorOrder) {
+    colorOrder = newColorOrder;
+    emit(EVENT_COLOR_ORDER_UPDATED);
+  }
+}
+
+uint8_t getStatusLedBrightness() {
+  return statusLedBrightness;
+}
+
+void setStatusLedBrightness(uint8_t newStatusLedBrightness) {
+  if (statusLedBrightness != newStatusLedBrightness) {
+    statusLedBrightness = newStatusLedBrightness;
+    emit(EVENT_STATUS_LED_BRIGHTNESS_UPDATED);
+  }
+}
+
+const char* getNickname() {
+  return nickname;
+}
+
+void setNickname(const char* newNickname) {
+  if (strncmp(nickname, newNickname, NICKNAME_LENGTH) != 0) {
+    strncpy(nickname, newNickname, NICKNAME_LENGTH);
+    nickname[NICKNAME_LENGTH] = '\0';
+    emit(EVENT_NICKNAME_UPDATED);
+  }
+}
+
+void beginIdentifying() {
+  identifyUntil = Platform::system->localClock() + IDENTIFY_DURATION;
+}
+
+// Pinned to now once over, so an end time left behind can't read as the future
+// again once uptime passes it by 2^31 ms
+void expireIdentifying() {
+  uint32_t now = Platform::system->localClock();
+  if (static_cast<int32_t>(now - identifyUntil) >= 0) {
+    identifyUntil = now;
+  }
+}
+
+bool isIdentifying() {
+  return static_cast<int32_t>(identifyUntil - Platform::system->localClock()) >
+      0;
+}
+
+void setCapabilities(uint8_t newCapabilities) {
+  capabilities = newCapabilities;
+}
+
+uint8_t getCapabilities() {
+  return capabilities;
+}
+
+void setMaxPixelCount(uint16_t newMaxPixelCount) {
+  maxPixelCount = newMaxPixelCount;
+}
+
+uint16_t getMaxPixelCount() {
+  return maxPixelCount;
 }
 
 bool getLinkUpState() {
