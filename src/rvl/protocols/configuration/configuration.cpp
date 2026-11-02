@@ -42,7 +42,6 @@ void sendStatus(uint8_t destination) {
   ProtocolInfrastructure::beginBroadcastWrite(
       RVLI_PACKET_TYPE_STATUS, destination);
   infrastructure.write8(getCapabilities());
-  infrastructure.write8(static_cast<uint8_t>(getDeviceMode()));
   infrastructure.write8(getChannel());
   infrastructure.write8(getBrightness());
   infrastructure.write16(getPixelCount());

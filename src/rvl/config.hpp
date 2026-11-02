@@ -126,7 +126,6 @@ Identify, to one node: no payload. Answered with a Status
 Status payload, to the node that asked:
 Capabilities: 1 byte = the properties this node honors, bit 1 << property;
   the top two bits are reserved and zero
-Mode: 1 byte = 0: controller, 1: receiver
 Channel: 1 byte
 Brightness: 1 byte
 Pixel count: 2 bytes
