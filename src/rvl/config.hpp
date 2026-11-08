@@ -116,22 +116,24 @@ Query, to one node or to every node: no payload. Answered with a Status
 
 Configure payload, to one node, answered with a Status:
 Property: 1 byte = 0: channel, 1: brightness, 2: pixel count, 3: color
-  order, 4: status LED brightness, 5: nickname
+  order, 4: status LED brightness, 5: nickname, 6: current limit
 Value: the property's size: channel 1 byte; brightness 1 byte; pixel count
   2 bytes; color order 1 byte = 0 RGB, 1 RBG, 2 GRB, 3 GBR, 4 BRG, 5 BGR;
-  status LED brightness 1 byte; nickname 16 bytes, ASCII, zero padded
+  status LED brightness 1 byte; nickname 16 bytes, ASCII, zero padded;
+  current limit 2 bytes, mA
 
 Identify, to one node: no payload. Answered with a Status
 
 Status payload, to the node that asked:
 Capabilities: 1 byte = the properties this node honors, bit 1 << property;
-  the top two bits are reserved and zero
+  the top bit is reserved and zero
 Channel: 1 byte
 Brightness: 1 byte
 Pixel count: 2 bytes
 Color order: 1 byte
 Status LED brightness: 1 byte
 Nickname: 16 bytes, ASCII, zero padded
+Current limit: 2 bytes, mA
 */
 #define RVLI_PACKET_TYPE_ID_ASSIGNMENT 1
 #define RVLI_PACKET_TYPE_CLOCK_SYNC 2

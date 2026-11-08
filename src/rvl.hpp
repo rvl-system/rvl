@@ -36,6 +36,7 @@ along with RVL.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENT_COLOR_ORDER_UPDATED 12
 #define EVENT_STATUS_LED_BRIGHTNESS_UPDATED 14
 #define EVENT_NICKNAME_UPDATED 16
+#define EVENT_CURRENT_LIMIT_UPDATED 18
 
 namespace rvl {
 

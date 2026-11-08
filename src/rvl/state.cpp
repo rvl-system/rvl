@@ -38,6 +38,7 @@ uint16_t pixelCount = 0;
 ColorOrder colorOrder = ColorOrder::RGB;
 uint8_t statusLedBrightness = 0;
 char nickname[NICKNAME_LENGTH + 1] = "";
+uint16_t currentLimit = 0;
 uint32_t identifyUntil = 0;
 
 // State inputs used to compute current state
@@ -196,6 +197,17 @@ void setNickname(const char* newNickname) {
     strncpy(nickname, newNickname, NICKNAME_LENGTH);
     nickname[NICKNAME_LENGTH] = '\0';
     emit(EVENT_NICKNAME_UPDATED);
+  }
+}
+
+uint16_t getCurrentLimit() {
+  return currentLimit;
+}
+
+void setCurrentLimit(uint16_t newCurrentLimit) {
+  if (currentLimit != newCurrentLimit) {
+    currentLimit = newCurrentLimit;
+    emit(EVENT_CURRENT_LIMIT_UPDATED);
   }
 }
 

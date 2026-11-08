@@ -42,9 +42,10 @@ enum class Property : uint8_t {
   PixelCount,
   ColorOrder,
   StatusLedBrightness,
-  Nickname
+  Nickname,
+  CurrentLimit
 };
-#define NUM_PROPERTIES 6
+#define NUM_PROPERTIES 7
 
 // The property's bit in a capabilities byte
 constexpr uint8_t capabilityBit(Property property) {
@@ -84,6 +85,10 @@ void setStatusLedBrightness(uint8_t newStatusLedBrightness);
 // At most NICKNAME_LENGTH characters, always terminated
 const char* getNickname();
 void setNickname(const char* newNickname);
+
+// The most the strip may draw, in mA
+uint16_t getCurrentLimit();
+void setCurrentLimit(uint16_t newCurrentLimit);
 
 // Set by an Identify, for IDENTIFY_DURATION of the local clock. The render
 // loops read it from the other task, so only the background task writes the

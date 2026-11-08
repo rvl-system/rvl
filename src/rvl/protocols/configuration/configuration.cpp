@@ -35,7 +35,7 @@ const uint16_t IDENTIFY_PACKET_LENGTH = ProtocolInfrastructure::HEADER_LENGTH;
 const uint16_t CONFIGURE_PREFIX_LENGTH =
     ProtocolInfrastructure::HEADER_LENGTH + 1;
 const uint16_t PROPERTY_VALUE_LENGTHS[NUM_PROPERTIES] = {
-    1, 1, 2, 1, 1, NICKNAME_LENGTH};
+    1, 1, 2, 1, 1, NICKNAME_LENGTH, 2};
 
 void sendStatus(uint8_t destination) {
   auto& infrastructure = Platform::system->infrastructure();
@@ -50,6 +50,7 @@ void sendStatus(uint8_t destination) {
   uint8_t nickname[NICKNAME_LENGTH] = {0};
   strncpy(reinterpret_cast<char*>(nickname), getNickname(), NICKNAME_LENGTH);
   infrastructure.write(nickname, NICKNAME_LENGTH);
+  infrastructure.write16(getCurrentLimit());
   infrastructure.endWrite();
 }
 
@@ -100,6 +101,9 @@ bool applyProperty(Property property) {
     setNickname(nickname);
     break;
   }
+  case Property::CurrentLimit:
+    setCurrentLimit(infrastructure.read16());
+    break;
   }
   return true;
 }
