@@ -31,7 +31,7 @@ namespace rvl {
 #define FRAME_PERIOD 32
 
 // The shortest fade any node runs, whether asked for or catching up late
-#define MIN_FADE_FRAMES 16
+#define MIN_FADE_FRAMES 6
 
 // A controller board's own changes, a second. Activation and the parser both
 // floor a smaller default silently
