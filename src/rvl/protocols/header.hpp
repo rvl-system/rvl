@@ -53,7 +53,7 @@ bool readHeader(Endpoint& endpoint, const uint8_t* signature,
   packetType = endpoint.read8();
 
   // A source is always a device ID, and the clock sync table is indexed by it.
-  // A node with no ID is 255 too, so this also drops a peer's ID request
+  // A node with no ID is 255 too, so this also drops a peer's first ID request
   if (source >= NUM_DEVICE_IDS || source == getDeviceId()) {
     endpoint.endRead();
     return false;

@@ -30,6 +30,7 @@ namespace ProtocolIdentity {
 
 #define ID_RETRY_INTERVAL 1000
 #define ID_RETRY_JITTER 250
+#define ID_REFRESH_INTERVAL 10000
 
 // The type and the assigned ID
 const uint16_t ID_REPLY_PACKET_LENGTH =
@@ -60,9 +61,6 @@ void loop() {
     requested = false;
     return;
   }
-  if (getDeviceId() != UNASSIGNED_DEVICE_ID) {
-    return;
-  }
   if (static_cast<int32_t>(now - nextRequestTime) < 0) {
     return;
   }
@@ -90,7 +88,13 @@ void parsePacket(uint16_t length) {
     return;
   }
   uint8_t id = infrastructure.read8();
-  if (id >= NUM_DEVICE_IDS || id == getDeviceId()) {
+  if (id >= NUM_DEVICE_IDS) {
+    return;
+  }
+  // Before the return for an unchanged ID, or every refresh would be retried
+  // each second
+  nextRequestTime = Platform::system->localClock() + ID_REFRESH_INTERVAL;
+  if (id == getDeviceId()) {
     return;
   }
   info("Assigned device ID %d", id);
