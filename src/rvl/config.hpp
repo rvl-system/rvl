@@ -148,7 +148,7 @@ Current limit: 2 bytes, mA
 #define NICKNAME_LENGTH 16
 
 // How long a node flashes after an Identify, in local ms
-#define IDENTIFY_DURATION 5000
+#define IDENTIFY_DURATION 8000
 
 // Broadcasts per clock sync set. Receivers map each broadcast to a slot with
 // id % NUM_OBSERVATIONS_IN_SET, so senders and receivers must agree on it

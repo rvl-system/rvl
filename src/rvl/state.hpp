@@ -96,6 +96,8 @@ void setCurrentLimit(uint16_t newCurrentLimit);
 void beginIdentifying();
 void expireIdentifying();
 bool isIdentifying();
+// In ms since the Identify, and at least IDENTIFY_DURATION with none running
+uint32_t getIdentifyElapsedTime();
 
 // State inputs
 // The properties this node honors over the wire, as capability bits, and the

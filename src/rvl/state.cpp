@@ -229,6 +229,10 @@ bool isIdentifying() {
       0;
 }
 
+uint32_t getIdentifyElapsedTime() {
+  return IDENTIFY_DURATION - (identifyUntil - Platform::system->localClock());
+}
+
 void setCapabilities(uint8_t newCapabilities) {
   capabilities = newCapabilities;
 }
